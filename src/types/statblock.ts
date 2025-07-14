@@ -33,6 +33,15 @@ export interface Stats {
 	charisma: number;
 }
 
+export enum Score {
+	Strength = "Strength",
+	Dexterity = "Dexterity",
+	Constitution = "Constitution",
+	Intelligence = "Intelligence",
+	Wisdom = "Wisdom",
+	Charisma = "Charisma"
+}
+
 export enum Ability {
 	Acrobatics = "Acrobatics",
 	AnimalHandling = "AnimalHandling",
@@ -102,7 +111,7 @@ export interface StatBlock {
 	hit_dice: string;
 	speed: string;
 	stats: Stats;
-	saves: Ability[];
+	saves: Score[];
 	skill_saves: Ability[];
 	senses: string;
 	languages: string[];

@@ -1,0 +1,131 @@
+.enemy-form {
+	background: white;
+	padding: 2rem;
+	border-radius: 12px;
+	box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+	width: 100%;
+	max-width: 33%;
+	font-family: sans-serif;
+	display: flex;
+	flex-direction: column;
+	gap: 1.5rem;
+}
+
+.enemy-form h2 {
+	margin: 0;
+	font-size: 1.5rem;
+	text-align: center;
+}
+
+.form-fields {
+	display: flex;
+	flex-direction: column;
+	gap: 1rem;
+}
+
+.form-field {
+	display: flex;
+	flex-direction: column;
+}
+
+.form-field-stats {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(5rem, 1fr));
+	gap: 1rem;
+	margin-bottom: 1rem;
+	text-align: center;
+}
+
+.stat-column {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+}
+
+.stat-column label {
+	font-weight: bold;
+	font-size: 0.9rem;
+	margin-bottom: 0.2rem;
+}
+
+.stat-column input {
+	width: 40px;
+	text-align: center;
+	padding: 0.3rem;
+	font-size: 1rem;
+}
+
+.stat-input::-webkit-outer-spin-button,
+.stat-input::-webkit-inner-spin-button {
+	-webkit-appearance: none;
+	margin: 0;
+}
+
+.stat-input {
+	-moz-appearance: textfield;
+}
+
+.form-field-saves {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(8rem, 1fr));
+	gap: 0.5rem;
+}
+
+.form-field-saves label {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 0.5rem;
+	white-space: nowrap;
+}
+
+.modifier {
+	margin-top: 0.2rem;
+	font-size: 0.85rem;
+	color: #666;
+}
+
+.form-field label {
+	margin-bottom: 0.5rem;
+	font-weight: 600;
+}
+
+.form-field input {
+	padding: 0.5rem;
+	border: 1px solid #ccc;
+	border-radius: 6px;
+	font-size: 1rem;
+}
+
+.form-actions {
+	display: flex;
+	justify-content: flex-end;
+	gap: 1rem;
+}
+
+button {
+	padding: 0.6rem 1.2rem;
+	font-size: 1rem;
+	border: none;
+	border-radius: 8px;
+	cursor: pointer;
+	transition: background 0.2s;
+}
+
+.cancel-button {
+	background-color: #eee;
+	color: #333;
+}
+
+.cancel-button:hover {
+	background-color: #ddd;
+}
+
+.submit-button {
+	background-color: #4caf50;
+	color: white;
+}
+
+.submit-button:hover {
+	background-color: #45a049;
+}

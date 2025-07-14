@@ -1,0 +1,19 @@
+.editor-container {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+}
+
+.enemy-item {
+	display: flex;
+	font-size: 1.5em;
+	flex-direction: row;
+	align-items: center;
+	padding: 1rem 2rem;
+	gap: 1rem;
+}
+
+.enemy-button {
+	font-size: 1em;
+	padding: 0.5rem 1rem;
+}
