@@ -1,0 +1,27 @@
+.home-container {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	margin-top: 10vh;
+	font-family: sans-serif;
+	text-align: center;
+}
+
+.home-buttons {
+	margin-top: 2rem;
+	display: flex;
+	gap: 1rem;
+}
+
+button {
+	font-size: 1.2rem;
+	padding: 1rem 2rem;
+	border: none;
+	border-radius: 8px;
+	cursor: pointer;
+	transition: 0.2s ease-in-out;
+}
+
+button:hover {
+	background-color: #ddd;
+}
