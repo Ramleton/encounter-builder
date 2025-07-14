@@ -1,12 +1,9 @@
 use serde::{Deserialize, Serialize};
-
-// Learn more about Tauri commands at https://tauri.app/develop/calling-rust/
-#[tauri::command]
-fn greet(name: &str) -> String {
-    format!("Hello, {}! You've been greeted from Rust!", name)
-}
+use typeshare::typeshare;
 
 #[derive(Serialize, Deserialize, Debug)]
+#[typeshare]
+#[serde(rename_all = "PascalCase")]
 enum Alignment {
     LawfulGood,
     NeutralGood,
@@ -20,6 +17,7 @@ enum Alignment {
 }
 
 #[derive(Serialize, Deserialize, Debug)]
+#[typeshare]
 enum Size {
     Tiny,
     Small,
@@ -30,6 +28,7 @@ enum Size {
 }
 
 #[derive(Serialize, Deserialize, Debug)]
+#[typeshare]
 enum ConditionType {
     Blinded,
     Charmed,
@@ -48,6 +47,7 @@ enum ConditionType {
 }
 
 #[derive(Serialize, Deserialize, Debug)]
+#[typeshare]
 enum DamageType {
     Acid,
     Bludgeoning,
@@ -64,7 +64,8 @@ enum DamageType {
 }
 
 #[derive(Serialize, Deserialize, Debug)]
-enum Abilities {
+#[typeshare]
+enum Ability {
     Acrobatics,
     AnimalHandling,
     Arcana,
@@ -86,48 +87,52 @@ enum Abilities {
 }
 
 #[derive(Serialize, Deserialize, Debug)]
+#[typeshare]
 struct Action {
     name: String,
     description: String,
 }
 
 #[derive(Serialize, Deserialize, Debug)]
+#[typeshare]
 struct Trait {
     name: String,
     description: String,
 }
 
 #[derive(Serialize, Deserialize, Debug)]
+#[typeshare]
 struct Stats {
-    strength: u64,
-    dexterity: u64,
-    constitution: u64,
-    intelligence: u64,
-    wisdom: u64,
-    charisma: u64,
+    strength: u32,
+    dexterity: u32,
+    constitution: u32,
+    intelligence: u32,
+    wisdom: u32,
+    charisma: u32,
 }
 
 #[derive(Serialize, Deserialize, Debug)]
+#[typeshare]
 struct StatBlock {
     name: String,
-    size: String,
+    size: Size,
     type_: String,
     subtype: String,
-    alignment: String,
-    ac: u64,
-    hp: u64,
+    alignment: Alignment,
+    ac: u32,
+    hp: u32,
     hit_dice: String,
     speed: String,
     stats: Stats,
-    saves: Vec<Abilities>,
-    skill_saves: Vec<Abilities>,
+    saves: Vec<Ability>,
+    skill_saves: Vec<Ability>,
     senses: String,
     languages: Vec<String>,
     damage_vulnerabilities: Vec<DamageType>,
     damage_resistances: Vec<DamageType>,
     damage_immunities: Vec<DamageType>,
     condition_immunities: Vec<ConditionType>,
-    cr: u64,
+    cr: u32,
     traits: Vec<Trait>,
     actions: Vec<Action>,
     legendary_actions: Vec<Action>,
@@ -135,11 +140,17 @@ struct StatBlock {
     reactions: Vec<Action>,
 }
 
+#[tauri::command]
+fn recv_statblock(statblock: StatBlock) -> String {
+    println!("Received StatBlock: {:?}", statblock);
+    format!("StatBlock for {} received successfully!", statblock.name)
+}
+
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     tauri::Builder::default()
         .plugin(tauri_plugin_opener::init())
-        .invoke_handler(tauri::generate_handler![greet])
+        .invoke_handler(tauri::generate_handler![recv_statblock])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }
