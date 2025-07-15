@@ -153,7 +153,7 @@ function EnemyForm({ onSubmit, onCancel }: Props) {
 					<input
 						id="enemy-hd"
 						type="text"
-						placeholder="hit dice"
+						placeholder="Hit dice"
 						value={statBlock.hit_dice}
 						onChange={e => updateField("hit_dice", e.target.value)}
 						required
@@ -164,7 +164,7 @@ function EnemyForm({ onSubmit, onCancel }: Props) {
 					<input
 						id="enemy-speed"
 						type="text"
-						placeholder="speed"
+						placeholder="Speed"
 						value={statBlock.speed}
 						onChange={e => updateField("speed", e.target.value)}
 						required
