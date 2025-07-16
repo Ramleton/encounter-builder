@@ -1,6 +1,8 @@
 import { useState } from "react";
-import { Alignment, Score, Size, StatBlock } from "../types/statblock";
+import { Ability, Alignment, Score, Size, StatBlock, Stats } from "../types/statblock";
+import abilityToScore from "../utils/abilityUtils";
 import "./EnemyForm.css";
+import MultiSelectDropdown from "./MultiSelectDropdown";
 
 interface Props {
 	onSubmit: (enemy: StatBlock) => void;
@@ -68,7 +70,13 @@ function EnemyForm({ onSubmit, onCancel }: Props) {
 		return (mod > 0 ? "+" : "") + mod;
 	}
 
+	const getProficiencyBonus = () => {
+		return Math.floor((statBlock.cr - 1) / 4) + 2;
+	}
+
 	const allScores = Object.values(Score);
+
+	const allAbilities = Object.values(Ability);
 
 	return (
 		<div className="enemy-form">
@@ -212,6 +220,38 @@ function EnemyForm({ onSubmit, onCancel }: Props) {
 								/>
 							</label>
 						))}
+					</div>
+				</div>
+				<div className="form-section">
+					<h3>Ability Save Proficiencies</h3>
+					<div className="form-field-saves">
+						<MultiSelectDropdown
+								label={"Select Ability Saves"}
+								options={allAbilities}
+								selected={statBlock.skill_saves}
+								onChange={(selected) => {
+									updateField("skill_saves", selected);
+								}}
+								getLabel={(v) => {
+									const associatedScore = abilityToScore(v);
+									const scoreKey = associatedScore.toLowerCase() as keyof Stats;
+									const rawStat = statBlock.stats[scoreKey];
+									const modifier = Math.floor((rawStat - 10) / 2) + (
+										statBlock.skill_saves.includes(v)
+											? getProficiencyBonus()
+											: 0
+									);
+
+									const abilityTrimmed = v.replace(/([A-Z])/g, " $1").trim();
+									const modifierStr = modifier > 0
+										? `+${modifier}`
+										: modifier == 0
+										? `${modifier}`
+										: `-${modifier}`;
+
+									return abilityTrimmed + ` (${modifierStr})`
+								}}
+								/>
 					</div>
 				</div>
 				<div className="form-field">
