@@ -75,8 +75,10 @@ function EnemyForm({ onSubmit, onCancel }: Props) {
 	}
 
 	const allScores = Object.values(Score);
-
 	const allAbilities = Object.values(Ability);
+	const CR_OPTIONS = [
+		"0", "1/8", " 1/4", "1/2", ...Array.from({ length: 30 }, (_, i) => i + 1)
+	];
 
 	return (
 		<div className="enemy-form">
@@ -226,36 +228,36 @@ function EnemyForm({ onSubmit, onCancel }: Props) {
 					<h3>Ability Save Proficiencies</h3>
 					<div className="form-field-saves">
 						<MultiSelectDropdown
-								label={"Select Ability Saves"}
-								options={allAbilities}
-								selected={statBlock.skill_saves}
-								onChange={(selected) => {
-									updateField("skill_saves", selected);
-								}}
-								getLabel={(v) => {
-									const associatedScore = abilityToScore(v);
-									const scoreKey = associatedScore.toLowerCase() as keyof Stats;
-									const rawStat = statBlock.stats[scoreKey];
-									const modifier = Math.floor((rawStat - 10) / 2) + (
-										statBlock.skill_saves.includes(v)
-											? getProficiencyBonus()
-											: 0
-									);
+							label={"Select Ability Saves"}
+							options={allAbilities}
+							selected={statBlock.skill_saves}
+							onChange={(selected) => {
+								updateField("skill_saves", selected);
+							}}
+							getLabel={(v) => {
+								const associatedScore = abilityToScore(v);
+								const scoreKey = associatedScore.toLowerCase() as keyof Stats;
+								const rawStat = statBlock.stats[scoreKey];
+								const modifier = Math.floor((rawStat - 10) / 2) + (
+									statBlock.skill_saves.includes(v)
+										? getProficiencyBonus()
+										: 0
+								);
 
-									const abilityTrimmed = v.replace(/([A-Z])/g, " $1").trim();
-									const modifierStr = modifier > 0
-										? `+${modifier}`
-										: modifier == 0
-										? `${modifier}`
-										: `-${modifier}`;
+								const abilityTrimmed = v.replace(/([A-Z])/g, " $1").trim();
+								const modifierStr = modifier > 0
+									? `+${modifier}`
+									: modifier == 0
+									? `${modifier}`
+									: `-${modifier}`;
 
-									return abilityTrimmed + ` (${modifierStr})`
-								}}
-								/>
+								return abilityTrimmed + ` (${modifierStr})`
+							}}
+						/>
 					</div>
 				</div>
 				<div className="form-field">
-					<label htmlFor="enemy-cr">Challenge Rating (CR)</label>
+					{/* <label htmlFor="enemy-cr">Challenge Rating (CR)</label>
 					<input
 						id="enemy-cr"
 						type="number"
@@ -264,7 +266,19 @@ function EnemyForm({ onSubmit, onCancel }: Props) {
 						value={statBlock.cr}
 						onChange={e => updateField("cr", Number(e.target.value))}
 						required
-					/>
+					/> */}
+					<label htmlFor="enemy-cr">Challenge Rating (CR)</label>
+					<select
+						id="enemy-cr"
+						value={statBlock.cr}
+						onChange={(e) => updateField("cr", parseFloat(e.target.value))}
+					>
+						{CR_OPTIONS.map((cr) => (
+							<option key={cr} value={cr}>
+								{cr}
+							</option>
+						))}
+					</select>
 				</div>
 			</div>
 			<div className="form-actions">
