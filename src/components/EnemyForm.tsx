@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Ability, Alignment, Score, Size, StatBlock, Stats } from "../types/statblock";
+import { Ability, Alignment, DamageType, Score, Size, StatBlock, Stats } from "../types/statblock";
 import { abilityToScore, getModifier, getProficiencyBonus } from "../utils/abilityUtils";
 import "./EnemyForm.css";
 import MultiSelectDropdown from "./MultiSelectDropdown";
@@ -67,6 +67,7 @@ function EnemyForm({ onSubmit, onCancel }: Props) {
 
 	const allScores = Object.values(Score);
 	const allAbilities = Object.values(Ability);
+	const allDamageTypes = Object.values(DamageType);
 	const CR_OPTIONS = [
 		"0", "1/8", " 1/4", "1/2", ...Array.from({ length: 30 }, (_, i) => i + 1)
 	];
@@ -268,6 +269,54 @@ function EnemyForm({ onSubmit, onCancel }: Props) {
 						onChange={e => updateField("languages", e.target.value)}
 						required
 					/>
+				</div>
+				<div className="form-section">
+					<h3>Damage Vulnerabilities</h3>
+					<div className="form-field-saves">
+						<MultiSelectDropdown
+							label={"Select Damage Vulnerabilities"}
+							options={allDamageTypes
+								.filter((dType) => !statBlock.damage_resistances.includes(dType))
+								.filter((dType) => !statBlock.damage_immunities.includes(dType))
+							}
+							selected={statBlock.damage_vulnerabilities}
+							onChange={(selected) => {
+								updateField("damage_vulnerabilities", selected);
+							}}
+						/>
+					</div>
+				</div>
+				<div className="form-section">
+					<h3>Damage Resistances</h3>
+					<div className="form-field-saves">
+						<MultiSelectDropdown
+							label={"Select Damage Resistances"}
+							options={allDamageTypes
+								.filter((dType) => !statBlock.damage_vulnerabilities.includes(dType))
+								.filter((dType) => !statBlock.damage_immunities.includes(dType))
+							}
+							selected={statBlock.damage_resistances}
+							onChange={(selected) => {
+								updateField("damage_resistances", selected);
+							}}
+						/>
+					</div>
+				</div>
+				<div className="form-section">
+					<h3>Damage Immunities</h3>
+					<div className="form-field-saves">
+						<MultiSelectDropdown
+							label={"Select Damage Immunities"}
+							options={allDamageTypes
+								.filter((dType) => !statBlock.damage_vulnerabilities.includes(dType))
+								.filter((dType) => !statBlock.damage_resistances.includes(dType))
+							}
+							selected={statBlock.damage_immunities}
+							onChange={(selected) => {
+								updateField("damage_immunities", selected);
+							}}
+						/>
+					</div>
 				</div>
 				<div className="form-field">
 					<label htmlFor="enemy-cr">Challenge Rating (CR)</label>
