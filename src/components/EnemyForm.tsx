@@ -248,6 +248,17 @@ function EnemyForm({ onSubmit, onCancel }: Props) {
 					</div>
 				</div>
 				<div className="form-field">
+					<label htmlFor="enemy-senses">Senses</label>
+					<input
+						id="enemy-senses"
+						type="text"
+						placeholder="Senses"
+						value={statBlock.senses}
+						onChange={e => updateField("senses", e.target.value)}
+						required
+					/>
+				</div>
+				<div className="form-field">
 					<label htmlFor="enemy-cr">Challenge Rating (CR)</label>
 					<select
 						id="enemy-cr"
