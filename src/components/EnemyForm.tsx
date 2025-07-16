@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Ability, Alignment, DamageType, Score, Size, StatBlock, Stats } from "../types/statblock";
+import { Ability, Alignment, ConditionType, DamageType, Score, Size, StatBlock, Stats } from "../types/statblock";
 import { abilityToScore, getModifier, getProficiencyBonus } from "../utils/abilityUtils";
 import "./EnemyForm.css";
 import MultiSelectDropdown from "./MultiSelectDropdown";
@@ -68,6 +68,7 @@ function EnemyForm({ onSubmit, onCancel }: Props) {
 	const allScores = Object.values(Score);
 	const allAbilities = Object.values(Ability);
 	const allDamageTypes = Object.values(DamageType);
+	const allConditions = Object.values(ConditionType);
 	const CR_OPTIONS = [
 		"0", "1/8", " 1/4", "1/2", ...Array.from({ length: 30 }, (_, i) => i + 1)
 	];
@@ -314,6 +315,19 @@ function EnemyForm({ onSubmit, onCancel }: Props) {
 							selected={statBlock.damage_immunities}
 							onChange={(selected) => {
 								updateField("damage_immunities", selected);
+							}}
+						/>
+					</div>
+				</div>
+				<div className="form-section">
+					<h3>Condition Immunities</h3>
+					<div className="form-field-saves">
+						<MultiSelectDropdown
+							label={"Select Condition Immunities"}
+							options={allConditions}
+							selected={statBlock.condition_immunities}
+							onChange={(selected) => {
+								updateField("condition_immunities", selected);
 							}}
 						/>
 					</div>
