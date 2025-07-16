@@ -31,7 +31,7 @@ function EnemyForm({ onSubmit, onCancel }: Props) {
 		saves: [],
 		skill_saves: [],
 		senses: "",
-		languages: [],
+		languages: "",
 		damage_vulnerabilities: [],
 		damage_immunities: [],
 		damage_resistances: [],
@@ -255,6 +255,17 @@ function EnemyForm({ onSubmit, onCancel }: Props) {
 						placeholder="Senses"
 						value={statBlock.senses}
 						onChange={e => updateField("senses", e.target.value)}
+						required
+					/>
+				</div>
+				<div className="form-field">
+					<label htmlFor="enemy-languages">Languages</label>
+					<input
+						id="enemy-languages"
+						type="text"
+						placeholder="Languages"
+						value={statBlock.languages}
+						onChange={e => updateField("languages", e.target.value)}
 						required
 					/>
 				</div>

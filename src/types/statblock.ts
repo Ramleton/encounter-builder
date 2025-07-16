@@ -114,7 +114,7 @@ export interface StatBlock {
 	saves: Score[];
 	skill_saves: Ability[];
 	senses: string;
-	languages: string[];
+	languages: string;
 	damage_vulnerabilities: DamageType[];
 	damage_resistances: DamageType[];
 	damage_immunities: DamageType[];

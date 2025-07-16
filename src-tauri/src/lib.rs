@@ -127,7 +127,7 @@ struct StatBlock {
     saves: Vec<Ability>,
     skill_saves: Vec<Ability>,
     senses: String,
-    languages: Vec<String>,
+    languages: String,
     damage_vulnerabilities: Vec<DamageType>,
     damage_resistances: Vec<DamageType>,
     damage_immunities: Vec<DamageType>,
