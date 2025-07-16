@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Ability, Alignment, Score, Size, StatBlock, Stats } from "../types/statblock";
-import abilityToScore from "../utils/abilityUtils";
+import { abilityToScore, getModifier, getProficiencyBonus } from "../utils/abilityUtils";
 import "./EnemyForm.css";
 import MultiSelectDropdown from "./MultiSelectDropdown";
 
@@ -63,15 +63,6 @@ function EnemyForm({ onSubmit, onCancel }: Props) {
 	
 	const handleSubmit = () => {
 		onSubmit(statBlock);
-	}
-
-	const getModifier = (score: number): string => {
-		const mod = Math.floor((score - 10) / 2);
-		return (mod > 0 ? "+" : "") + mod;
-	}
-
-	const getProficiencyBonus = () => {
-		return Math.floor((statBlock.cr - 1) / 4) + 2;
 	}
 
 	const allScores = Object.values(Score);
@@ -240,7 +231,7 @@ function EnemyForm({ onSubmit, onCancel }: Props) {
 								const rawStat = statBlock.stats[scoreKey];
 								const modifier = Math.floor((rawStat - 10) / 2) + (
 									statBlock.skill_saves.includes(v)
-										? getProficiencyBonus()
+										? getProficiencyBonus(statBlock)
 										: 0
 								);
 
@@ -257,16 +248,6 @@ function EnemyForm({ onSubmit, onCancel }: Props) {
 					</div>
 				</div>
 				<div className="form-field">
-					{/* <label htmlFor="enemy-cr">Challenge Rating (CR)</label>
-					<input
-						id="enemy-cr"
-						type="number"
-						min={0}
-						placeholder="2"
-						value={statBlock.cr}
-						onChange={e => updateField("cr", Number(e.target.value))}
-						required
-					/> */}
 					<label htmlFor="enemy-cr">Challenge Rating (CR)</label>
 					<select
 						id="enemy-cr"

@@ -1,6 +1,16 @@
-import { Ability, Score } from "../types/statblock";
+import { Ability, Score, StatBlock } from "../types/statblock";
 
-function abilityToScore(label: Ability): Score {
+
+export function getModifier(score: number): string {
+	const mod = Math.floor((score - 10) / 2);
+	return (mod > 0 ? "+" : "") + mod;
+}
+
+export function getProficiencyBonus(statBlock: StatBlock) {
+	return Math.floor((statBlock.cr - 1) / 4) + 2;
+}
+
+export function abilityToScore(label: Ability): Score {
 	switch(label) {
 		case Ability.Athletics:
 			return Score.Strength;
@@ -27,5 +37,3 @@ function abilityToScore(label: Ability): Score {
 			return Score.Charisma;
 	}
 }
-
-export default abilityToScore;
