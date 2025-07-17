@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Ability, Alignment, ConditionType, DamageType, Score, Size, StatBlock, Stats } from "../types/statblock";
 import { abilityToScore, getModifier, getProficiencyBonus } from "../utils/abilityUtils";
+import ActionListInput from "./ActionListInput";
 import "./EnemyForm.css";
 import MultiSelectDropdown from "./MultiSelectDropdown";
 
@@ -346,6 +347,31 @@ function EnemyForm({ onSubmit, onCancel }: Props) {
 						))}
 					</select>
 				</div>
+				<ActionListInput
+					label="Traits"
+					actions={statBlock.traits}
+					onChange={(updated) => updateField("traits", updated)}
+				/>
+				<ActionListInput
+					label="Actions"
+					actions={statBlock.actions}
+					onChange={(updated) => updateField("actions", updated)}
+				/>
+				<ActionListInput
+					label="Bonus Actions"
+					actions={statBlock.bonus_actions}
+					onChange={(updated) => updateField("bonus_actions", updated)}
+				/>
+				<ActionListInput
+					label="Reactions"
+					actions={statBlock.reactions}
+					onChange={(updated) => updateField("reactions", updated)}
+				/>
+				<ActionListInput
+					label="Legendary Actions"
+					actions={statBlock.legendary_actions}
+					onChange={(updated) => updateField("legendary_actions", updated)}
+				/>
 			</div>
 			<div className="form-actions">
 				<button className="cancel-button" onClick={onCancel}>Cancel</button>
