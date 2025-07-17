@@ -24,7 +24,7 @@ function Editor() {
 		<div className="editor-container">
 			<h1>Encounter Editor</h1>
 
-			{enemies.length === 0 ? (
+			{enemies.length === 0 && !showForm ? (
 				<div className="empty-state">
 					<p>No enemies in this encounter yet.</p>
 					<button onClick={() => setShowForm(true)}>Add First Enemy</button>

@@ -37,7 +37,7 @@ function EnemyForm({ onSubmit, onCancel }: Props) {
 		damage_immunities: [],
 		damage_resistances: [],
 		condition_immunities: [],
-		cr: 0,
+		cr: "0",
 		traits: [],
 		actions: [],
 		legendary_actions: [],
@@ -90,6 +90,25 @@ function EnemyForm({ onSubmit, onCancel }: Props) {
 					/>
 				</div>
 				<div className="form-field">
+					<label htmlFor="enemy-size">Size</label>
+					<select
+						id="enemy-size"
+						name="size"
+						defaultValue={Size.Medium}
+						onChange={e => updateField("size", e.target.value as Size)}
+						required
+					>
+						{Object.values(Size).map(size => (
+							<option
+								key={size}
+								value={size}
+							>
+								{size.replace(/([A-Z])/g, " $1").trim()}
+							</option>
+						))}
+					</select>
+				</div>
+				<div className="form-field">
 					<label htmlFor="enemy-type">Type</label>
 					<input
 						id="enemy-type"
@@ -132,9 +151,8 @@ function EnemyForm({ onSubmit, onCancel }: Props) {
 					<label htmlFor="enemy-ac">Armour Class (AC)</label>
 					<input
 						id="enemy-ac"
-						type="number"
-						min={0}
-						placeholder="2"
+						type="text"
+						placeholder="10"
 						value={statBlock.ac}
 						onChange={e => updateField("ac", Number(e.target.value))}
 						required
@@ -144,9 +162,8 @@ function EnemyForm({ onSubmit, onCancel }: Props) {
 					<label htmlFor="enemy-hp">Hit Points (HP)</label>
 					<input
 						id="enemy-hp"
-						type="number"
-						min={1}
-						placeholder="2"
+						type="text"
+						placeholder="10"
 						value={statBlock.hp}
 						onChange={e => updateField("hp", Number(e.target.value))}
 						required
@@ -188,8 +205,8 @@ function EnemyForm({ onSubmit, onCancel }: Props) {
 							<input
 								className="stat-input"
 								id={`enemy-${key}`}
-								type="number"
-								min={0}
+								type="text"
+								placeholder="10"
 								value={statBlock.stats[key as keyof typeof statBlock.stats]}
 								onChange={(e) => updateStat(key as keyof typeof statBlock.stats, Number(e.target.value))}
 							/>
@@ -338,7 +355,7 @@ function EnemyForm({ onSubmit, onCancel }: Props) {
 					<select
 						id="enemy-cr"
 						value={statBlock.cr}
-						onChange={(e) => updateField("cr", parseFloat(e.target.value))}
+						onChange={(e) => updateField("cr", e.target.value)}
 					>
 						{CR_OPTIONS.map((cr) => (
 							<option key={cr} value={cr}>

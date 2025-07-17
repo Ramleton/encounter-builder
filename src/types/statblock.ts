@@ -82,6 +82,7 @@ export enum ConditionType {
 	Blinded = "Blinded",
 	Charmed = "Charmed",
 	Deafened = "Deafened",
+	Exhaustion = "Exhaustion",
 	Frightened = "Frightened",
 	Grappled = "Grappled",
 	Incapacitated = "Incapacitated",
@@ -119,7 +120,7 @@ export interface StatBlock {
 	damage_resistances: DamageType[];
 	damage_immunities: DamageType[];
 	condition_immunities: ConditionType[];
-	cr: number;
+	cr: string;
 	traits: Trait[];
 	actions: Action[];
 	legendary_actions: Action[];

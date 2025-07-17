@@ -33,6 +33,7 @@ enum ConditionType {
     Blinded,
     Charmed,
     Deafened,
+    Exhaustion,
     Frightened,
     Grappled,
     Incapacitated,
@@ -132,7 +133,7 @@ struct StatBlock {
     damage_resistances: Vec<DamageType>,
     damage_immunities: Vec<DamageType>,
     condition_immunities: Vec<ConditionType>,
-    cr: u32, /* TODO Change this to String later */
+    cr: String,
     traits: Vec<Trait>,
     actions: Vec<Action>,
     legendary_actions: Vec<Action>,
