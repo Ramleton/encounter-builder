@@ -8,10 +8,11 @@ import MultiSelectDropdown from "./MultiSelectDropdown";
 interface Props {
 	onSubmit: (enemy: StatBlock) => void;
 	onCancel: () => void;
+	editStatblock?: StatBlock;
 }
 
-function EnemyForm({ onSubmit, onCancel }: Props) {
-	const [statBlock, setStatBlock] = useState<StatBlock>({
+function createDefaultStatBlock(): StatBlock {
+	return {
 		name: "",
 		size: Size.Medium,
 		type_: "",
@@ -43,7 +44,13 @@ function EnemyForm({ onSubmit, onCancel }: Props) {
 		legendary_actions: [],
 		bonus_actions: [],
 		reactions: []
-	});
+	}
+}
+
+function EnemyForm({ onSubmit, onCancel, editStatblock }: Props) {
+	const [statBlock, setStatBlock] = useState<StatBlock>(
+		editStatblock ? editStatblock : createDefaultStatBlock()
+	);
 
 	const updateField = <K extends keyof StatBlock>(key: K, value: StatBlock[K]) => {
 		setStatBlock(prev => ({
@@ -76,7 +83,7 @@ function EnemyForm({ onSubmit, onCancel }: Props) {
 
 	return (
 		<div className="enemy-form">
-			<h2>Add New Enemy</h2>
+			<h2>Configure Statblock</h2>
 			<div className="form-fields">
 				<div className="form-field">
 					<label htmlFor="enemy-name">Name</label>
@@ -392,7 +399,7 @@ function EnemyForm({ onSubmit, onCancel }: Props) {
 			</div>
 			<div className="form-actions">
 				<button className="cancel-button" onClick={onCancel}>Cancel</button>
-				<button className="submit-button" onClick={handleSubmit}>Add</button>
+				<button className="submit-button" onClick={handleSubmit}>{editStatblock ? "Save" : "Add"}</button>
 			</div>
 		</div>
 	)

@@ -6,14 +6,21 @@ import "./Editor.css";
 function Editor() {
 	const [enemies, setEnemies] = useState<StatBlock[]>([]);
 	const [showForm, setShowForm] = useState(false);
+	const [editIndex, setEditIndex] = useState<number | null>(null);
 
-	const handleAddEnemy = (enemy: StatBlock) => {
-		setEnemies(prev => [...prev, enemy]);
+	const handleSubmit = (enemy: StatBlock) => {
+		if (editIndex !== null) {
+			setEnemies(prev => prev.map((e, i) => (i === editIndex ? enemy : e)));
+		} else {
+			setEnemies(prev => [...prev, enemy]);
+		}
 		setShowForm(false);
+		setEditIndex(null);
 	}
 
 	const handleEditEnemy = (index: number) => {
-		// TODO
+		setEditIndex(index);
+		setShowForm(true);
 	}
 
 	const handleDeleteEnemy = (index: number) => {
@@ -55,7 +62,11 @@ function Editor() {
 				</>
 			)}
 
-			{showForm && <EnemyForm onSubmit={handleAddEnemy} onCancel={() => setShowForm(false)} />}
+			{showForm && <EnemyForm
+				onSubmit={handleSubmit}
+				onCancel={() => setShowForm(false)}
+				editStatblock={editIndex !== null ? enemies[editIndex] : undefined}
+			/>}
 		</div>
 	)
 }
