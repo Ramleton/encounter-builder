@@ -68,9 +68,7 @@ const budgetByLevel: Record<Level, Difficulty> = {
 }
 
 export const calcEncounterXP = (creatures: StatBlock[]): number => {
-	return creatures
-		.map((creature) => xpByCR[creature.cr])
-		.reduce((prev, curr, _idx, _arr) => prev + curr, 0);
+	return creatures.reduce((sum, creature) => sum + xpByCR[creature.cr], 0);
 }
 
 enum EncounterDifficulty {
@@ -82,14 +80,15 @@ enum EncounterDifficulty {
 
 export const calcEncounterDifficulty = (creatures: StatBlock[], players: Player[]): EncounterDifficulty => {
 	const encounterBudget = players
-		.map(player => budgetByLevel[player.level])
-		.reduce((prevBudget, currBudget) => {
+		.reduce((acc, player) => {
+			const budget = budgetByLevel[player.level];
 			return {
-				low: prevBudget.low + currBudget.low,
-				moderate: prevBudget.moderate + currBudget.moderate,
-				high: prevBudget.high + currBudget.high
-			}
-		}
+				low: acc.low + budget.low,
+				moderate: acc.moderate + budget.moderate,
+				high: acc.high + budget.high
+			};
+		},
+		{ low: 0, moderate: 0, high: 0 }
 	);
 	const encounterXP = calcEncounterXP(creatures);
 
