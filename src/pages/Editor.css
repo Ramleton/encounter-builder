@@ -1,19 +1,31 @@
 .editor-container {
+	padding: 1rem;
+}
+
+.editor-content {
 	display: flex;
-	flex-direction: column;
-	align-items: center;
+	gap: 2rem;
+}
+
+.enemy-list-panel {
+	width: 30%;
+	border-right: 1px solid #ccc;
+	padding-right: 1rem;
+}
+
+.enemy-form-panel {
+	width: 70%;
 }
 
 .enemy-item {
+	margin-bottom: 0.75rem;
 	display: flex;
-	font-size: 1.5em;
-	flex-direction: row;
+	justify-content: space-between;
 	align-items: center;
-	padding: 1rem 2rem;
-	gap: 1rem;
 }
 
-.enemy-button {
-	font-size: 1em;
+.enemy-buttons button {
+	margin-left: 0.5rem;
+	font-size: 0.75rem;
 	padding: 0.5rem 1rem;
 }
