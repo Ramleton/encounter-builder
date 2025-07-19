@@ -7,7 +7,7 @@ export function getModifier(score: number): string {
 }
 
 export function getProficiencyBonus(statBlock: StatBlock) {
-	return Math.floor((statBlock.cr - 1) / 4) + 2;
+	return Math.floor((Number.parseFloat(statBlock.cr) - 1) / 4) + 2;
 }
 
 export function abilityToScore(label: Ability): Score {
