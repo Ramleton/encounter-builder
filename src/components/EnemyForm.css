@@ -73,10 +73,17 @@
 
 .form-field-saves label {
 	display: flex;
-	align-items: center;
+	align-items: flex-start;
 	justify-content: space-between;
 	gap: 0.5rem;
 	white-space: nowrap;
+}
+
+@media screen and (width > 830px) {
+	.form-field-saves label {
+		align-items: center;
+		justify-content: center;
+	}
 }
 
 .modifier {
