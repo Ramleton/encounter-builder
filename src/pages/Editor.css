@@ -24,6 +24,18 @@
 	width: 70%;
 }
 
+.panel-title {
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	justify-content: space-between;
+}
+
+.panel-title button {
+	font-size: 0.75rem;
+	margin: 1rem 0;
+}
+
 .enemy-item {
 	margin-bottom: 0.75rem;
 	display: flex;

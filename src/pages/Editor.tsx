@@ -64,11 +64,13 @@ function Editor() {
 			<h1>Encounter Editor</h1>
 			<div className="editor-content">
 				<div className="enemy-list-panel">
-					<h2>Creatures</h2>
-					<button onClick={() => {
-						setEditIndex(null);
-						setShowForm(true);
-					}}>Add Creature</button>
+					<div className="panel-title">
+						<h2>Creatures</h2>
+						<button onClick={() => {
+							setEditIndex(null);
+							setShowForm(true);
+						}}>Add Creature</button>
+					</div>
 					<ul>
 						{enemies.map((enemy, index) => (
 							<li key={index} className="enemy-item">
@@ -97,8 +99,10 @@ function Editor() {
 						))}
 					</ul>
 					<div className="player-container">
-						<h2>Players</h2>
-						<button onClick={handleAddPlayer}>Add Player</button>
+						<div className="panel-title">
+							<h2>Players</h2>
+							<button onClick={handleAddPlayer}>Add Player</button>
+						</div>
 						<ul>
 							{players.map((player, index) => (
 								<li key={index} className="enemy-item">
