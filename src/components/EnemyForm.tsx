@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Ability, Alignment, ConditionType, DamageType, Score, Size, StatBlock, Stats } from "../types/statblock";
+import { Ability, Alignment, ConditionType, CR, CR_VALUES, DamageType, Score, Size, StatBlock, Stats } from "../types/statblock";
 import { abilityToScore, getModifier, getProficiencyBonus } from "../utils/abilityUtils";
 import ActionListInput from "./ActionListInput";
 import "./EnemyForm.css";
@@ -77,9 +77,6 @@ function EnemyForm({ onSubmit, onCancel, editStatblock }: Props) {
 	const allAbilities = Object.values(Ability);
 	const allDamageTypes = Object.values(DamageType);
 	const allConditions = Object.values(ConditionType);
-	const CR_OPTIONS = [
-		"0", "1/8", " 1/4", "1/2", ...Array.from({ length: 30 }, (_, i) => i + 1)
-	];
 	const calcSaveProficiency = (score: Score) => {
 		const statMod = Math.floor((statBlock.stats[score.toLowerCase() as keyof Stats] - 10) / 2);
 		const profMod = statBlock.saves.includes(score)
@@ -375,9 +372,9 @@ function EnemyForm({ onSubmit, onCancel, editStatblock }: Props) {
 					<select
 						id="enemy-cr"
 						value={statBlock.cr}
-						onChange={(e) => updateField("cr", e.target.value)}
+						onChange={(e) => updateField("cr", e.target.value as CR)}
 					>
-						{CR_OPTIONS.map((cr) => (
+						{CR_VALUES.map((cr) => (
 							<option key={cr} value={cr}>
 								{cr}
 							</option>

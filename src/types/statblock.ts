@@ -101,6 +101,12 @@ export interface Trait {
 	description: string;
 }
 
+export const CR_VALUES = [
+	"0", "1/8", "1/4", "1/2", ...Array.from({ length: 30 }, (_, i) => (i + 1) + "")
+] as const;
+
+export type CR = typeof CR_VALUES[number];
+
 export interface StatBlock {
 	name: string;
 	size: Size;
@@ -120,7 +126,7 @@ export interface StatBlock {
 	damage_resistances: DamageType[];
 	damage_immunities: DamageType[];
 	condition_immunities: ConditionType[];
-	cr: string;
+	cr: CR;
 	traits: Trait[];
 	actions: Action[];
 	legendary_actions: Action[];
