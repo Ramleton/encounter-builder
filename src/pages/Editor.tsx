@@ -59,6 +59,10 @@ function Editor() {
 		setEditIndex(null);
 	}
 
+	const handleSaveEncounter = () => {
+		console.log("saving")
+	}
+
 	return (
 		<div className="editor-container">
 			<h1>Encounter Editor</h1>
@@ -137,6 +141,7 @@ function Editor() {
 							<strong>Encounter Difficulty:</strong>{calcEncounterDifficulty(enemies, players)}
 						</span>
 					</div>
+					<button className="save-button" onClick={handleSaveEncounter}>Save</button>
 				</div>
 				<div className="enemy-form-panel">
 					{showForm ? (
