@@ -80,6 +80,18 @@ function EnemyForm({ onSubmit, onCancel, editStatblock }: Props) {
 	const CR_OPTIONS = [
 		"0", "1/8", " 1/4", "1/2", ...Array.from({ length: 30 }, (_, i) => i + 1)
 	];
+	const calcSaveProficiency = (score: Score) => {
+		const statMod = Math.floor((statBlock.stats[score.toLowerCase() as keyof Stats] - 10) / 2);
+		const profMod = statBlock.saves.includes(score)
+			? getProficiencyBonus(statBlock)
+			: 0;
+		const totalMod = statMod + profMod;
+		const fmtMod = totalMod > 0
+			? `+${totalMod}`
+			: totalMod;
+
+		return `${score} (${fmtMod})`
+	} 
 
 	return (
 		<div className="enemy-form">
@@ -227,7 +239,8 @@ function EnemyForm({ onSubmit, onCancel, editStatblock }: Props) {
 					<h3>Saving Throw Proficiencies</h3>
 					<div className="form-field-saves">
 						{allScores.map((score) => (
-							<label key={score}>{score}
+							<label key={score}>
+								{calcSaveProficiency(score)}
 								<input
 									type="checkbox"
 									checked={statBlock.saves.includes(score)}
