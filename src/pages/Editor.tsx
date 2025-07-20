@@ -1,12 +1,15 @@
+import { invoke } from "@tauri-apps/api/core";
 import { useState } from "react";
 import EnemyForm from "../components/EnemyForm";
 import PlayerForm from "../components/PlayerForm";
+import { Encounter } from "../types/encounter";
 import { Player } from "../types/player";
 import { StatBlock } from "../types/statblock";
 import { calcEncounterDifficulty, calcEncounterXP } from "../utils/encounterUtils";
 import "./Editor.css";
 
 function Editor() {
+	const [encounterName, setEncounterName] = useState<string>("");
 	const [enemies, setEnemies] = useState<StatBlock[]>([]);
 	const [players, setPlayers] = useState<Player[]>([]);
 	const [showForm, setShowForm] = useState(false);
@@ -59,8 +62,21 @@ function Editor() {
 		setEditIndex(null);
 	}
 
-	const handleSaveEncounter = () => {
-		console.log("saving")
+	const handleSaveEncounter = async () => {
+		const encounter: Encounter = {
+			name: encounterName,
+			creatures: enemies,
+			players
+		};
+
+		try {
+			const result = await invoke<string>("save_encounter", {
+				encounter
+			});
+			console.log(result);
+		} catch (error) {
+			console.error("Failed to save encounter:", error);
+		}
 	}
 
 	return (
@@ -68,6 +84,16 @@ function Editor() {
 			<h1>Encounter Editor</h1>
 			<div className="editor-content">
 				<div className="enemy-list-panel">
+					<div className="panel-title">
+						<label htmlFor="encounter-title">Title</label>
+						<input
+							id="encounter-title"
+							name="encounter-title"
+							type="text"
+							value={encounterName}
+							onChange={(e) => setEncounterName(e.target.value)}
+						/>
+					</div>
 					<div className="panel-title">
 						<h2>Creatures</h2>
 						<button onClick={() => {

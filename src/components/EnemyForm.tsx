@@ -150,6 +150,7 @@ function EnemyForm({ onSubmit, onCancel, editStatblock }: Props) {
 					<select
 						id="enemy-alignment"
 						name="alignment"
+						value={statBlock.alignment}
 						onChange={e => updateField("alignment", e.target.value as Alignment)}
 						required
 					>
