@@ -12,7 +12,13 @@ function EncounterLoadPage() {
 
 		const fetchEncounters = async () => {
 			try {
-				const data = await invoke<Encounter[]>("load_encounters")
+				const data = await invoke<Encounter[]>("load_encounters");
+				data.sort((a, b) => {
+					const dateA = new Date(a.last_modified).getTime();
+					const dateB = new Date(b.last_modified).getTime();
+					
+					return dateB - dateA;
+				});
 				setEncounters(data);
 			} catch (error) {
 				console.error("Failed to load encounters:", error);
