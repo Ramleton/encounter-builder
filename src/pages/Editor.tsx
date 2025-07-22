@@ -1,5 +1,6 @@
 import { invoke } from "@tauri-apps/api/core";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useLocation } from "react-router-dom";
 import EnemyForm from "../components/EnemyForm";
 import PlayerForm from "../components/PlayerForm";
 import { Encounter } from "../types/encounter";
@@ -15,6 +16,16 @@ function Editor() {
 	const [showForm, setShowForm] = useState(false);
 	const [showPlayerForm, setShowPlayerForm] = useState<boolean>(false);
 	const [editIndex, setEditIndex] = useState<number | null>(null);
+	const location = useLocation();
+
+	useEffect(() => {
+		const encounter = location.state?.encounter;
+		if (!encounter) return;
+
+		setEncounterName(encounter.name);
+		setEnemies(encounter.creatures);
+		setPlayers(encounter.players);
+	}, [location]);
 
 	const handleSubmit = (enemy: StatBlock) => {
 		if (editIndex !== null) {
@@ -66,7 +77,8 @@ function Editor() {
 		const encounter: Encounter = {
 			name: encounterName,
 			creatures: enemies,
-			players
+			players,
+			last_modified: new Date().toISOString()
 		};
 
 		try {

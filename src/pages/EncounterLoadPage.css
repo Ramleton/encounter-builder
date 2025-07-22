@@ -1,0 +1,92 @@
+.encounter-grid-container {
+			padding: 20px;
+			max-width: 1000px;
+			margin: 0 auto;
+}
+
+.encounter-grid-title {
+			font-size: 24px;
+			font-weight: bold;
+			margin-bottom: 16px;
+}
+
+.no-encounters-message {
+    font-style: italic;
+    color: #777;
+}
+
+.encounter-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 16px;
+}
+
+.encounter-card {
+    background: #fff;
+    border: 1px solid #ccc;
+    border-radius: 12px;
+    padding: 16px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+.empty-encounter-card {
+    background: #fff;
+    border: 1px solid #ccc;
+    border-radius: 12px;
+    padding: 16px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+.empty-encounter-card:hover {
+	cursor: pointer;
+}
+
+.encounter-name {
+			font-size: 18px;
+			margin-bottom: 4px;
+}
+
+.encounter-details {
+			font-size: 14px;
+			color: #555;
+}
+
+.encounter-modified {
+			font-size: 12px;
+			color: #999;
+			margin-top: 6px;
+}
+
+.encounter-buttons {
+			display: flex;
+			gap: 8px;
+			margin-top: 12px;
+}
+
+.load-button,
+.delete-button {
+			flex: 1;
+			padding: 8px;
+			font-size: 14px;
+			border: none;
+			border-radius: 6px;
+			cursor: pointer;
+}
+
+.load-button {
+			background-color: #007bff;
+			color: white;
+}
+
+.load-button:hover {
+			background-color: #0056b3;
+}
+
+.delete-button {
+			background-color: #dc3545;
+			color: white;
+}
+
+.delete-button:hover {
+			background-color: #a71d2a;
+}

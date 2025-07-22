@@ -1,3 +1,4 @@
+use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
 use typeshare::typeshare;
 
@@ -165,4 +166,5 @@ pub struct Encounter {
     pub name: String,
     pub creatures: Vec<StatBlock>,
     pub players: Vec<Player>,
+    pub last_modified: DateTime<Utc>,
 }

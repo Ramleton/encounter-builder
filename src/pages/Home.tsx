@@ -5,7 +5,7 @@ function Home() {
 	const navigate = useNavigate();
 
 	const handleLoadEncounter = async() => {
-		// TODO
+		navigate("/loadEncounter");
 	}
 
 	const handleNewEncounter = () => {

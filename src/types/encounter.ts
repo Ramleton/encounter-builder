@@ -5,4 +5,5 @@ export type Encounter = {
 	name: string;
 	creatures: StatBlock[];
 	players: Player[];
+	last_modified: string;
 }
