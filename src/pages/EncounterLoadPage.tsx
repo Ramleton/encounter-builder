@@ -26,8 +26,13 @@ function EncounterLoadPage() {
 		navigate("/editor", { state: { encounter } });
 	}
 
-	const onDelete = (encounter: Encounter) => {
-		// TODO
+	const onDelete = async (encounter: Encounter) => {
+		try {
+			await invoke<String>("delete_encounter", { encounter });
+			setEncounters(prev => prev.filter(e => e !== encounter));
+		} catch (error) {
+			console.error("Failed to delete encounter:", error);
+		}
 	}
 
 	return (
