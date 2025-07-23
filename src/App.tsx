@@ -1,18 +1,20 @@
+import { ThemeProvider } from "@mui/material/styles";
 import { Route, HashRouter as Router, Routes } from "react-router-dom";
-import "./App.css";
-import Editor from "./pages/Editor";
-import EncounterLoadPage from "./pages/EncounterLoadPage";
+import MainLayout from "./layouts/MainLayout";
 import Home from "./pages/Home";
+import { darkTheme } from "./theme";
 
 function App() {
     return (
-      <Router>
-        <Routes>
-          <Route path="/" element={<Home/>} />
-          <Route path="/editor" element={<Editor/>} />
-          <Route path="/loadEncounter" element={<EncounterLoadPage />} />
-        </Routes>
-      </Router>
+      <ThemeProvider theme={darkTheme}>
+        <MainLayout>
+          <Router>
+            <Routes>
+              <Route path="/" Component={Home} />
+            </Routes>
+          </Router>
+        </MainLayout>
+      </ThemeProvider>
     );
 }
 

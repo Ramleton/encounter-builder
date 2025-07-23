@@ -1,28 +1,12 @@
-import { useNavigate } from "react-router-dom";
-import "./Home.css";
+import { Container, Typography } from "@mui/material";
 
 function Home() {
-	const navigate = useNavigate();
-
-	const handleLoadEncounter = async() => {
-		navigate("/loadEncounter");
-	}
-
-	const handleNewEncounter = () => {
-		navigate("/editor");
-	}
-
 	return (
-		<div className="home-container">
-			<h1>Encounter Builder</h1>
-			<p>Create or load an encounter to begin.</p>
-
-
-			<div className="home-buttons">
-				<button onClick={handleLoadEncounter}>Load Encounter</button>
-				<button onClick={handleNewEncounter}>New Encounter</button>
-			</div>
-		</div>
+		<Container sx={{
+			margin: 0
+		}}>
+			<Typography>Test</Typography>
+		</Container>
 	)
 }
 
