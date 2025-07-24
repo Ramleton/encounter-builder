@@ -1,8 +1,7 @@
+import { AccountCircle, Ballot, ListAlt, Settings } from '@mui/icons-material';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
-import MailIcon from '@mui/icons-material/Mail';
 import MenuIcon from '@mui/icons-material/Menu';
-import InboxIcon from '@mui/icons-material/MoveToInbox';
 import MuiAppBar, { AppBarProps as MuiAppBarProps } from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
 import CssBaseline from '@mui/material/CssBaseline';
@@ -79,28 +78,28 @@ const AppBar = styled(MuiAppBar, {
 }));
 
 const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' })(
-  ({ theme }) => ({
-    width: drawerWidth,
-    flexShrink: 0,
-    whiteSpace: 'nowrap',
-    boxSizing: 'border-box',
-    variants: [
-      {
-        props: ({ open }) => open,
-        style: {
-          ...openedMixin(theme),
-          '& .MuiDrawer-paper': openedMixin(theme),
-        },
-      },
-      {
-        props: ({ open }) => !open,
-        style: {
-          ...closedMixin(theme),
-          '& .MuiDrawer-paper': closedMixin(theme),
-        },
-      },
-    ],
-  }),
+	({ theme }) => ({
+		width: drawerWidth,
+		flexShrink: 0,
+		whiteSpace: 'nowrap',
+		boxSizing: 'border-box',
+		variants: [
+		{
+			props: ({ open }) => open,
+			style: {
+			...openedMixin(theme),
+			'& .MuiDrawer-paper': openedMixin(theme),
+			},
+		},
+		{
+			props: ({ open }) => !open,
+			style: {
+			...closedMixin(theme),
+			'& .MuiDrawer-paper': closedMixin(theme),
+			},
+		},
+		],
+	}),
 );
 
 interface MainLayoutProps {
@@ -108,158 +107,171 @@ interface MainLayoutProps {
 }
 
 function MainLayout({ children }: MainLayoutProps) {
-  const theme = useTheme();
-  const [open, setOpen] = React.useState(false);
+	const theme = useTheme();
+	const [open, setOpen] = React.useState(false);
 
-  const handleDrawerOpen = () => {
-    setOpen(true);
-  };
+	const handleDrawerOpen = () => {
+		setOpen(true);
+	};
 
-  const handleDrawerClose = () => {
-    setOpen(false);
-  };
+	const handleDrawerClose = () => {
+		setOpen(false);
+	};
 
-  return (
-    <Box sx={{ display: 'flex' }}>
-      <CssBaseline />
-      <AppBar position="fixed" open={open}>
-        <Toolbar>
-          <IconButton
-            color="inherit"
-            aria-label="open drawer"
-            onClick={handleDrawerOpen}
-            edge="start"
-            sx={[
-              {
-                marginRight: 5,
-              },
-              open && { display: 'none' },
-            ]}
-          >
-            <MenuIcon />
-          </IconButton>
-          <Typography variant="h6" noWrap component="div">
-            EncounterArchitect
-          </Typography>
-        </Toolbar>
-      </AppBar>
-      <Drawer variant="permanent" open={open}>
-        <DrawerHeader>
-          <IconButton onClick={handleDrawerClose}>
-            {theme.direction === 'rtl' ? <ChevronRightIcon /> : <ChevronLeftIcon />}
-          </IconButton>
-        </DrawerHeader>
-        <Divider />
-        <List>
-          {['Inbox', 'Starred', 'Send email', 'Drafts'].map((text, index) => (
-            <ListItem key={text} disablePadding sx={{ display: 'block' }}>
-              <ListItemButton
-                sx={[
-                  {
-                    minHeight: 48,
-                    px: 2.5,
-                  },
-                  open
-                    ? {
-                        justifyContent: 'initial',
-                      }
-                    : {
-                        justifyContent: 'center',
-                      },
-                ]}
-              >
-                <ListItemIcon
-                  sx={[
-                    {
-                      minWidth: 0,
-                      justifyContent: 'center',
-                    },
-                    open
-                      ? {
-                          mr: 3,
-                        }
-                      : {
-                          mr: 'auto',
-                        },
-                  ]}
-                >
-                  {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
-                </ListItemIcon>
-                <ListItemText
-                  primary={text}
-                  sx={[
-                    open
-                      ? {
-                          opacity: 1,
-                        }
-                      : {
-                          opacity: 0,
-                        },
-                  ]}
-                />
-              </ListItemButton>
-            </ListItem>
-          ))}
-        </List>
-        <Divider />
-        <List>
-          {['All mail', 'Trash', 'Spam'].map((text, index) => (
-            <ListItem key={text} disablePadding sx={{ display: 'block' }}>
-              <ListItemButton
-                sx={[
-                  {
-                    minHeight: 48,
-                    px: 2.5,
-                  },
-                  open
-                    ? {
-                        justifyContent: 'initial',
-                      }
-                    : {
-                        justifyContent: 'center',
-                      },
-                ]}
-              >
-                <ListItemIcon
-                  sx={[
-                    {
-                      minWidth: 0,
-                      justifyContent: 'center',
-                    },
-                    open
-                      ? {
-                          mr: 3,
-                        }
-                      : {
-                          mr: 'auto',
-                        },
-                  ]}
-                >
-                  {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
-                </ListItemIcon>
-                <ListItemText
-                  primary={text}
-                  sx={[
-                    open
-                      ? {
-                          opacity: 1,
-                        }
-                      : {
-                          opacity: 0,
-                        },
-                  ]}
-                />
-              </ListItemButton>
-            </ListItem>
-          ))}
-        </List>
-      </Drawer>
-      <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
-        <DrawerHeader />
-		{children}
-      </Box>
-    </Box>
-  );
+	return (
+		<Box sx={{ display: 'flex' }}>
+		<CssBaseline />
+		<AppBar position="fixed" open={open}>
+			<Toolbar>
+			<IconButton
+				color="inherit"
+				aria-label="open drawer"
+				onClick={handleDrawerOpen}
+				edge="start"
+				sx={[
+				{
+					marginRight: 5,
+				},
+				open && { display: 'none' },
+				]}
+			>
+				<MenuIcon />
+			</IconButton>
+			<Typography variant="h6" noWrap component="div">
+				EncounterArchitect
+			</Typography>
+			</Toolbar>
+		</AppBar>
+		<Drawer variant="permanent" open={open}>
+			<DrawerHeader>
+			<IconButton onClick={handleDrawerClose}>
+				{theme.direction === 'rtl' ? <ChevronRightIcon /> : <ChevronLeftIcon />}
+			</IconButton>
+			</DrawerHeader>
+			{/* Start of section 1 */}
+			<Box sx={{
+			display: "flex",
+			flexDirection: "column",
+			justifyContent: "space-between",
+			height: "100%"
+			}}>
+			<Box>
+				<Divider />
+				<List>
+				{['StatBlocks', 'Encounters'].map((text, index) => (
+					<ListItem key={text} disablePadding sx={{ display: 'block' }}>
+					<ListItemButton
+						sx={[
+						{
+							minHeight: 48,
+							px: 2.5,
+						},
+						open
+							? {
+								justifyContent: 'initial',
+							}
+							: {
+								justifyContent: 'center',
+							},
+						]}
+					>
+						<ListItemIcon
+						sx={[
+							{
+							minWidth: 0,
+							justifyContent: 'center',
+							},
+							open
+							? {
+								mr: 3,
+								}
+							: {
+								mr: 'auto',
+								},
+						]}
+						>
+						{index % 2 === 0 ? <ListAlt /> : <Ballot />}
+						</ListItemIcon>
+						<ListItemText
+						primary={text}
+						sx={[
+							open
+							? {
+								opacity: 1,
+								}
+							: {
+								opacity: 0,
+								},
+						]}
+						/>
+					</ListItemButton>
+					</ListItem>
+				))}
+				</List>
+				<Divider />
+			</Box>
+			<Box>
+				<Divider />
+				<List>
+				{['Account', 'Settings'].map((text, index) => (
+					<ListItem key={text} disablePadding sx={{ display: 'block' }}>
+					<ListItemButton
+						sx={[
+						{
+							minHeight: 48,
+							px: 2.5,
+						},
+						open
+							? {
+								justifyContent: 'initial',
+							}
+							: {
+								justifyContent: 'center',
+							},
+						]}
+					>
+						<ListItemIcon
+						sx={[
+							{
+							minWidth: 0,
+							justifyContent: 'center',
+							},
+							open
+							? {
+								mr: 3,
+								}
+							: {
+								mr: 'auto',
+								},
+						]}
+						>
+						{index % 2 === 0 ? <AccountCircle /> : <Settings />}
+						</ListItemIcon>
+						<ListItemText
+						primary={text}
+						sx={[
+							open
+							? {
+								opacity: 1,
+								}
+							: {
+								opacity: 0,
+								},
+						]}
+						/>
+					</ListItemButton>
+					</ListItem>
+				))}
+				</List>
+			</Box>
+			</Box>
+		</Drawer>
+		<Box component="main" sx={{ flexGrow: 1, p: 3 }}>
+			<DrawerHeader />
+				{children}
+		</Box>
+		</Box>
+	);
 }
 
 export default MainLayout;
