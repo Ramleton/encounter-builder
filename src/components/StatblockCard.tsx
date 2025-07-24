@@ -3,32 +3,30 @@ import Card from '@mui/material/Card';
 import CardActions from '@mui/material/CardActions';
 import CardContent from '@mui/material/CardContent';
 import Typography from '@mui/material/Typography';
-import { Encounter } from '../types/encounter';
+import { StatBlock } from '../types/statBlock';
 
-interface EncounterCardProps {
-	encounter: Encounter;
+interface StatBlockCardProps {
+	statblock: StatBlock;
 	informative?: boolean;
 }
 
-export default function EncounterCard({ encounter, informative = false }: EncounterCardProps) {
-	const { name, last_modified, creatures, players } = encounter;
-
+function StatBlockCard({ statblock, informative = false }: StatBlockCardProps) {
 	return (
 		<Card variant="outlined" sx={{ width: "100%" }}>
 			<CardContent>
 				<Typography variant="h5" component="div">
-					{name}
+					{statblock.name}
 				</Typography>
 				<Typography sx={{ color: 'text.secondary' }}>
-					{new Date(last_modified).toLocaleString()}
+					{new Date(statblock.last_modified).toLocaleString()}
 				</Typography>
 				{informative ? (
 					<>
 						<Typography variant="body2">
-							Creatures: {creatures.length}
+							HP: {statblock.hp}
 						</Typography>
 						<Typography variant="body2">
-							Players: {players.length}
+							CR: {statblock.cr}
 						</Typography>
 					</>
 				): (
@@ -37,9 +35,10 @@ export default function EncounterCard({ encounter, informative = false }: Encoun
 			</CardContent>
 			<CardActions>
 				<Button size="small">Edit</Button>
-				<Button size="small">Run</Button>
 				<Button size="small">Delete</Button>
 			</CardActions>
 		</Card>
 	);
 }
+
+export default StatBlockCard;

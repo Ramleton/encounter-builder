@@ -132,4 +132,5 @@ export interface StatBlock {
 	legendary_actions: Action[];
 	bonus_actions: Action[];
 	reactions: Action[];
+	last_modified: string;
 }

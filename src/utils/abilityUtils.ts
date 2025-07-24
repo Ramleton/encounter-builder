@@ -1,4 +1,4 @@
-import { Ability, Score, StatBlock } from "../types/statblock";
+import { Ability, Score, StatBlock } from "../types/statBlock";
 
 
 export function getModifier(score: number): string {

@@ -1,5 +1,5 @@
 import { Player } from "./player";
-import { StatBlock } from "./statblock";
+import { StatBlock } from "./statBlock";
 
 export type Encounter = {
 	name: string;

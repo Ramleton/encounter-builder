@@ -1,8 +1,13 @@
 mod types;
+mod utils;
+
 use types::Encounter;
+use utils::fs_utils::load_data;
 
 use std::fs;
 use std::path::PathBuf;
+
+use crate::types::StatBlock;
 
 #[tauri::command]
 fn save_encounter(encounter: Encounter) -> Result<String, String> {
@@ -18,26 +23,14 @@ fn save_encounter(encounter: Encounter) -> Result<String, String> {
 
 #[tauri::command]
 fn load_encounters() -> Result<Vec<Encounter>, String> {
-    let folder = PathBuf::from("../encounters/");
-
-    if !folder.exists() {
-        return Ok(vec![]);
-    }
-
-    let mut encounters = Vec::new();
-
-    for entry in fs::read_dir(folder).map_err(|e| e.to_string())? {
-        let entry = entry.map_err(|e| e.to_string())?;
-        let path = entry.path();
-
-        if path.extension().map_or(false, |ext| ext == "json") {
-            let content = fs::read_to_string(&path).map_err(|e| e.to_string())?;
-            let encounter: Encounter = serde_json::from_str(&content).map_err(|e| e.to_string())?;
-            encounters.push(encounter);
-        }
-    }
-
+    let encounters: Vec<Encounter> = load_data("encounters")?;
     Ok(encounters)
+}
+
+#[tauri::command]
+fn load_statblocks() -> Result<Vec<StatBlock>, String> {
+    let statblocks: Vec<StatBlock> = load_data("statblocks")?;
+    Ok(statblocks)
 }
 
 #[tauri::command]
@@ -56,7 +49,8 @@ pub fn run() {
         .invoke_handler(tauri::generate_handler![
             save_encounter,
             load_encounters,
-            delete_encounter
+            delete_encounter,
+            load_statblocks,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

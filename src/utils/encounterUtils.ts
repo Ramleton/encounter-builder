@@ -1,5 +1,5 @@
 import { Level, Player } from "../types/player";
-import { CR, StatBlock } from "../types/statblock";
+import { CR, StatBlock } from "../types/statBlock";
 
 const xpByCR: Record<CR, number> = {
 	"0": 10,
