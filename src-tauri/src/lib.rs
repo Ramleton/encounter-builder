@@ -1,6 +1,8 @@
 mod types;
 mod utils;
 
+#[cfg(desktop)]
+use tauri_plugin_deep_link::DeepLinkExt;
 use types::encounter_types::Encounter;
 use utils::fs_utils::load_data;
 
@@ -47,10 +49,24 @@ fn delete_encounter(encounter: Encounter) -> Result<String, String> {
     Ok(String::from("Successfully deleted encounter"))
 }
 
+#[tauri::command]
+async fn open_url(url: &str) -> Result<(), String> {
+    tauri_plugin_opener::open_url(&url, None::<&str>)
+        .map_err(|e| format!("Failed to open URL: {}", e))?;
+
+    Ok(())
+}
+
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     tauri::Builder::default()
         .plugin(tauri_plugin_opener::init())
+        .plugin(tauri_plugin_deep_link::init())
+        .setup(|app| {
+            #[cfg(desktop)]
+            app.deep_link().register("encounterarchitect")?;
+            Ok(())
+        })
         .invoke_handler(tauri::generate_handler![
             save_encounter,
             load_encounters,
@@ -63,6 +79,7 @@ pub fn run() {
             store_value,
             get_stored_value,
             remove_stored_value,
+            open_url
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

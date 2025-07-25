@@ -15,9 +15,12 @@ async fn init_supabase() -> Result<SupabaseConfig, String> {
 pub async fn login_with_discord() -> Result<String, String> {
     let config = init_supabase().await?;
 
+    let redirect_uri = "tauri://localhost/auth/callback";
+
     let discord_oauth_url = format!(
         "{}/auth/v1/authorize?provider=discord&redirect_to={}",
-        config.url, "https://jnyokkwidbszakhjttno.supabase.co/auth/v1/callback"
+        config.url,
+        urlencoding::encode(redirect_uri)
     );
 
     Ok(discord_oauth_url)

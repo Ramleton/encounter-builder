@@ -1,6 +1,7 @@
 import { HowToReg } from "@mui/icons-material";
 import Login from "@mui/icons-material/Login";
 import { Box, Button, IconButton, Stack, TextField, Tooltip, Typography } from "@mui/material";
+import { invoke } from "@tauri-apps/api/core";
 import { useState } from "react";
 import { FaDiscord } from "react-icons/fa";
 
@@ -8,6 +9,20 @@ function Register() {
 	const [username, setUsername] = useState<string>("");
 	const [email, setEmail] = useState<string>("");
 	const [password, setPassword] = useState<string>("");
+	const [discordLoading, setDiscordLoading] = useState<boolean>(false);
+
+	const handleDiscordLogin = async () => {
+		setDiscordLoading(true);
+		try {
+			// Call the backend to initiate Discord OAuth flow
+			const res = await invoke<string>('login_with_discord');
+			await invoke('open_url', { url: res });
+		} catch (error) {
+			console.error("Discord login failed:", error);
+		} finally {
+			setDiscordLoading(false);
+		}
+	};
 
 	return (
 		<Box sx={{
@@ -22,7 +37,6 @@ function Register() {
 			<Stack spacing={2} sx={{ mt: 2 }}>
 				<TextField
 					required
-					id="standard-required"
 					label="Username"
 					variant="standard"
 					type="text"
@@ -30,7 +44,6 @@ function Register() {
 				/>
 				<TextField
 					required
-					id="standard-required"
 					label="Email"
 					variant="standard"
 					type="email"
@@ -38,7 +51,6 @@ function Register() {
 				/>
 				<TextField
 					required
-					id="standard-required"
 					label="Password"
 					variant="standard"
 					type="password"
@@ -58,9 +70,11 @@ function Register() {
 			</Typography>
 			<Stack direction="row" spacing={2} sx={{ mt: 1 }}>
 				<Tooltip title="Discord">
-					<IconButton aria-label="discord login" color="secondary" onClick={() => {
-
-					}}>
+					<IconButton
+						loading={discordLoading}
+						aria-label="discord login"
+						color="secondary"
+						onClick={handleDiscordLogin}>
 						<FaDiscord />
 					</IconButton>
 				</Tooltip>

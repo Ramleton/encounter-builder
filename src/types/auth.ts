@@ -82,7 +82,7 @@ class AuthService {
 	async loginWithDiscord(): Promise<void> {
 		try {
 			const oauthUrl = await invoke<string>('login_with_discord');
-			await open(oauthUrl);
+			await invoke('open_url', { url: oauthUrl});
 		} catch (error) {
 			console.error('Discord login failed:', error);
 			throw error;
