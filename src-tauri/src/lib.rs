@@ -1,13 +1,18 @@
 mod types;
 mod utils;
 
-use types::Encounter;
+use types::encounter_types::Encounter;
 use utils::fs_utils::load_data;
+
+use utils::oauth_utils::{
+    get_current_user, get_stored_value, handle_discord_oauth_callback, login_with_discord,
+    logout_user, remove_stored_value, store_value,
+};
 
 use std::fs;
 use std::path::PathBuf;
 
-use crate::types::StatBlock;
+use types::statblock_types::StatBlock;
 
 #[tauri::command]
 fn save_encounter(encounter: Encounter) -> Result<String, String> {
@@ -51,6 +56,13 @@ pub fn run() {
             load_encounters,
             delete_encounter,
             load_statblocks,
+            get_current_user,
+            logout_user,
+            login_with_discord,
+            handle_discord_oauth_callback,
+            store_value,
+            get_stored_value,
+            remove_stored_value,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

@@ -48,7 +48,7 @@ function Home() {
 				<Button
 					variant="contained"
 					color="primary"
-					onClick={() => navigate("/")}
+					onClick={() => navigate("/register")}
 				>
 					Register
 				</Button>

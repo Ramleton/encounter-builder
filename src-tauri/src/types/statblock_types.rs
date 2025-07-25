@@ -1,4 +1,3 @@
-use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
 use typeshare::typeshare;
 
@@ -151,20 +150,4 @@ pub struct StatBlock {
     pub legendary_actions: Vec<Action>,
     pub bonus_actions: Vec<Action>,
     pub reactions: Vec<Action>,
-}
-
-#[derive(Serialize, Deserialize, Debug)]
-#[typeshare]
-pub struct Player {
-    pub name: String,
-    pub level: u32,
-}
-
-#[derive(Serialize, Deserialize, Debug)]
-#[typeshare]
-pub struct Encounter {
-    pub name: String,
-    pub creatures: Vec<StatBlock>,
-    pub players: Vec<Player>,
-    pub last_modified: DateTime<Utc>,
 }
