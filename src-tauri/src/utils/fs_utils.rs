@@ -2,7 +2,9 @@ use std::{fs, path::PathBuf};
 
 use serde::Deserialize;
 
-pub fn load_data<T: for<'de> Deserialize<'de>>(folder_name: &str) -> Result<Vec<T>, String> {
+use crate::types::{encounter_types::Encounter, statblock_types::StatBlock};
+
+fn load_data<T: for<'de> Deserialize<'de>>(folder_name: &str) -> Result<Vec<T>, String> {
     let folder = PathBuf::from(format!("../{}", folder_name));
 
     if !folder.exists() {
@@ -23,4 +25,37 @@ pub fn load_data<T: for<'de> Deserialize<'de>>(folder_name: &str) -> Result<Vec<
     }
 
     Ok(data)
+}
+
+#[tauri::command]
+pub fn load_encounters() -> Result<Vec<Encounter>, String> {
+    let encounters: Vec<Encounter> = load_data("encounters")?;
+    Ok(encounters)
+}
+
+#[tauri::command]
+pub fn load_statblocks() -> Result<Vec<StatBlock>, String> {
+    let statblocks: Vec<StatBlock> = load_data("statblocks")?;
+    Ok(statblocks)
+}
+
+#[tauri::command]
+pub fn save_encounter(encounter: Encounter) -> Result<String, String> {
+    // Determine path to save encounter
+    let path = PathBuf::from(format!("../encounters/{}.json", encounter.name));
+    fs::create_dir_all(path.parent().unwrap()).map_err(|e| e.to_string())?;
+
+    let json = serde_json::to_string_pretty(&encounter).map_err(|e| e.to_string())?;
+    fs::write(&path, json).map_err(|e| e.to_string())?;
+
+    Ok(format!("Encounter saved at {:?}", path))
+}
+
+#[tauri::command]
+pub fn delete_encounter(encounter: Encounter) -> Result<String, String> {
+    let path = PathBuf::from(format!("../encounters/{}.json", encounter.name));
+
+    fs::remove_file(path).map_err(|e| e.to_string())?;
+
+    Ok(String::from("Successfully deleted encounter"))
 }

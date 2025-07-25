@@ -1,53 +1,15 @@
 mod types;
 mod utils;
 
+use tauri::{Emitter, Manager};
 #[cfg(desktop)]
 use tauri_plugin_deep_link::DeepLinkExt;
-use types::encounter_types::Encounter;
-use utils::fs_utils::load_data;
+use utils::fs_utils::{delete_encounter, load_encounters, load_statblocks, save_encounter};
 
 use utils::oauth_utils::{
     get_current_user, get_stored_value, handle_discord_oauth_callback, login_with_discord,
     logout_user, remove_stored_value, store_value,
 };
-
-use std::fs;
-use std::path::PathBuf;
-
-use types::statblock_types::StatBlock;
-
-#[tauri::command]
-fn save_encounter(encounter: Encounter) -> Result<String, String> {
-    // Determine path to save encounter
-    let path = PathBuf::from(format!("../encounters/{}.json", encounter.name));
-    fs::create_dir_all(path.parent().unwrap()).map_err(|e| e.to_string())?;
-
-    let json = serde_json::to_string_pretty(&encounter).map_err(|e| e.to_string())?;
-    fs::write(&path, json).map_err(|e| e.to_string())?;
-
-    Ok(format!("Encounter saved at {:?}", path))
-}
-
-#[tauri::command]
-fn load_encounters() -> Result<Vec<Encounter>, String> {
-    let encounters: Vec<Encounter> = load_data("encounters")?;
-    Ok(encounters)
-}
-
-#[tauri::command]
-fn load_statblocks() -> Result<Vec<StatBlock>, String> {
-    let statblocks: Vec<StatBlock> = load_data("statblocks")?;
-    Ok(statblocks)
-}
-
-#[tauri::command]
-fn delete_encounter(encounter: Encounter) -> Result<String, String> {
-    let path = PathBuf::from(format!("../encounters/{}.json", encounter.name));
-
-    fs::remove_file(path).map_err(|e| e.to_string())?;
-
-    Ok(String::from("Successfully deleted encounter"))
-}
 
 #[tauri::command]
 async fn open_url(url: &str) -> Result<(), String> {
@@ -62,9 +24,46 @@ pub fn run() {
     tauri::Builder::default()
         .plugin(tauri_plugin_opener::init())
         .plugin(tauri_plugin_deep_link::init())
+        .plugin(tauri_plugin_single_instance::init(|app, args, _cwd| {
+            println!("Single instance callback triggered with args: {:?}", args);
+
+            for arg in args {
+                if arg.starts_with("encounterarchitect://") {
+                    println!("Processing deep link from second instance: {}", arg);
+                    if let Err(e) = handle_deep_link_url(app, &arg) {
+                        eprintln!("Failed to handle deep link from second instance: {}", e);
+                    }
+                }
+            }
+
+            if let Some(window) = app.get_webview_window("main") {
+                let _ = window.show();
+                let _ = window.set_focus();
+                let _ = window.unminimize();
+            }
+        }))
         .setup(|app| {
-            #[cfg(desktop)]
-            app.deep_link().register("encounterarchitect")?;
+            if let Ok(Some(urls)) = app.deep_link().get_current() {
+                println!("Current deep link URL: {:?}", urls);
+
+                for url in urls {
+                    if let Err(e) = handle_deep_link_url(app.handle(), &url.as_str()) {
+                        eprintln!("Error handling deep link URL: {}", e);
+                    }
+                }
+            };
+
+            let handle = app.handle().clone();
+            app.deep_link().on_open_url(move |event| {
+                let urls = event.urls();
+                println!("Received deep link URLs: {:?}", urls);
+                for url in urls {
+                    if let Err(e) = handle_deep_link_url(&handle, &url.as_str()) {
+                        eprintln!("Failed to handle deep link: {}", e);
+                    }
+                }
+            });
+
             Ok(())
         })
         .invoke_handler(tauri::generate_handler![
@@ -83,4 +82,107 @@ pub fn run() {
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
+}
+
+fn handle_deep_link_url(
+    app_handle: &tauri::AppHandle,
+    url: &str,
+) -> Result<(), Box<dyn std::error::Error>> {
+    use url::Url;
+
+    println!("Processing deep linl: {}", url);
+    let parsed_url = Url::parse(url)?;
+
+    if parsed_url.scheme() == "encounterarchitect" && parsed_url.host_str() == Some("oauth") {
+        println!("Handling deep link for OAuth: {}", url);
+
+        if let Some(fragment) = parsed_url.fragment() {
+            println!("OAuth fragment: {}", fragment);
+
+            let fragment_url = Url::parse(&format!("http://localhost?{}", fragment))?;
+            let query_pairs: std::collections::HashMap<_, _> = fragment_url.query_pairs().collect();
+
+            if let Some(access_token) = query_pairs.get("access_token") {
+                println!("Found access token in deep link");
+
+                let access_token_str = access_token.to_string();
+                let refresh_token_str = query_pairs
+                    .get("refresh_token")
+                    .map(|s| s.to_string())
+                    .unwrap_or_default();
+
+                let app_handle_clone = app_handle.clone();
+                tauri::async_runtime::spawn(async move {
+                    if let Err(e) = store_value(
+                        app_handle_clone.clone(),
+                        "access_token".to_string(),
+                        access_token_str.clone(),
+                    )
+                    .await
+                    {
+                        eprintln!("Failed to store access token: {}", e);
+                    } else {
+                        println!("Successfully stored access token");
+                    }
+
+                    if !refresh_token_str.is_empty() {
+                        if let Err(e) = store_value(
+                            app_handle_clone.clone(),
+                            "refresh_token".to_string(),
+                            refresh_token_str.clone(),
+                        )
+                        .await
+                        {
+                            eprintln!("Failed to st ore refresh token: {}", e);
+                        } else {
+                            println!("Successfully stored refresh token");
+                        }
+                    }
+
+                    match get_current_user(access_token_str).await {
+                        Ok(user) => {
+                            if let Err(e) = store_value(
+                                app_handle_clone.clone(),
+                                "user".to_string(),
+                                user.to_string(),
+                            )
+                            .await
+                            {
+                                eprintln!("Failed to store user info: {}", e);
+                            } else {
+                                println!("Successfully stored user info");
+                            }
+                        }
+                        Err(e) => {
+                            eprintln!("Failed to get user info: {}", e);
+                        }
+                    }
+
+                    if let Err(e) = app_handle_clone.emit(
+                        "oauth-success",
+                        serde_json::json!({
+                           "message": "Successfully authenticated with Discord"
+                        }),
+                    ) {
+                        eprintln!("Failed to emit oauth-success event: {}", e);
+                    } else {
+                        println!("Emitted oauth-success event");
+                    }
+                });
+
+                if let Some(window) = app_handle.get_webview_window("main") {
+                    let _ = window.show();
+                    let _ = window.set_focus();
+
+                    println!("Focused app window");
+                }
+            } else {
+                println!("No access token found in deep link fragment");
+            }
+        } else {
+            println!("No fragment found in OAuth deep link");
+        }
+    }
+
+    Ok(())
 }
