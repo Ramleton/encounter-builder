@@ -1,7 +1,8 @@
+use serde_json::json;
 use std::{collections::HashMap, fs};
 use tauri::Manager;
 
-use crate::types::oauth_types::{AuthResponse, SupabaseConfig};
+use crate::types::auth_types::{AuthResponse, LoginRequest, RegisterRequest, SupabaseConfig};
 
 async fn init_supabase() -> Result<SupabaseConfig, String> {
     Ok(SupabaseConfig {
@@ -9,6 +10,85 @@ async fn init_supabase() -> Result<SupabaseConfig, String> {
         anon_key: std::env::var("SUPABASE_ANON_KEY")
             .unwrap_or_else(|_| "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpueW9ra3dpZGJzemFraGp0dG5vIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTMyODY4OTIsImV4cCI6MjA2ODg2Mjg5Mn0.8cG_DFiR4-iHryR5aMFhgOvLTYxAnauwquDwMlUvsaQ".to_string()),
     })
+}
+
+#[tauri::command]
+pub async fn register_with_email(
+    register_request: RegisterRequest,
+) -> Result<AuthResponse, String> {
+    let config = init_supabase().await?;
+    let client = reqwest::Client::new();
+
+    let body = json!({
+        "email": register_request.email,
+        "password": register_request.password,
+        "data": {
+            "username": register_request.username,
+            "display_name": register_request.username
+        }
+    });
+
+    println!("Registering with: {:?}", body);
+
+    let response = client
+        .post(&format!("{}/auth/v1/signup", config.url))
+        .header("apikey", &config.anon_key)
+        .header("Content-Type", "application/json")
+        .json(&body)
+        .send()
+        .await
+        .map_err(|e| format!("Request failed: {}", e))?;
+
+    if !response.status().is_success() {
+        let error_text = response
+            .text()
+            .await
+            .unwrap_or_else(|_| "Unknown error".to_string());
+        return Err(format!("Registration failed: {}", error_text));
+    }
+
+    let auth_response: AuthResponse = response
+        .json()
+        .await
+        .map_err(|e| format!("Failed to parse response: {}", e))?;
+
+    println!("Received response: {:?}", auth_response);
+    Ok(auth_response)
+}
+
+#[tauri::command]
+pub async fn login_with_email(login_request: LoginRequest) -> Result<AuthResponse, String> {
+    let config = init_supabase().await?;
+    let client = reqwest::Client::new();
+
+    let body = json!({
+        "email": login_request.email,
+        "password": login_request.password
+    });
+
+    let response = client
+        .post(&format!("{}/auth/v1/token?grant_type=password", config.url))
+        .header("apikey", &config.anon_key)
+        .header("Content-Type", "application/json")
+        .json(&body)
+        .send()
+        .await
+        .map_err(|e| format!("Request failed: {}", e))?;
+
+    if !response.status().is_success() {
+        let error_text = response
+            .text()
+            .await
+            .unwrap_or_else(|_| "Unknown error".to_string());
+        return Err(format!("Login failed: {}", error_text));
+    }
+
+    let auth_response: AuthResponse = response
+        .json()
+        .await
+        .map_err(|e| format!("Failed to parse response: {}", e))?;
+
+    Ok(auth_response)
 }
 
 #[tauri::command]

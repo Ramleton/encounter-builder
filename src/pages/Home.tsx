@@ -48,16 +48,9 @@ function Home() {
 				<Button
 					variant="contained"
 					color="primary"
-					onClick={() => navigate("/register")}
+					onClick={() => navigate("/auth")}
 				>
-					Register
-				</Button>
-				<Button
-					variant="contained"
-					color="primary"
-					onClick={() => navigate("/")}
-				>
-					Login
+					Register/Login
 				</Button>
 			</Stack>
 			<Stack direction="row" spacing={5} sx={{ mt: 4 }}>

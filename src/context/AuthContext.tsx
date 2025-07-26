@@ -1,7 +1,7 @@
 import { invoke } from "@tauri-apps/api/core";
 import { listen } from "@tauri-apps/api/event";
 import { createContext, FC, ReactNode, useContext, useEffect, useState } from "react";
-import { User } from "../types/auth";
+import { AuthResponse, LoginRequest, RegisterRequest, RegisterResult, User } from "../types/auth";
 
 interface AuthContextType {
 	user: User | null;
@@ -9,6 +9,8 @@ interface AuthContextType {
 	isLoading: boolean;
 	error: string;
 	loginWithDiscord: () => Promise<void>;
+	loginWithEmail: (loginRequest: LoginRequest) => Promise<void>;
+	registerWithEmail: (registerRequest: RegisterRequest) => Promise<RegisterResult>;
 	logout: () => Promise<void>;
 	clearError: () => void;
 }
@@ -154,6 +156,95 @@ export const AuthProvider: FC<AuthProviderProps> = ({ children }) => {
 		}
 	};
 
+	const saveTokensToStorage = async (response: AuthResponse) => {
+		try {
+			if (response.access_token) {
+				await invoke('store_value', { key: 'access_token', value: response.access_token });
+			}
+			if (response.refresh_token) {
+				await invoke('store_value', { key: 'refresh_token', value: response.refresh_token });
+			}
+			if (response.user) {
+				await invoke('store_value', { key: 'user', value: JSON.stringify(response.user) });
+
+				const user: User = {
+					username: response.user.username,
+					email: response.user.email,
+					avatarUrl: response.user.avatarUrl
+				};
+
+				setUser(user);
+			}
+		} catch (error) {
+			console.error('Failed to save auth tokens:', error);
+			throw new Error('Failed to save authentication data');
+		}
+	};
+
+	const loginWithEmail = async (loginRequest: LoginRequest): Promise<void> => {
+		try {
+			setIsLoading(true);
+			setError("");
+			
+			const response: AuthResponse = await invoke('login_with_email', { loginRequest });
+
+			if (response.error) {
+				throw new Error(response.error);
+			}
+
+			await saveTokensToStorage(response);
+		} catch (error) {
+			const errorMessage = error instanceof Error ? error.message : 'Login failed';
+			setError(errorMessage);
+			console.error('Email login failed:', error);
+			throw new Error(errorMessage);
+		} finally {
+			setIsLoading(false);
+		}
+	}
+
+	const registerWithEmail = async (registerRequest: RegisterRequest): Promise<RegisterResult> => {
+		try {
+			setIsLoading(true);
+			setError("");
+
+			const response: AuthResponse = await invoke('register_with_email', { registerRequest });
+
+			if (response.error) {
+				throw new Error(response.error);
+			}
+
+			if (!response.access_token && !response.error) {
+				// Email confirmation required - no session returned
+				return {
+					status: "pending-verification",
+					email: registerRequest.email
+				}
+			}
+
+			if (response.access_token && response.user) {
+				await saveTokensToStorage(response);
+				return {
+					status: "registered",
+					user: {
+						username: response.user.username,
+						email: response.user.email,
+						avatarUrl: response.user.avatarUrl
+					}
+				};
+			}
+
+			throw new Error("Unknown registration result");
+		} catch (error) {
+			const errorMessage = error instanceof Error ? error.message : 'Registration failed';
+			setError(errorMessage);
+			console.error('Email registration failed:', error);
+			throw new Error(errorMessage);
+		} finally {
+			setIsLoading(false);
+		}
+	};
+
 	const loginWithDiscord = async (): Promise<void> => {
 		try {
 			setIsLoading(true);
@@ -230,6 +321,8 @@ export const AuthProvider: FC<AuthProviderProps> = ({ children }) => {
 		isLoading,
 		error,
 		loginWithDiscord,
+		loginWithEmail,
+		registerWithEmail,
 		logout,
 		clearError
 	};

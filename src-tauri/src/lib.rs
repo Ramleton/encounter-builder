@@ -6,9 +6,9 @@ use tauri::{Emitter, Manager};
 use tauri_plugin_deep_link::DeepLinkExt;
 use utils::fs_utils::{delete_encounter, load_encounters, load_statblocks, save_encounter};
 
-use utils::oauth_utils::{
+use utils::auth_utils::{
     get_current_user, get_stored_value, handle_discord_oauth_callback, login_with_discord,
-    logout_user, remove_stored_value, store_value,
+    login_with_email, logout_user, register_with_email, remove_stored_value, store_value,
 };
 
 #[tauri::command]
@@ -75,7 +75,9 @@ pub fn run() {
             store_value,
             get_stored_value,
             remove_stored_value,
-            open_url
+            open_url,
+            register_with_email,
+            login_with_email,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

@@ -4,8 +4,8 @@ import { AuthProvider } from "./context/AuthContext";
 import { EncounterProvider } from "./context/EncounterContext";
 import { StatBlockProvider } from "./context/StatBlockContext";
 import MainLayout from "./layouts/MainLayout";
+import AuthForm from "./pages/AuthForm";
 import Home from "./pages/Home";
-import Register from "./pages/Register";
 import { darkTheme } from "./theme";
 
 function App() {
@@ -18,7 +18,7 @@ function App() {
                 <Router>
                   <Routes>
                     <Route path="/" Component={Home} />
-                    <Route path="/register" Component={Register} />
+                    <Route path="/auth" Component={AuthForm} />
                   </Routes>
                 </Router>
               </MainLayout>

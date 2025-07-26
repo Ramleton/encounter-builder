@@ -21,3 +21,9 @@ export interface RegisterRequest {
 	email: string;
 	password: string;
 }
+
+export type OAuthProvider = 'discord';
+
+export type RegisterResult =
+	| { status: "registered"; user: User }
+	| { status: "pending-verification"; email: string }
