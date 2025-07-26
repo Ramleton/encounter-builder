@@ -25,11 +25,8 @@ pub fn run() {
         .plugin(tauri_plugin_opener::init())
         .plugin(tauri_plugin_deep_link::init())
         .plugin(tauri_plugin_single_instance::init(|app, args, _cwd| {
-            println!("Single instance callback triggered with args: {:?}", args);
-
             for arg in args {
                 if arg.starts_with("encounterarchitect://") {
-                    println!("Processing deep link from second instance: {}", arg);
                     if let Err(e) = handle_deep_link_url(app, &arg) {
                         eprintln!("Failed to handle deep link from second instance: {}", e);
                     }
@@ -90,21 +87,14 @@ fn handle_deep_link_url(
 ) -> Result<(), Box<dyn std::error::Error>> {
     use url::Url;
 
-    println!("Processing deep linl: {}", url);
     let parsed_url = Url::parse(url)?;
 
     if parsed_url.scheme() == "encounterarchitect" && parsed_url.host_str() == Some("oauth") {
-        println!("Handling deep link for OAuth: {}", url);
-
         if let Some(fragment) = parsed_url.fragment() {
-            println!("OAuth fragment: {}", fragment);
-
             let fragment_url = Url::parse(&format!("http://localhost?{}", fragment))?;
             let query_pairs: std::collections::HashMap<_, _> = fragment_url.query_pairs().collect();
 
             if let Some(access_token) = query_pairs.get("access_token") {
-                println!("Found access token in deep link");
-
                 let access_token_str = access_token.to_string();
                 let refresh_token_str = query_pairs
                     .get("refresh_token")
