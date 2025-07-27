@@ -1,7 +1,8 @@
-import { HowToReg, Login, Visibility, VisibilityOff } from "@mui/icons-material";
+import { Home, HowToReg, Login, Visibility, VisibilityOff } from "@mui/icons-material";
 import { Alert, Box, Button, CircularProgress, Divider, IconButton, InputAdornment, Stack, Tab, Tabs, TextField, Tooltip, Typography } from "@mui/material";
 import { useEffect, useState } from "react";
 import { FaDiscord } from "react-icons/fa";
+import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { LoginRequest, OAuthProvider, RegisterRequest } from "../types/auth";
 
@@ -26,6 +27,7 @@ function AuthForm() {
 	const [showConfirmPassword, setShowConfirmPassword] = useState<boolean>(false);
 	const [validationErrors, setValidationErrors] = useState<string[]>([]);
 	const [emailVerificationSent, setEmailVerificationSent] = useState<string>("");
+	const navigate = useNavigate();
 
 	const {
 		user,
@@ -159,14 +161,28 @@ function AuthForm() {
 				<Alert severity="success" sx={{ mb: 2, width: '100%', maxWidth: 400 }}>
 					Logged in as {user.username}
 				</Alert>
-
-				<Button
-					variant="outlined"
-					onClick={handleLogout}
-					disabled={isLoading}
+				<Box
+					sx={{
+						display: 'flex',
+						flexDirection: 'column',
+						gap: '0.5rem'
+					}}
 				>
-					{isLoading ? <CircularProgress size={20} /> : 'Logout'}
-				</Button>
+					<Button
+						variant="outlined"
+						onClick={handleLogout}
+						disabled={isLoading}
+					>
+						{isLoading ? <CircularProgress size={20} /> : 'Logout'}
+					</Button>
+					<Button
+						variant="outlined"
+						onClick={() => navigate("/")}
+						disabled={isLoading}
+					>
+						{isLoading ? <CircularProgress size={20} /> : 'Home'}
+					</Button>
+				</Box>
 			</Box>
 		);
 	}
@@ -314,16 +330,31 @@ function AuthForm() {
 					<Divider sx={{ my: 2 }}>OR</Divider>
 
 					<Stack direction="row" spacing={2} justifyContent="center">
+						<Tooltip title="Return Home">
+							<IconButton
+								aria-label="return home"
+								color="secondary"
+								onClick={() => navigate("/")}
+								disabled={isLoading}
+								sx={{
+									border: '1px solid',
+									borderColor: 'primary.main',
+									'&:hover': { backgroundColor: 'primary.main', color: 'white' }
+								}}
+							>
+								{isLoading ? <CircularProgress size={24} /> : <Home />}
+							</IconButton>
+						</Tooltip>
 						<Tooltip title="Sign in with Discord">
 							<IconButton
 								aria-label="discord login"
-								color="primary"
+								color="secondary"
 								onClick={() => handleOAuthLogin('discord')}
 								disabled={isLoading}
 								sx={{ 
 									border: '1px solid',
-									borderColor: 'secondary.main',
-									'&:hover': { backgroundColor: 'secondary.main', color: 'white' }
+									borderColor: 'primary.main',
+									'&:hover': { backgroundColor: 'primary.main', color: 'white' }
 								}}
 							>
 								{isLoading ? <CircularProgress size={24} /> : <FaDiscord />}

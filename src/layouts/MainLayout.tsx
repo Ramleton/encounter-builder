@@ -115,8 +115,6 @@ function MainLayout({ children }: MainLayoutProps) {
 	const {
 		user,
 		isAuthenticated,
-		isLoading,
-		error
 	} = useAuth();
 
 
