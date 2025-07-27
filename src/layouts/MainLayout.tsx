@@ -2,6 +2,7 @@ import { AccountCircle, Ballot, ListAlt, Settings } from '@mui/icons-material';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import MenuIcon from '@mui/icons-material/Menu';
+import { Avatar } from '@mui/material';
 import MuiAppBar, { AppBarProps as MuiAppBarProps } from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
 import CssBaseline from '@mui/material/CssBaseline';
@@ -17,6 +18,7 @@ import { CSSObject, styled, Theme, useTheme } from '@mui/material/styles';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import * as React from 'react';
+import { useAuth } from '../context/AuthContext';
 
 const drawerWidth = 240;
 
@@ -110,6 +112,14 @@ function MainLayout({ children }: MainLayoutProps) {
 	const theme = useTheme();
 	const [open, setOpen] = React.useState(false);
 
+	const {
+		user,
+		isAuthenticated,
+		isLoading,
+		error
+	} = useAuth();
+
+
 	const handleDrawerOpen = () => {
 		setOpen(true);
 	};
@@ -190,7 +200,7 @@ function MainLayout({ children }: MainLayoutProps) {
 								},
 						]}
 						>
-						{index % 2 === 0 ? <ListAlt /> : <Ballot />}
+						{index % 2 === 0 ? <ListAlt sx={{ width: 32, height: 32 }} /> : <Ballot sx={{ width: 32, height: 32 }} />}
 						</ListItemIcon>
 						<ListItemText
 						primary={text}
@@ -231,21 +241,24 @@ function MainLayout({ children }: MainLayoutProps) {
 						]}
 					>
 						<ListItemIcon
-						sx={[
-							{
+						sx={{
 							minWidth: 0,
 							justifyContent: 'center',
-							},
-							open
-							? {
-								mr: 3,
-								}
-							: {
-								mr: 'auto',
-								},
-						]}
+							alignItems: 'center',
+							display: 'flex',
+							mr: open ? 3 : 0
+						}}
 						>
-						{index % 2 === 0 ? <AccountCircle /> : <Settings />}
+						{index % 2 === 0 ? (
+							isAuthenticated && user?.avatarUrl
+							?
+								<Avatar
+									alt={user.username}
+									src={user.avatarUrl}
+									sx={{ width: 32, height: 32 }}
+								/>
+							: <AccountCircle sx={{ width: 32, height: 32 }} />
+							) : <Settings sx={{ width: 32, height: 32 }} />}
 						</ListItemIcon>
 						<ListItemText
 						primary={text}
