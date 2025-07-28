@@ -18,6 +18,7 @@ import { CSSObject, styled, Theme, useTheme } from '@mui/material/styles';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import * as React from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 
 const drawerWidth = 240;
@@ -109,8 +110,9 @@ interface MainLayoutProps {
 }
 
 function MainLayout({ children }: MainLayoutProps) {
-	const theme = useTheme();
 	const [open, setOpen] = React.useState(false);
+	const theme = useTheme();
+	const navigate = useNavigate();
 
 	const {
 		user,
@@ -169,6 +171,7 @@ function MainLayout({ children }: MainLayoutProps) {
 				{['StatBlocks', 'Encounters'].map((text, index) => (
 					<ListItem key={text} disablePadding sx={{ display: 'block' }}>
 					<ListItemButton
+						onClick={() => navigate("/statblock_search")}
 						sx={[
 						{
 							minHeight: 48,

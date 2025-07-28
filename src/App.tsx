@@ -6,6 +6,7 @@ import { StatBlockProvider } from "./context/StatBlockContext";
 import MainLayout from "./layouts/MainLayout";
 import AuthForm from "./pages/AuthForm";
 import Home from "./pages/Home";
+import StatBlockSearch from "./pages/StatBlockSearch";
 import { darkTheme } from "./theme";
 
 function App() {
@@ -14,14 +15,15 @@ function App() {
         <AuthProvider>
           <EncounterProvider>
             <StatBlockProvider>
-              <MainLayout>
-                <Router>
+              <Router>
+                <MainLayout>
                   <Routes>
                     <Route path="/" Component={Home} />
                     <Route path="/auth" Component={AuthForm} />
+                    <Route path="/statblock_search" Component={StatBlockSearch} />
                   </Routes>
-                </Router>
-              </MainLayout>
+                </MainLayout>
+              </Router>
             </StatBlockProvider>
           </EncounterProvider>
         </AuthProvider>
