@@ -6,8 +6,8 @@ import { useEncounters } from "../context/EncounterContext";
 import { useStatBlocks } from "../context/StatBlockContext";
 
 function Home() {
-	const { encounters, refreshEncounters } = useEncounters();
-	const { statBlocks, refreshStatBlocks } = useStatBlocks();
+	const { encounters } = useEncounters();
+	const { statBlocks } = useStatBlocks();
 	const navigate = useNavigate();
 
 	return (

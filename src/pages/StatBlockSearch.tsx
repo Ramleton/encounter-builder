@@ -1,6 +1,8 @@
 import { Add, Search } from "@mui/icons-material";
 import { Box, Button, TextField, Typography } from "@mui/material";
 import { useState } from "react";
+import StatBlockCard from "../components/StatblockCard";
+import { useStatBlocks } from "../context/StatBlockContext";
 
 interface StatBlockHeaderProps {
 	search: string;
@@ -50,8 +52,22 @@ function StatBlockHeader({ search, setSearch }: StatBlockHeaderProps) {
 function StatBlockSearch() {
 	const [search, setSearch] = useState<string>("");
 
+	const { statBlocks, refreshStatBlocks } = useStatBlocks();
+
 	return (
-		<StatBlockHeader search={search} setSearch={setSearch} />
+		<>
+			<StatBlockHeader search={search} setSearch={setSearch} />
+			<Box sx={{
+				display: 'grid',
+				gridTemplateColumns: 'repeat(4, 1fr)',
+				width: '100%'
+			}}>
+				{statBlocks
+					.filter(statBlock => statBlock.name.includes(search))
+					.map(statBlock => <StatBlockCard statblock={statBlock} />)
+				}
+			</Box>
+		</>
 	)
 }
 
