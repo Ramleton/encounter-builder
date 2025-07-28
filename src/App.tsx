@@ -5,6 +5,7 @@ import { EncounterProvider } from "./context/EncounterContext";
 import { StatBlockProvider } from "./context/StatBlockContext";
 import MainLayout from "./layouts/MainLayout";
 import AuthForm from "./pages/AuthForm";
+import CreateStatBlock from "./pages/CreateStatBlock";
 import Home from "./pages/Home";
 import StatBlockSearch from "./pages/StatBlockSearch";
 import { darkTheme } from "./theme";
@@ -21,6 +22,7 @@ function App() {
                     <Route path="/" Component={Home} />
                     <Route path="/auth" Component={AuthForm} />
                     <Route path="/statblock_search" Component={StatBlockSearch} />
+                    <Route path="/create_statblock" Component={CreateStatBlock} />
                   </Routes>
                 </MainLayout>
               </Router>

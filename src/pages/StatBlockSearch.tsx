@@ -1,15 +1,18 @@
 import { Add, Search } from "@mui/icons-material";
 import { Box, Button, TextField, Typography } from "@mui/material";
-import { useState } from "react";
+import { Dispatch, SetStateAction, useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import StatBlockCard from "../components/StatblockCard";
 import { useStatBlocks } from "../context/StatBlockContext";
 
 interface StatBlockHeaderProps {
 	search: string;
-	setSearch: (s: string) => void;
+	setSearch: Dispatch<SetStateAction<string>>;
 }
 
 function StatBlockHeader({ search, setSearch }: StatBlockHeaderProps) {
+	const navigate = useNavigate();
+
 	return (
 		<Box sx={{
 			borderBottom: '1px solid blue',
@@ -17,6 +20,7 @@ function StatBlockHeader({ search, setSearch }: StatBlockHeaderProps) {
 			flexDirection: 'row',
 			alignItems: 'center',
 			justifyContent: 'space-between',
+			gap: '1rem',
 			width: '100%',
 		}}>
 			<Typography variant="h3">StatBlocks</Typography>
@@ -38,6 +42,7 @@ function StatBlockHeader({ search, setSearch }: StatBlockHeaderProps) {
 			<Button
 				variant="contained"
 				startIcon={<Add />}
+				onClick={() => navigate("/create_statblock")}
 				sx={{
 					marginBottom: '1rem',
 					marginTop: '1rem'
@@ -53,6 +58,10 @@ function StatBlockSearch() {
 	const [search, setSearch] = useState<string>("");
 
 	const { statBlocks, refreshStatBlocks } = useStatBlocks();
+
+	useEffect(() => {
+		refreshStatBlocks();
+	}, [])
 
 	return (
 		<>

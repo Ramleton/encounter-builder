@@ -1,0 +1,158 @@
+import { Box, FormControl, InputLabel, MenuItem, Select, TextField } from "@mui/material";
+import { Dispatch, SetStateAction, useState } from "react";
+import { Alignment, Size, StatBlock } from "../types/statBlock";
+import { generateEmptyStatBlock } from "../utils/statBlockUtils";
+
+interface StatBlockFormProps {
+	statBlock: StatBlock;
+	setStatBlock: Dispatch<SetStateAction<StatBlock>>;
+}
+
+function StatBlockForm({ statBlock, setStatBlock }: StatBlockFormProps) {
+	const updateField = <K extends keyof StatBlock>(key: K, value: StatBlock[K]) => {
+		setStatBlock(prev => ({...prev, [key]: value }));
+	}
+
+	const updateIntegerField = (key: keyof StatBlock, s: string): void => {
+		const parsed = Number.parseInt(s, 10);
+		updateField(key, isNaN(parsed) ? 0 : parsed);
+	}
+
+	return (
+		<Box sx={{
+			flex: 1,
+			display: 'flex',
+			flexDirection: 'column',
+			border: '1px solid black',
+			padding: '1rem 2rem'
+		}}>
+			<Box sx={{
+				display: 'flex',
+				flexDirection: 'row',
+				width: '100%',
+				justifyContent: 'center',
+				alignItems: 'center',
+				gap: '2rem',
+				padding: '1rem 0'
+			}}>
+				<TextField
+					required
+					id="standard-required"
+					label="Name"
+					type="text"
+					value={statBlock.name}
+					onChange={(e) => updateField("name", e.target.value)}
+					variant="standard"
+				/>
+				<FormControl variant="standard">
+					<InputLabel id="size-select-label" sx={{ color: 'secondary.main' }}>Size</InputLabel>
+					<Select
+						required
+						labelId="size-select-label"
+						id="size-select"
+						value={statBlock.size}
+						onChange={(e) => updateField("size", e.target.value)}
+					>
+						{
+							Object.values(Size).map(size => <MenuItem value={size}>{size}</MenuItem>)
+						}
+					</Select>
+				</FormControl>
+				<TextField
+					required
+					id="standard-required"
+					label="Type"
+					type="text"
+					value={statBlock.type_}
+					onChange={(e) => updateField("type_", e.target.value)}
+					variant="standard"
+				/>
+				<FormControl variant="standard">
+					<InputLabel id="alignment-select-label" sx={{ color: 'secondary.main' }}>Alignment</InputLabel>
+					<Select
+						required
+						labelId="alignment-select-label"
+						id="alignment-select"
+						value={statBlock.alignment}
+						onChange={(e) => updateField("alignment", e.target.value)}
+					>
+						{
+							Object.values(Alignment).map(alignment => <MenuItem value={alignment}>
+								{alignment.toString().replace(/([a-z])([A-Z])/g, `$1 $2`)}
+							</MenuItem>)
+						}
+					</Select>
+				</FormControl>
+			</Box>
+			<Box sx={{
+				display: 'flex',
+				flexDirection: 'row',
+				width: '100%',
+				justifyContent: 'center',
+				alignItems: 'center',
+				gap: '2rem'
+			}}>
+				<TextField
+					required
+					id="standard-required"
+					label="Hit Points"
+					type="text"
+					value={typeof statBlock.hp === 'number' ? statBlock.hp : ""}
+					onChange={(e) => updateIntegerField("hp", e.target.value)}
+					variant="standard"
+				/>
+				<TextField
+					required
+					id="standard-required"
+					label="Armor Class"
+					type="text"
+					value={typeof statBlock.ac === 'number' ? statBlock.ac : ""}
+					onChange={(e) => updateIntegerField("ac", e.target.value)}
+					variant="standard"
+				/>
+				<TextField
+					required
+					id="standard-required"
+					label="Speed"
+					type="text"
+					value={statBlock.speed}
+					onChange={(e) => updateField("speed", e.target.value)}
+					variant="standard"
+				/>
+			</Box>
+		</Box>
+	)
+}
+
+interface StatBlockPreviewProps {
+	statBlock: StatBlock;
+}
+
+function StatBlockPreview({ statBlock }: StatBlockPreviewProps) {
+	return (
+		<Box
+			sx={{
+				flex: 1
+			}}
+		>
+		</Box>
+	)
+}
+
+function CreateStatBlock() {
+	const [statBlock, setStatBlock] = useState<StatBlock>(generateEmptyStatBlock());	
+
+	return (
+		<Box sx={{
+			display: 'flex',
+			flexDirection: 'row',
+			width: '100%',
+			minHeight: '100%'
+		}}>
+			<StatBlockForm statBlock={statBlock} setStatBlock={setStatBlock}/>
+			<StatBlockPreview statBlock={statBlock} />
+		</Box>
+	)
+}
+
+export default CreateStatBlock;
