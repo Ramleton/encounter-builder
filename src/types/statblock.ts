@@ -63,6 +63,18 @@ export enum Ability {
 	Survival = "Survival",
 }
 
+export type ProficiencyLevel = "none" | "proficient" | "expertise";
+
+export type SkillProficiency = {
+	ability: Ability;
+	level: ProficiencyLevel;
+}
+
+export type SaveProficiency = {
+	score: Score;
+	level: ProficiencyLevel;
+}
+
 export enum DamageType {
 	Acid = "Acid",
 	Bludgeoning = "Bludgeoning",
@@ -118,8 +130,8 @@ export interface StatBlock {
 	hit_dice: string;
 	speed: string;
 	stats: Stats;
-	saves: Score[];
-	skill_saves: Ability[];
+	saves: SaveProficiency[];
+	skill_saves: SkillProficiency[];
 	senses: string;
 	languages: string;
 	damage_vulnerabilities: DamageType[];
