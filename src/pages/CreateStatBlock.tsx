@@ -1,6 +1,7 @@
-import { Box, FormControl, InputLabel, MenuItem, Select, TextField } from "@mui/material";
+import { Box, Divider, FormControl, InputLabel, MenuItem, Select, TextField, Typography } from "@mui/material";
 import { Dispatch, SetStateAction, useState } from "react";
-import { Alignment, Size, StatBlock } from "../types/statBlock";
+import { Alignment, Score, Size, StatBlock, Stats } from "../types/statBlock";
+import { getModifier } from "../utils/abilityUtils";
 import { generateEmptyStatBlock } from "../utils/statBlockUtils";
 
 interface StatBlockFormProps {
@@ -13,6 +14,10 @@ function StatBlockForm({ statBlock, setStatBlock }: StatBlockFormProps) {
 		setStatBlock(prev => ({...prev, [key]: value }));
 	}
 
+	const updateStatField = <K extends keyof Stats>(key: K, value: Stats[K]) => {
+		setStatBlock(prev => ({...prev, "stats": {...prev.stats, [key]: value }}));
+	}
+
 	const updateIntegerField = (key: keyof StatBlock, s: string): void => {
 		const parsed = Number.parseInt(s, 10);
 		updateField(key, isNaN(parsed) ? 0 : parsed);
@@ -23,7 +28,7 @@ function StatBlockForm({ statBlock, setStatBlock }: StatBlockFormProps) {
 			flex: 1,
 			display: 'flex',
 			flexDirection: 'column',
-			border: '1px solid black',
+			border: '1px solid white',
 			padding: '1rem 2rem'
 		}}>
 			<Box sx={{
@@ -42,9 +47,10 @@ function StatBlockForm({ statBlock, setStatBlock }: StatBlockFormProps) {
 					type="text"
 					value={statBlock.name}
 					onChange={(e) => updateField("name", e.target.value)}
+					sx={{ flex: 2 }}
 					variant="standard"
 				/>
-				<FormControl variant="standard">
+				<FormControl variant="standard" sx={{ flex: 1 }}>
 					<InputLabel id="size-select-label" sx={{ color: 'secondary.main' }}>Size</InputLabel>
 					<Select
 						required
@@ -58,6 +64,16 @@ function StatBlockForm({ statBlock, setStatBlock }: StatBlockFormProps) {
 						}
 					</Select>
 				</FormControl>
+			</Box>
+			<Box sx={{
+				display: 'flex',
+				flexDirection: 'row',
+				width: '100%',
+				justifyContent: 'center',
+				alignItems: 'center',
+				gap: '2rem',
+				padding: '1rem 0'
+			}}>
 				<TextField
 					required
 					id="standard-required"
@@ -66,8 +82,9 @@ function StatBlockForm({ statBlock, setStatBlock }: StatBlockFormProps) {
 					value={statBlock.type_}
 					onChange={(e) => updateField("type_", e.target.value)}
 					variant="standard"
+					sx={{ flex: 1 }}
 				/>
-				<FormControl variant="standard">
+				<FormControl variant="standard" sx={{ flex: 1 }}>
 					<InputLabel id="alignment-select-label" sx={{ color: 'secondary.main' }}>Alignment</InputLabel>
 					<Select
 						required
@@ -100,6 +117,7 @@ function StatBlockForm({ statBlock, setStatBlock }: StatBlockFormProps) {
 					value={typeof statBlock.hp === 'number' ? statBlock.hp : ""}
 					onChange={(e) => updateIntegerField("hp", e.target.value)}
 					variant="standard"
+					sx={{ flex: 1 }}
 				/>
 				<TextField
 					required
@@ -109,6 +127,7 @@ function StatBlockForm({ statBlock, setStatBlock }: StatBlockFormProps) {
 					value={typeof statBlock.ac === 'number' ? statBlock.ac : ""}
 					onChange={(e) => updateIntegerField("ac", e.target.value)}
 					variant="standard"
+					sx={{ flex: 1 }}
 				/>
 				<TextField
 					required
@@ -118,7 +137,52 @@ function StatBlockForm({ statBlock, setStatBlock }: StatBlockFormProps) {
 					value={statBlock.speed}
 					onChange={(e) => updateField("speed", e.target.value)}
 					variant="standard"
+					sx={{ flex: 2 }}
 				/>
+			</Box>
+			<Divider sx={{ mt: '1rem', mb: '1rem' }} />
+			<Box sx={{
+				display: 'grid',
+				gridTemplateColumns: 'repeat(6, 1fr)',
+				width: '100%',
+				justifyContent: 'center',
+				alignItems: 'center',
+				gap: '2rem'
+			}}>
+				{
+					Object.values(Score).map(score => {
+						const key = score.toLowerCase() as keyof Stats;
+						return (
+							<Box sx={{
+								display: 'flex',
+								flexDirection: 'column',
+								justifyContent: 'center',
+								alignItems: 'center',
+								border: "1px solid white",
+								borderRadius: '5%'
+							}}>
+								<Typography variant="body1" textAlign="center">{score}</Typography>
+								<TextField
+									required
+									id="standard-required"
+									type="text"
+									value={typeof statBlock.stats[key] === 'number' ? statBlock.stats[key] : 10}
+									onChange={(e) => {
+										const parsed = Number.parseInt(e.target.value, 10);
+										updateStatField(key, isNaN(parsed) ? 0 : parsed);
+									}}
+									variant="standard"
+									sx={{
+										'& input': {
+											textAlign: 'center'
+										}
+									}}
+								/>
+								<Typography>{getModifier(statBlock.stats[key])}</Typography>
+							</Box>
+						)
+					})
+				}
 			</Box>
 		</Box>
 	)
@@ -147,7 +211,8 @@ function CreateStatBlock() {
 			display: 'flex',
 			flexDirection: 'row',
 			width: '100%',
-			minHeight: '100%'
+			minHeight: '100%',
+			gap: '4rem'
 		}}>
 			<StatBlockForm statBlock={statBlock} setStatBlock={setStatBlock}/>
 			<StatBlockPreview statBlock={statBlock} />
