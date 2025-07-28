@@ -1,6 +1,6 @@
 import { Box, Divider, FormControl, InputLabel, MenuItem, Select, TextField, Typography } from "@mui/material";
 import { Dispatch, SetStateAction, useState } from "react";
-import { Alignment, Score, Size, StatBlock, Stats } from "../types/statBlock";
+import { Alignment, CR_VALUES, Score, Size, StatBlock, Stats } from "../types/statBlock";
 import { getModifier } from "../utils/abilityUtils";
 import { generateEmptyStatBlock } from "../utils/statBlockUtils";
 
@@ -64,6 +64,7 @@ function StatBlockForm({ statBlock, setStatBlock }: StatBlockFormProps) {
 						}
 					</Select>
 				</FormControl>
+				
 			</Box>
 			<Box sx={{
 				display: 'flex',
@@ -96,6 +97,22 @@ function StatBlockForm({ statBlock, setStatBlock }: StatBlockFormProps) {
 						{
 							Object.values(Alignment).map(alignment => <MenuItem value={alignment}>
 								{alignment.toString().replace(/([a-z])([A-Z])/g, `$1 $2`)}
+							</MenuItem>)
+						}
+					</Select>
+				</FormControl>
+				<FormControl variant="standard" sx={{ flex: 1 }}>
+					<InputLabel id="cr-select-label" sx={{ color: 'secondary.main' }}>CR</InputLabel>
+					<Select
+						required
+						labelId="cr-select-label"
+						id="cr-select"
+						value={statBlock.cr}
+						onChange={(e) => updateField("cr", e.target.value)}
+					>
+						{
+							CR_VALUES.map(cr => <MenuItem value={cr}>
+								{cr.toString()}
 							</MenuItem>)
 						}
 					</Select>
@@ -184,6 +201,7 @@ function StatBlockForm({ statBlock, setStatBlock }: StatBlockFormProps) {
 					})
 				}
 			</Box>
+			<Divider sx={{ mt: '1rem', mb: '1rem' }} />
 		</Box>
 	)
 }
