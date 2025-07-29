@@ -1,4 +1,5 @@
-import { Alignment, Size, StatBlock } from "../types/statBlock"
+import { Dispatch, SetStateAction } from "react";
+import { Alignment, Size, StatBlock, Stats } from "../types/statBlock";
 
 export const generateEmptyStatBlock = (): StatBlock => {
 	return {
@@ -35,4 +36,29 @@ export const generateEmptyStatBlock = (): StatBlock => {
 		reactions: [],
 		last_modified: ""
 	}
+}
+
+export const updateField = <K extends keyof StatBlock>(
+	key: K,
+	value: StatBlock[K],
+	setStatBlock: Dispatch<SetStateAction<StatBlock>>
+) => {
+	setStatBlock(prev => ({...prev, [key]: value }));
+}
+
+export const updateStatField = <K extends keyof Stats>(
+	key: K,
+	value: Stats[K],
+	setStatBlock: Dispatch<SetStateAction<StatBlock>>
+) => {
+	setStatBlock(prev => ({...prev, "stats": {...prev.stats, [key]: value }}));
+}
+
+export const updateIntegerField = (
+	key: keyof StatBlock,
+	s: string,
+	setStatBlock: Dispatch<SetStateAction<StatBlock>>
+): void => {
+	const parsed = Number.parseInt(s, 10);
+	updateField(key, isNaN(parsed) ? 0 : parsed, setStatBlock);
 }
