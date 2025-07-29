@@ -27,7 +27,7 @@ export const generateEmptyStatBlock = (): StatBlock => {
 		damage_resistances: [],
 		damage_immunities: [],
 		condition_immunities: [],
-		cr: "",
+		cr: "0",
 		traits: [],
 		actions: [],
 		legendary_actions: [],

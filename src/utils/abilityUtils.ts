@@ -1,13 +1,19 @@
 import { Ability, Score, StatBlock } from "../types/statBlock";
 
 
-export function getModifier(score: number): string {
-	const mod = Math.floor((score - 10) / 2);
-	return (mod > 0 ? "+" : "") + mod;
+export function modifierToString(modifier: number): string {
+	return (modifier > 0 ? "+" : "") + modifier;
+}
+
+export function getModifier(score: number): number {
+	return Math.floor((score - 10) / 2);
 }
 
 export function getProficiencyBonus(statBlock: StatBlock) {
-	return Math.floor((Number.parseFloat(statBlock.cr) - 1) / 4) + 2;
+	if (isNaN(Number.parseInt(statBlock.cr))) {
+		return 2;
+	}
+	return Math.floor((Number.parseInt(statBlock.cr) - 1) / 4) + 2;
 }
 
 export function abilityToScore(label: Ability): Score {

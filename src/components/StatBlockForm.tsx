@@ -1,7 +1,7 @@
-import { Box, Divider, FormControl, InputLabel, MenuItem, Select, TextField, Typography } from "@mui/material";
+import { Box, Checkbox, Divider, FormControl, FormControlLabel, InputLabel, MenuItem, Select, TextField, Typography } from "@mui/material";
 import { Dispatch, SetStateAction } from "react";
 import { Ability, Alignment, CR_VALUES, ProficiencyLevel, Score, Size, StatBlock, Stats } from "../types/statBlock";
-import { getModifier } from "../utils/abilityUtils";
+import { getModifier, getProficiencyBonus, modifierToString } from "../utils/abilityUtils";
 
 interface StatBlockFormProps {
 	statBlock: StatBlock;
@@ -59,7 +59,7 @@ function StatBlockForm({ statBlock, setStatBlock }: StatBlockFormProps) {
 						onChange={(e) => updateField("size", e.target.value)}
 					>
 						{
-							Object.values(Size).map(size => <MenuItem value={size}>{size}</MenuItem>)
+							Object.values(Size).map(size => <MenuItem key={size} value={size}>{size}</MenuItem>)
 						}
 					</Select>
 				</FormControl>
@@ -94,7 +94,7 @@ function StatBlockForm({ statBlock, setStatBlock }: StatBlockFormProps) {
 						onChange={(e) => updateField("alignment", e.target.value)}
 					>
 						{
-							Object.values(Alignment).map(alignment => <MenuItem value={alignment}>
+							Object.values(Alignment).map(alignment => <MenuItem key={alignment} value={alignment}>
 								{alignment.toString().replace(/([a-z])([A-Z])/g, `$1 $2`)}
 							</MenuItem>)
 						}
@@ -110,7 +110,7 @@ function StatBlockForm({ statBlock, setStatBlock }: StatBlockFormProps) {
 						onChange={(e) => updateField("cr", e.target.value)}
 					>
 						{
-							CR_VALUES.map(cr => <MenuItem value={cr}>
+							CR_VALUES.map(cr => <MenuItem key={cr} value={cr}>
 								{cr.toString()}
 							</MenuItem>)
 						}
@@ -169,14 +169,17 @@ function StatBlockForm({ statBlock, setStatBlock }: StatBlockFormProps) {
 					Object.values(Score).map(score => {
 						const key = score.toLowerCase() as keyof Stats;
 						return (
-							<Box sx={{
-								display: 'flex',
-								flexDirection: 'column',
-								justifyContent: 'center',
-								alignItems: 'center',
-								border: "1px solid white",
-								borderRadius: '5%'
-							}}>
+							<Box 
+								key={score}
+								sx={{
+									display: 'flex',
+									flexDirection: 'column',
+									justifyContent: 'center',
+									alignItems: 'center',
+									border: "1px solid white",
+									borderRadius: '5%'
+								}}
+							>
 								<Typography variant="body1" textAlign="center">{score}</Typography>
 								<TextField
 									required
@@ -194,7 +197,34 @@ function StatBlockForm({ statBlock, setStatBlock }: StatBlockFormProps) {
 										}
 									}}
 								/>
-								<Typography>{getModifier(statBlock.stats[key])}</Typography>
+								<Typography>{modifierToString(getModifier(statBlock.stats[key]))}</Typography>
+								<FormControl fullWidth sx={{
+									display: 'flex',
+									flexDirection: 'row',
+									borderTop: '1px solid white',
+									alignItems: 'center',
+									justifyContent: 'center'
+								}}>
+									<FormControlLabel control={<Checkbox
+										onChange={(e) => {
+											if (e.target.checked) {
+												updateField("saves", 
+												[...statBlock.saves.filter((s) => s.score !== score),
+													{ score, level: "proficient" }
+												]);
+											} else {
+												updateField("saves",
+													statBlock.saves.filter((s) => s.score !== score)
+												);
+											}
+										}}
+									/>} label="Save" />
+								</FormControl>
+								<Typography>{
+									modifierToString(statBlock.saves.find(save => save.score === score)?.level === "proficient"
+										? getModifier(statBlock.stats[key] + getProficiencyBonus(statBlock) * 2)
+										: getModifier(statBlock.stats[key]))
+								}</Typography>
 							</Box>
 						)
 					})
