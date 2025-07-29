@@ -218,6 +218,29 @@ function StatBlockForm({ statBlock, setStatBlock }: StatBlockFormProps) {
 												);
 											}
 										}}
+										icon={
+											<Box
+												sx={{
+													width: 20,
+													height: 20,
+													borderRadius: '50%',
+													border: '2px solid',
+													borderColor: 'text.secondary',
+												}}
+											/>
+										}
+										checkedIcon={
+											<Box
+												sx={{
+													width: 20,
+													height: 20,
+													borderRadius: '50%',
+													backgroundColor: 'primary.main',
+													border: '2px solid',
+													borderColor: 'primary.main',
+												}}
+											/>
+										}
 									/>} label="Save" />
 								</FormControl>
 								<Typography>{
