@@ -279,8 +279,8 @@ function StatBlockForm({ statBlock, setStatBlock }: StatBlockFormProps) {
 									display: 'flex',
 									alignItems: 'center',
 									gap: 2,
-									py: 1,
-									px: 2,
+									py: 0.25,
+									px: 0.5,
 									borderRadius: 1,
 									'&:hover': {
 										backgroundColor: 'action.hover',
