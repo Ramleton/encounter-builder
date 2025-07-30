@@ -2,6 +2,7 @@ import { Box, Divider } from "@mui/material";
 import { Dispatch, SetStateAction } from "react";
 import { StatBlock } from "../types/statBlock";
 import StatBlockFormAbilitySection from "./statBlockForm/StatBlockFormAbilitySection";
+import StatBlockFormSenseLanguages from "./statBlockForm/StatBlockFormSenseLanguages";
 import StatBlockFormStatSection from "./statBlockForm/StatBlockFormStatSection";
 import UpperStatBlockForm from "./statBlockForm/UpperStatBlockForm";
 
@@ -32,14 +33,14 @@ function StatBlockForm({ statBlock, setStatBlock }: StatBlockFormProps) {
 				alignItems: 'center',
 			}}>
 				<StatBlockFormAbilitySection statBlock={statBlock} setStatBlock={setStatBlock} />
+				<Divider orientation="vertical" />
 				<Box sx={{
 					display: 'flex',
 					flexDirection: 'column',
 					flex: 1,
-					justifyContent: 'center',
-					alignItems: 'center',
+					height: '100%'
 				}}>
-
+					<StatBlockFormSenseLanguages statBlock={statBlock} setStatBlock={setStatBlock} />
 				</Box>
 			</Box>
 		</Box>
