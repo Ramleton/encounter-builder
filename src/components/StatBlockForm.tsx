@@ -1,4 +1,4 @@
-import { Box, Divider } from "@mui/material";
+import { Box, Divider, useTheme } from "@mui/material";
 import { Dispatch, SetStateAction } from "react";
 import { StatBlock } from "../types/statBlock";
 import StatBlockFormAbilitySection from "./statBlockForm/StatBlockFormAbilitySection";
@@ -16,32 +16,43 @@ interface StatBlockFormProps {
 // TODO: Add stat block context to avoid constant prop drilling
 
 function StatBlockForm({ statBlock, setStatBlock }: StatBlockFormProps) {
+	const theme = useTheme();
 
 	return (
 		<Box sx={{
 			flex: 1,
 			display: 'flex',
 			flexDirection: 'column',
-			border: '1px solid white',
-			padding: '1rem 2rem'
+			border: '1px solid',
+			borderColor: theme.palette.secondary.main,
+			padding: '1rem 2rem',
+			height: '100vh',
+			maxHeight: '100vh',
+			overflow: 'hidden'
 		}}>
-			<UpperStatBlockForm statBlock={statBlock} setStatBlock={setStatBlock} />
-			<Divider sx={{ mt: '1rem', mb: '1rem' }} />
-			<StatBlockFormStatSection statBlock={statBlock} setStatBlock={setStatBlock} />
-			<Divider sx={{ mt: '1rem', mb: '1rem' }} />
+			<Box sx={{ flexShrink: 0 }}>
+				<UpperStatBlockForm statBlock={statBlock} setStatBlock={setStatBlock} />
+				<Divider sx={{ mt: '1rem', mb: '1rem' }} />
+				<StatBlockFormStatSection statBlock={statBlock} setStatBlock={setStatBlock} />
+				<Divider sx={{ mt: '1rem', mb: '1rem' }} />
+			</Box>
 			<Box sx={{
 				display: 'flex',
 				flexDirection: 'row',
 				width: '100%',
 				justifyContent: 'center',
-				alignItems: 'center',
+				alignItems: 'stretch',
+				height: '100%',
+				minHeight: 0,
 			}}>
 				<StatBlockFormAbilitySection statBlock={statBlock} setStatBlock={setStatBlock} />
 				<Divider orientation="vertical" />
 				<Box sx={{
 					display: 'flex',
 					flexDirection: 'column',
-					flex: 2,
+					flex: 1,
+					overflow: 'hidden',
+					minHeight: 0,
 					height: '100%'
 				}}>
 					<StatBlockFormSenseLanguages statBlock={statBlock} setStatBlock={setStatBlock} />
@@ -51,6 +62,7 @@ function StatBlockForm({ statBlock, setStatBlock }: StatBlockFormProps) {
 					<StatBlockFormTraitsSection statBlock={statBlock} setStatBlock={setStatBlock} />
 				</Box>
 			</Box>
+			<Divider />
 		</Box>
 	)
 }

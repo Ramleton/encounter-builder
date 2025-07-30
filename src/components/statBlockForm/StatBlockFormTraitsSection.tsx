@@ -11,6 +11,7 @@ interface StatBlockFormTraitsSectionProps {
 function StatBlockFormTraitsSection({ statBlock, setStatBlock }: StatBlockFormTraitsSectionProps) {
 	const theme = useTheme();
 	const [addingTrait, setAddingTrait] = useState<Trait | null>(null);
+	const [editIndex, setEditIndex] = useState<number | null>(null);
 
 	const handleUpdateAddingTrait = (key: keyof Trait, value: string) => {
 		setAddingTrait(prev => prev ? { ...prev, [key]: value } : null)
@@ -26,13 +27,46 @@ function StatBlockFormTraitsSection({ statBlock, setStatBlock }: StatBlockFormTr
 		setAddingTrait(null);
 	}
 
+	const handleEditTrait = () => {
+		if (editIndex === null || !addingTrait) return;
+
+		setStatBlock(prev => {
+			const newTraits = [...prev.traits];
+			newTraits[editIndex] = addingTrait;
+			return {
+				...prev,
+				"traits": newTraits
+			};
+		});
+		setAddingTrait(null);
+		setEditIndex(null);
+	}
+
+	const handleEditingTrait = (idx: number) => {
+		setEditIndex(idx);
+		setAddingTrait(statBlock.traits[idx])
+	}
+
+	const handleRemoveTrait = (idx: number) => {
+		setStatBlock(prev => ({
+			...prev,
+			"traits": prev.traits.filter((_, index) => index !== idx)
+		}));
+	}
+
+	const handleCancel = () => {
+		setAddingTrait(null);
+		setEditIndex(null);
+	}
+
 	return (
 		<Box
 			sx={{
 				display: 'flex',
 				flexDirection: 'column',
-				paddingLeft: '1rem',
-				paddingTop: '1rem'
+				padding: '1rem',
+				overflowY: 'auto',
+				gap: '1rem'
 			}}
 		>
 			<Box sx={{
@@ -94,13 +128,16 @@ function StatBlockFormTraitsSection({ statBlock, setStatBlock }: StatBlockFormTr
 						<ButtonGroup variant="contained">
 							<Button
 								variant="contained"
-								onClick={handleCreatingTrait}
+								onClick={editIndex !== null
+									? handleEditTrait
+									: handleCreatingTrait
+								}
 							>
-								Create
+								{editIndex !== null ? "Edit" : "Create"}
 							</Button>
 							<Button
 								variant="contained"
-								onClick={() => setAddingTrait(null)}
+								onClick={handleCancel}
 							>
 								Cancel
 							</Button>
@@ -109,38 +146,62 @@ function StatBlockFormTraitsSection({ statBlock, setStatBlock }: StatBlockFormTr
 				</Box>
 			)}
 			{statBlock.traits.map((trait, idx) => 
-				
 				(
 					<Box
 						key={idx}
 						sx={{
 							display: 'flex',
-							flexDirection: 'column',
+							flexDirection: 'row',
 							border: '1px solid',
 							borderColor: theme.palette.secondary.main,
 							borderRadius: '0.5rem',
-							padding: '1rem'
+							padding: '1rem',
 						}}
 					>
 						<Box sx={{
 							display: 'flex',
-							flexDirection: 'row',
-							alignItems: 'center',
-							justifyContent: 'left',
-							gap: '0.5rem'
+							flexDirection: 'column',
+							flex: 3
 						}}>
-							<Typography variant="body1" fontStyle="oblique">Name:</Typography>
-							<Typography variant="body1">{trait.name}</Typography>
+							<Box sx={{
+								display: 'flex',
+								flexDirection: 'row',
+								alignItems: 'center',
+								justifyContent: 'left',
+								gap: '0.5rem'
+							}}>
+								<Typography variant="body1" fontStyle="oblique">Name:</Typography>
+								<Typography variant="body1">{trait.name}</Typography>
+							</Box>
+							<Box sx={{
+								display: 'flex',
+								flexDirection: 'column',
+								alignItems: 'center',
+								justifyContent: 'left',
+								paddingTop: '0.25rem'
+							}}>
+								<Typography variant="body1" alignSelf="start" fontStyle="oblique">Description:</Typography>
+								<Typography variant="body1" alignSelf="start">{trait.description}</Typography>
+							</Box>
 						</Box>
 						<Box sx={{
 							display: 'flex',
-							flexDirection: 'row',
+							flexDirection: 'column',
 							alignItems: 'center',
-							justifyContent: 'left',
-							gap: '0.5rem'
+							justifyContent: 'center',
+							flex: 1,
+							paddingLeft: '1rem'
 						}}>
-							<Typography variant="body1" fontStyle="oblique">Description:</Typography>
-							<Typography variant="body1">{trait.description}</Typography>
+							<ButtonGroup variant="contained">
+								<Button
+									variant="contained"
+									onClick={() => handleEditingTrait(idx)}
+								>Edit</Button>
+								<Button
+									variant="contained"
+									onClick={() => handleRemoveTrait(idx)}
+								>Remove</Button>
+							</ButtonGroup>
 						</Box>
 					</Box>
 				)
