@@ -38,7 +38,7 @@ function StatBlockForm({ statBlock, setStatBlock }: StatBlockFormProps) {
 				<Box sx={{
 					display: 'flex',
 					flexDirection: 'column',
-					flex: 1,
+					flex: 2,
 					height: '100%'
 				}}>
 					<StatBlockFormSenseLanguages statBlock={statBlock} setStatBlock={setStatBlock} />

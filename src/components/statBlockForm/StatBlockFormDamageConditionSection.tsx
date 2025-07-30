@@ -14,7 +14,7 @@ function StatBlockFormDamageConditionSection({ statBlock, setStatBlock }: StatBl
 			sx={{
 				display: 'flex',
 				flexDirection: 'column',
-				paddingLeft: '2rem',
+				paddingLeft: '1rem',
 				paddingBottom: '1rem',
 				gap: '0.5rem'
 			}}

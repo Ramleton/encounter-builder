@@ -20,7 +20,7 @@ function StatBlockFormSenseLanguages(
 					width: '100%',
 					gap: '0.5rem',
 					paddingBottom: '1rem',
-					paddingLeft: '2rem'
+					paddingLeft: '1rem'
 				}}
 			>
 				<TextField
