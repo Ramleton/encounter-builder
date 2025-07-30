@@ -5,12 +5,15 @@ import StatBlockFormAbilitySection from "./statBlockForm/StatBlockFormAbilitySec
 import StatBlockFormDamageConditionSection from "./statBlockForm/StatBlockFormDamageConditionSection";
 import StatBlockFormSenseLanguages from "./statBlockForm/StatBlockFormSenseLanguages";
 import StatBlockFormStatSection from "./statBlockForm/StatBlockFormStatSection";
+import StatBlockFormTraitsSection from "./statBlockForm/StatBlockFormTraitsSection";
 import UpperStatBlockForm from "./statBlockForm/UpperStatBlockForm";
 
 interface StatBlockFormProps {
 	statBlock: StatBlock;
 	setStatBlock: Dispatch<SetStateAction<StatBlock>>;
 }
+
+// TODO: Add stat block context to avoid constant prop drilling
 
 function StatBlockForm({ statBlock, setStatBlock }: StatBlockFormProps) {
 
@@ -45,6 +48,7 @@ function StatBlockForm({ statBlock, setStatBlock }: StatBlockFormProps) {
 					<Divider />
 					<StatBlockFormDamageConditionSection statBlock={statBlock} setStatBlock={setStatBlock} />
 					<Divider />
+					<StatBlockFormTraitsSection statBlock={statBlock} setStatBlock={setStatBlock} />
 				</Box>
 			</Box>
 		</Box>
