@@ -1,5 +1,5 @@
 import { Add } from "@mui/icons-material";
-import { Box, Button, TextField, Typography } from "@mui/material";
+import { Box, Button, ButtonGroup, TextField, Typography, useTheme } from "@mui/material";
 import { Dispatch, SetStateAction, useState } from "react";
 import { StatBlock, Trait } from "../../types/statBlock";
 
@@ -9,6 +9,7 @@ interface StatBlockFormTraitsSectionProps {
 }
 
 function StatBlockFormTraitsSection({ statBlock, setStatBlock }: StatBlockFormTraitsSectionProps) {
+	const theme = useTheme();
 	const [addingTrait, setAddingTrait] = useState<Trait | null>(null);
 
 	const handleUpdateAddingTrait = (key: keyof Trait, value: string) => {
@@ -54,11 +55,13 @@ function StatBlockFormTraitsSection({ statBlock, setStatBlock }: StatBlockFormTr
 				<Box sx={{
 					display: 'flex',
 					flexDirection: 'column',
-					border: '1px solid black',
+					border: '1px solid',
+					borderColor: theme.palette.secondary.main,
 					paddingLeft: '1rem',
 					paddingRight: '1rem',
 					paddingBottom: '1.5rem',
-					borderRadius: '2%',
+					marginBottom: '0.5rem',
+					borderRadius: '0.5rem',
 					gap: '1rem'
 				}}>
 					<TextField
@@ -82,12 +85,27 @@ function StatBlockFormTraitsSection({ statBlock, setStatBlock }: StatBlockFormTr
 						sx={{ flex: 2 }}
 						variant="standard"
 					/>
-					<Button
-						variant="contained"
-						onClick={handleCreatingTrait}
-					>
-						Create
-					</Button>
+					<Box sx={{
+						display: 'flex',
+						flexDirection: 'row',
+						alignItems: 'center',
+						justifyContent: 'center',
+					}}>
+						<ButtonGroup variant="contained">
+							<Button
+								variant="contained"
+								onClick={handleCreatingTrait}
+							>
+								Create
+							</Button>
+							<Button
+								variant="contained"
+								onClick={() => setAddingTrait(null)}
+							>
+								Cancel
+							</Button>
+						</ButtonGroup>
+					</Box>
 				</Box>
 			)}
 			{statBlock.traits.map((trait, idx) => 
@@ -97,7 +115,11 @@ function StatBlockFormTraitsSection({ statBlock, setStatBlock }: StatBlockFormTr
 						key={idx}
 						sx={{
 							display: 'flex',
-							flexDirection: 'column'
+							flexDirection: 'column',
+							border: '1px solid',
+							borderColor: theme.palette.secondary.main,
+							borderRadius: '0.5rem',
+							padding: '1rem'
 						}}
 					>
 						<Box sx={{
@@ -107,7 +129,7 @@ function StatBlockFormTraitsSection({ statBlock, setStatBlock }: StatBlockFormTr
 							justifyContent: 'left',
 							gap: '0.5rem'
 						}}>
-							<Typography variant="body1">Name:</Typography>
+							<Typography variant="body1" fontStyle="oblique">Name:</Typography>
 							<Typography variant="body1">{trait.name}</Typography>
 						</Box>
 						<Box sx={{
@@ -117,7 +139,7 @@ function StatBlockFormTraitsSection({ statBlock, setStatBlock }: StatBlockFormTr
 							justifyContent: 'left',
 							gap: '0.5rem'
 						}}>
-							<Typography variant="body1">Description:</Typography>
+							<Typography variant="body1" fontStyle="oblique">Description:</Typography>
 							<Typography variant="body1">{trait.description}</Typography>
 						</Box>
 					</Box>
