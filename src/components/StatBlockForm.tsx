@@ -28,7 +28,6 @@ function StatBlockForm({ statBlock, setStatBlock }: StatBlockFormProps) {
 			padding: '1rem 2rem',
 			height: '100vh',
 			maxHeight: '100vh',
-			overflow: 'hidden'
 		}}>
 			<Box sx={{ flexShrink: 0 }}>
 				<UpperStatBlockForm statBlock={statBlock} setStatBlock={setStatBlock} />
@@ -39,6 +38,8 @@ function StatBlockForm({ statBlock, setStatBlock }: StatBlockFormProps) {
 			<Box sx={{
 				display: 'flex',
 				flexDirection: 'row',
+				flexGrow: 1,
+				overflow: 'auto',
 				width: '100%',
 				justifyContent: 'center',
 				alignItems: 'stretch',
@@ -51,9 +52,7 @@ function StatBlockForm({ statBlock, setStatBlock }: StatBlockFormProps) {
 					display: 'flex',
 					flexDirection: 'column',
 					flex: 1,
-					overflow: 'hidden',
 					minHeight: 0,
-					height: '100%'
 				}}>
 					<StatBlockFormSenseLanguages statBlock={statBlock} setStatBlock={setStatBlock} />
 					<Divider />

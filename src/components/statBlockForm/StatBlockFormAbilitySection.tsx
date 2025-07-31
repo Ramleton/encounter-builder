@@ -15,12 +15,11 @@ function StatBlockFormAbilitySection({ statBlock, setStatBlock }: StatBlockFormA
 				display: 'flex',
 				flexDirection: 'column',
 				flex: 1,
-				justifyContent: 'center',
-				alignItems: 'center',
 				marginRight: '0.5rem',
 				marginBottom: '1rem',
+				height: '100%',
 				minHeight: 0,
-				overflowY: 'auto'
+				overflowY: 'auto',
 			}}>
 				{Object.values(Ability).map((ability) => {
 					const current = statBlock.skill_saves.find((s) => s.ability === ability)?.level ?? "none";
