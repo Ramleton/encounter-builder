@@ -2,6 +2,7 @@ import { Add } from "@mui/icons-material";
 import { Box, Button, ButtonGroup, TextField, Typography, useTheme } from "@mui/material";
 import { Dispatch, SetStateAction, useState } from "react";
 import { StatBlock, Trait } from "../../types/statBlock";
+import StatBlockFormActionCard from "./StatBlockFormActionCard";
 
 interface StatBlockFormTraitsSectionProps {
 	statBlock: StatBlock;
@@ -65,6 +66,9 @@ function StatBlockFormTraitsSection({ statBlock, setStatBlock }: StatBlockFormTr
 				display: 'flex',
 				flexDirection: 'column',
 				padding: '1rem',
+				marginRight: '0.5rem',
+				marginTop: '1rem',
+				marginBottom: '1rem',
 				overflowY: 'auto',
 				gap: '1rem'
 			}}
@@ -145,69 +149,13 @@ function StatBlockFormTraitsSection({ statBlock, setStatBlock }: StatBlockFormTr
 					</Box>
 				</Box>
 			)}
-			{statBlock.traits.map((trait, idx) => 
-				(
-					<Box
-						key={idx}
-						sx={{
-							display: 'flex',
-							flexDirection: 'row',
-							border: '1px solid',
-							borderColor: theme.palette.secondary.main,
-							borderRadius: '0.5rem',
-							padding: '1rem',
-						}}
-					>
-						<Box sx={{
-							display: 'flex',
-							flexDirection: 'column',
-							flex: 3
-						}}>
-							<Box sx={{
-								display: 'flex',
-								flexDirection: 'row',
-								alignItems: 'center',
-								justifyContent: 'left',
-								gap: '0.5rem'
-							}}>
-								<Typography variant="body1" fontStyle="oblique">Name:</Typography>
-								<Typography variant="body1">{trait.name}</Typography>
-							</Box>
-							<Box sx={{
-								display: 'flex',
-								flexDirection: 'column',
-								alignItems: 'center',
-								justifyContent: 'left',
-								paddingTop: '0.25rem'
-							}}>
-								<Typography variant="body1" alignSelf="start" fontStyle="oblique">Description:</Typography>
-								<Typography variant="body1" alignSelf="start">{trait.description}</Typography>
-							</Box>
-						</Box>
-						<Box sx={{
-							display: 'flex',
-							flexDirection: 'column',
-							alignItems: 'center',
-							justifyContent: 'center',
-							flex: 1,
-							paddingLeft: '1rem'
-						}}>
-							<ButtonGroup variant="contained">
-								<Button
-									variant="contained"
-									onClick={() => handleEditingTrait(idx)}
-								>Edit</Button>
-								<Button
-									variant="contained"
-									onClick={() => handleRemoveTrait(idx)}
-								>Remove</Button>
-							</ButtonGroup>
-						</Box>
-					</Box>
-				)
-			)
-
-			}
+			{statBlock.traits.map((trait, idx) => <StatBlockFormActionCard
+				key={idx}
+				value={trait}
+				idx={idx}
+				handleEdit={handleEditTrait}
+				handleRemove={handleRemoveTrait}
+			/>)}
 		</Box>
 	)
 }

@@ -16,8 +16,8 @@ function StatBlockFormAbilitySection({ statBlock, setStatBlock }: StatBlockFormA
 				flexDirection: 'column',
 				flex: 1,
 				marginRight: '0.5rem',
+				paddingRight: '0.5rem',
 				marginBottom: '1rem',
-				height: '100%',
 				minHeight: 0,
 				overflowY: 'auto',
 			}}>
