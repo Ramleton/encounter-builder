@@ -148,6 +148,7 @@ pub struct StatBlock {
     pub traits: Vec<Trait>,
     pub actions: Vec<Action>,
     pub legendary_actions: Vec<Action>,
+    pub legendary_description: String,
     pub bonus_actions: Vec<Action>,
     pub reactions: Vec<Action>,
 }

@@ -142,6 +142,7 @@ export interface StatBlock {
 	traits: Trait[];
 	actions: Action[];
 	legendary_actions: Action[];
+	legendary_description: string;
 	bonus_actions: Action[];
 	reactions: Action[];
 	last_modified: string;
