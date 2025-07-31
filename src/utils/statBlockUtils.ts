@@ -32,6 +32,7 @@ export const generateEmptyStatBlock = (): StatBlock => {
 		traits: [],
 		actions: [],
 		legendary_actions: [],
+		legendary_description: "",
 		bonus_actions: [],
 		reactions: [],
 		last_modified: ""
@@ -62,3 +63,17 @@ export const updateIntegerField = (
 	const parsed = Number.parseInt(s, 10);
 	updateField(key, isNaN(parsed) ? 0 : parsed, setStatBlock);
 }
+
+export const STATBLOCK_KEY_LABELS = {
+	saves: "Save",
+    skill_saves: "Skill Save", 
+    damage_vulnerabilities: "Damage Vulnerability",
+    damage_resistances: "Damage Resistance",
+    damage_immunities: "Damage Immunity",
+    condition_immunities: "Condition Immunity",
+    traits: "Trait",
+    actions: "Action",
+    legendary_actions: "Legendary Action",
+    bonus_actions: "Bonus Action",
+    reactions: "Reaction"
+};

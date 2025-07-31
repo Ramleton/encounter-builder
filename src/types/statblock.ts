@@ -1,3 +1,4 @@
+
 export interface Action {
 	name: string;
 	description: string;
@@ -147,3 +148,9 @@ export interface StatBlock {
 	reactions: Action[];
 	last_modified: string;
 }
+
+export type ActionKeys<T> = {
+	[K in keyof T]: T[K] extends Action[] ? K : never;
+}[keyof T];
+
+export type StatBlockArrayKey = ActionKeys<StatBlock>;

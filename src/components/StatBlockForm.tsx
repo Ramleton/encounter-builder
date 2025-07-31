@@ -2,6 +2,7 @@ import { Box, Divider, useTheme } from "@mui/material";
 import { Dispatch, SetStateAction } from "react";
 import { StatBlock } from "../types/statBlock";
 import StatBlockFormAbilitySection from "./statBlockForm/StatBlockFormAbilitySection";
+import StatBlockFormActionsSection from "./statBlockForm/StatBlockFormActionsSection";
 import StatBlockFormDamageConditionSection from "./statBlockForm/StatBlockFormDamageConditionSection";
 import StatBlockFormSenseLanguages from "./statBlockForm/StatBlockFormSenseLanguages";
 import StatBlockFormStatSection from "./statBlockForm/StatBlockFormStatSection";
@@ -26,13 +27,12 @@ function StatBlockForm({ statBlock, setStatBlock }: StatBlockFormProps) {
 			border: '1px solid',
 			borderColor: theme.palette.secondary.main,
 			padding: '1rem 2rem',
-			height: '120vh',
 		}}>
 			<Box sx={{ flexShrink: 0 }}>
 				<UpperStatBlockForm statBlock={statBlock} setStatBlock={setStatBlock} />
 				<Divider sx={{ mt: '1rem', mb: '1rem' }} />
 				<StatBlockFormStatSection statBlock={statBlock} setStatBlock={setStatBlock} />
-				<Divider sx={{ mt: '1rem', mb: '1rem' }} />
+				<Divider sx={{ mt: '1rem' }} />
 			</Box>
 			<Box sx={{
 				display: 'flex',
@@ -61,6 +61,7 @@ function StatBlockForm({ statBlock, setStatBlock }: StatBlockFormProps) {
 				</Box>
 			</Box>
 			<Divider />
+			<StatBlockFormActionsSection statBlock={statBlock} setStatBlock={setStatBlock} />
 		</Box>
 	)
 }
