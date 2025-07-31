@@ -95,6 +95,7 @@ function StatBlockFormTraitsSection({ statBlock, setStatBlock }: StatBlockFormTr
 					flexDirection: 'column',
 					border: '1px solid',
 					borderColor: theme.palette.secondary.main,
+					paddingTop: '1rem',
 					paddingLeft: '1rem',
 					paddingRight: '1rem',
 					paddingBottom: '1.5rem',
@@ -153,7 +154,7 @@ function StatBlockFormTraitsSection({ statBlock, setStatBlock }: StatBlockFormTr
 				key={idx}
 				value={trait}
 				idx={idx}
-				handleEdit={handleEditTrait}
+				handleEdit={handleEditingTrait}
 				handleRemove={handleRemoveTrait}
 			/>)}
 		</Box>
