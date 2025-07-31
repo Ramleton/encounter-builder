@@ -89,7 +89,7 @@ function StatBlockFormActionSection({
 				flexDirection: 'row',
 				justifyContent: 'space-between'
 			}}>
-				<Typography variant="h6">{label}</Typography>
+				<Typography variant="h6">{`${label}s`}</Typography>
 				<Button
 					variant="contained"
 					endIcon={<Add />}
