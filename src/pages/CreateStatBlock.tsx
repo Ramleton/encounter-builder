@@ -1,6 +1,7 @@
 import { Box } from "@mui/material";
 import { useState } from "react";
 import StatBlockForm from "../components/StatBlockForm";
+import { StatBlockProvider } from "../context/StatBlockContext";
 import { StatBlock } from "../types/statBlock";
 import { generateEmptyStatBlock } from "../utils/statBlockUtils";
 
@@ -30,8 +31,10 @@ function CreateStatBlock() {
 			minHeight: '100%',
 			gap: '4rem'
 		}}>
-			<StatBlockForm statBlock={statBlock} setStatBlock={setStatBlock}/>
-			<StatBlockPreview statBlock={statBlock} />
+			<StatBlockProvider>
+				<StatBlockForm />
+				<StatBlockPreview statBlock={statBlock} />
+			</StatBlockProvider>
 		</Box>
 	)
 }

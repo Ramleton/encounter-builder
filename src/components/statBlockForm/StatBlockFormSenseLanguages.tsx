@@ -1,16 +1,10 @@
 import { Box, TextField } from "@mui/material";
-import { Dispatch, SetStateAction } from "react";
-import { StatBlock } from "../../types/statBlock";
+import { useStatBlock } from "../../context/StatBlockContext";
 import { updateField } from "../../utils/statBlockUtils";
 
-interface StatBlockFormSenseLanguagesProps {
-	statBlock: StatBlock;
-	setStatBlock: Dispatch<SetStateAction<StatBlock>>;
-}
+function StatBlockFormSenseLanguages() {
+	const { statBlock, setStatBlock } = useStatBlock();
 
-function StatBlockFormSenseLanguages(
-	{ statBlock, setStatBlock }: StatBlockFormSenseLanguagesProps
-) {
 	return (
 		<Box sx={{
 				display: 'flex',

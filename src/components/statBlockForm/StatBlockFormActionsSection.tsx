@@ -1,7 +1,8 @@
 import { Add } from "@mui/icons-material";
 import { Box, Button, ButtonGroup, Divider, TextField, Typography, useTheme } from "@mui/material";
 import { Dispatch, SetStateAction, useState } from "react";
-import { Action, ACTION_KEY_LABELS, StatBlock, StatBlockActionKey } from "../../types/statBlock";
+import { useStatBlock } from "../../context/StatBlockContext";
+import { Action, ACTION_KEY_LABELS, StatBlockActionKey } from "../../types/statBlock";
 import StatBlockFormActionCard from "./StatBlockFormActionCard";
 
 const handleUpdateAction = (
@@ -15,27 +16,19 @@ const handleUpdateAction = (
 	});
 };
 
-interface StatBlockFormActionsSectionProps {
-	statBlock: StatBlock;
-	setStatBlock: Dispatch<SetStateAction<StatBlock>>;
-}
-
 interface StatBlockFormActionSectionProps {
 	statblockKey: StatBlockActionKey;
-	statBlock: StatBlock;
-	setStatBlock: Dispatch<SetStateAction<StatBlock>>;
 }
 
 function StatBlockFormActionSection({
-	statblockKey,
-	statBlock,
-	setStatBlock
+	statblockKey
 }: StatBlockFormActionSectionProps) {
 	const [editing, setEditing] = useState<Action | null>(null);
 	const [editIndex, setEditIndex] = useState<number | null>(null);
 	const label = ACTION_KEY_LABELS[statblockKey];
 	
 	const theme = useTheme();
+	const { statBlock, setStatBlock } = useStatBlock();
 
 	const handleCreatingAction = () => {
 		if (!editing) return;
@@ -170,9 +163,7 @@ function StatBlockFormActionSection({
 	)
 }
 
-function StatBlockFormActionsSection(
-	{ statBlock, setStatBlock }: StatBlockFormActionsSectionProps
-) {
+function StatBlockFormActionsSection() {
 	return (
 		<Box sx={{
 			display: 'flex',
@@ -182,26 +173,18 @@ function StatBlockFormActionsSection(
 		}}>
 			<StatBlockFormActionSection
 				statblockKey="legendary_actions"
-				statBlock={statBlock}
-				setStatBlock={setStatBlock}
 			/>
 			<Divider />
 			<StatBlockFormActionSection
 				statblockKey="actions"
-				statBlock={statBlock}
-				setStatBlock={setStatBlock}
 			/>
 			<Divider />
 			<StatBlockFormActionSection
 				statblockKey="bonus_actions"
-				statBlock={statBlock}
-				setStatBlock={setStatBlock}
 			/>
 			<Divider />
 			<StatBlockFormActionSection
 				statblockKey="reactions"
-				statBlock={statBlock}
-				setStatBlock={setStatBlock}
 			/>
 		</Box>
 	)

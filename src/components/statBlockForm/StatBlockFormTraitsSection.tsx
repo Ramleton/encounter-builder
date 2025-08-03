@@ -1,18 +1,16 @@
 import { Add } from "@mui/icons-material";
 import { Box, Button, ButtonGroup, TextField, Typography, useTheme } from "@mui/material";
-import { Dispatch, SetStateAction, useState } from "react";
-import { StatBlock, Trait } from "../../types/statBlock";
+import { useState } from "react";
+import { useStatBlock } from "../../context/StatBlockContext";
+import { Trait } from "../../types/statBlock";
 import StatBlockFormActionCard from "./StatBlockFormActionCard";
 
-interface StatBlockFormTraitsSectionProps {
-	statBlock: StatBlock;
-	setStatBlock: Dispatch<SetStateAction<StatBlock>>;
-}
-
-function StatBlockFormTraitsSection({ statBlock, setStatBlock }: StatBlockFormTraitsSectionProps) {
+function StatBlockFormTraitsSection() {
 	const theme = useTheme();
 	const [addingTrait, setAddingTrait] = useState<Trait | null>(null);
 	const [editIndex, setEditIndex] = useState<number | null>(null);
+
+	const { statBlock, setStatBlock } = useStatBlock();
 
 	const handleUpdateAddingTrait = (key: keyof Trait, value: string) => {
 		setAddingTrait(prev => prev ? { ...prev, [key]: value } : null)

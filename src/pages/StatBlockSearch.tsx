@@ -3,7 +3,7 @@ import { Box, Button, TextField, Typography } from "@mui/material";
 import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import StatBlockCard from "../components/StatblockCard";
-import { useStatBlocks } from "../context/StatBlockContext";
+import { StatBlock } from "../types/statBlock";
 
 interface StatBlockHeaderProps {
 	search: string;
@@ -56,11 +56,10 @@ function StatBlockHeader({ search, setSearch }: StatBlockHeaderProps) {
 
 function StatBlockSearch() {
 	const [search, setSearch] = useState<string>("");
-
-	const { statBlocks, refreshStatBlocks } = useStatBlocks();
+	const [statBlocks, setStatBlocks] = useState<StatBlock[]>([]);
 
 	useEffect(() => {
-		refreshStatBlocks();
+		// refreshStatBlocks();
 	}, [])
 
 	return (

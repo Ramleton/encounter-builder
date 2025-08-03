@@ -1,14 +1,11 @@
 import { Box, FormControl, InputLabel, MenuItem, Select } from "@mui/material";
-import { Dispatch, SetStateAction } from "react";
-import { ConditionType, DamageType, StatBlock } from "../../types/statBlock";
+import { useStatBlock } from "../../context/StatBlockContext";
+import { ConditionType, DamageType } from "../../types/statBlock";
 import { updateField } from "../../utils/statBlockUtils";
 
-interface StatBlockFormDamageConditionSectionProps {
-	statBlock: StatBlock;
-	setStatBlock: Dispatch<SetStateAction<StatBlock>>;
-}
+function StatBlockFormDamageConditionSection() {
+	const { statBlock, setStatBlock } = useStatBlock();
 
-function StatBlockFormDamageConditionSection({ statBlock, setStatBlock }: StatBlockFormDamageConditionSectionProps) {
 	return (
 		<Box
 			sx={{

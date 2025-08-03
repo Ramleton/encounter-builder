@@ -1,6 +1,4 @@
 import { Box, Divider, useTheme } from "@mui/material";
-import { Dispatch, SetStateAction } from "react";
-import { StatBlock } from "../types/statBlock";
 import StatBlockFormAbilitySection from "./statBlockForm/StatBlockFormAbilitySection";
 import StatBlockFormActionsSection from "./statBlockForm/StatBlockFormActionsSection";
 import StatBlockFormDamageConditionSection from "./statBlockForm/StatBlockFormDamageConditionSection";
@@ -10,14 +8,7 @@ import StatBlockFormStatSection from "./statBlockForm/StatBlockFormStatSection";
 import StatBlockFormTraitsSection from "./statBlockForm/StatBlockFormTraitsSection";
 import UpperStatBlockForm from "./statBlockForm/UpperStatBlockForm";
 
-interface StatBlockFormProps {
-	statBlock: StatBlock;
-	setStatBlock: Dispatch<SetStateAction<StatBlock>>;
-}
-
-// TODO: Add stat block context to avoid constant prop drilling
-
-function StatBlockForm({ statBlock, setStatBlock }: StatBlockFormProps) {
+function StatBlockForm() {
 	const theme = useTheme();
 
 	return (
@@ -31,9 +22,9 @@ function StatBlockForm({ statBlock, setStatBlock }: StatBlockFormProps) {
 			mb: '1rem'
 		}}>
 			<Box sx={{ flexShrink: 0 }}>
-				<UpperStatBlockForm statBlock={statBlock} setStatBlock={setStatBlock} />
+				<UpperStatBlockForm />
 				<Divider sx={{ mt: '1rem', mb: '1rem' }} />
-				<StatBlockFormStatSection statBlock={statBlock} setStatBlock={setStatBlock} />
+				<StatBlockFormStatSection />
 				<Divider sx={{ mt: '1rem' }} />
 			</Box>
 			<Box sx={{
@@ -47,7 +38,7 @@ function StatBlockForm({ statBlock, setStatBlock }: StatBlockFormProps) {
 				height: '75vh',
 				minHeight: 0,
 			}}>
-				<StatBlockFormAbilitySection statBlock={statBlock} setStatBlock={setStatBlock} />
+				<StatBlockFormAbilitySection />
 				<Divider orientation="vertical" />
 				<Box sx={{
 					display: 'flex',
@@ -55,17 +46,17 @@ function StatBlockForm({ statBlock, setStatBlock }: StatBlockFormProps) {
 					flex: 1,
 					minHeight: 0,
 				}}>
-					<StatBlockFormSenseLanguages statBlock={statBlock} setStatBlock={setStatBlock} />
+					<StatBlockFormSenseLanguages />
 					<Divider />
-					<StatBlockFormDamageConditionSection statBlock={statBlock} setStatBlock={setStatBlock} />
+					<StatBlockFormDamageConditionSection />
 					<Divider />
-					<StatBlockFormTraitsSection statBlock={statBlock} setStatBlock={setStatBlock} />
+					<StatBlockFormTraitsSection />
 				</Box>
 			</Box>
 			<Divider />
-			<StatBlockFormSpellSection statBlock={statBlock} setStatBlock={setStatBlock} />
+			<StatBlockFormSpellSection />
 			<Divider />
-			<StatBlockFormActionsSection statBlock={statBlock} setStatBlock={setStatBlock} />
+			<StatBlockFormActionsSection />
 		</Box>
 	)
 }

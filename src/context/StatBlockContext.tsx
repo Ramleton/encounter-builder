@@ -1,36 +1,26 @@
-import { invoke } from "@tauri-apps/api/core";
-import { createContext, Dispatch, FC, ReactNode, SetStateAction, useContext, useEffect, useState } from "react";
+import { createContext, Dispatch, FC, ReactNode, SetStateAction, useContext, useState } from "react";
 import { StatBlock } from "../types/statBlock";
+import { generateEmptyStatBlock } from "../utils/statBlockUtils";
 
 interface StatBlockContextType {
-	statBlocks: StatBlock[];
-	setStatBlocks: Dispatch<SetStateAction<StatBlock[]>>;
-	refreshStatBlocks: () => Promise<void>;
+	statBlock: StatBlock;
+	setStatBlock: Dispatch<SetStateAction<StatBlock>>;
 }
 
 const StatBlockContext = createContext<StatBlockContextType | undefined>(undefined);
 
 export const StatBlockProvider: FC<{ children: ReactNode }> = ({ children }) => {
-	const [statBlocks, setStatBlocks] = useState<StatBlock[]>([]);
-	
-	const refreshStatBlocks = async (): Promise<void> => {
-		const data = await invoke<StatBlock[]>("load_statblocks");
-		setStatBlocks(data);
-	}
-
-	useEffect(() => {
-		refreshStatBlocks();
-	}, []);
+	const [statBlock, setStatBlock] = useState<StatBlock>(generateEmptyStatBlock());
 
 	return (
-		<StatBlockContext.Provider value={{ statBlocks, setStatBlocks, refreshStatBlocks }}>
+		<StatBlockContext.Provider value={{ statBlock, setStatBlock }}>
 			{children}
 		</StatBlockContext.Provider>
 	);
-};
+}
 
-export const useStatBlocks = (): StatBlockContextType => {
+export const useStatBlock = () => {
 	const context = useContext(StatBlockContext);
-	if (!context) throw new Error("useStatBlocks must be used within a StatBlockProvider");
+	if (!context) throw new Error("useStatBlock must be used within a StatBlockProvider");
 	return context;
 }

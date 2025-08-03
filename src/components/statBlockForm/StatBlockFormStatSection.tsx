@@ -1,15 +1,12 @@
 import { Box, Checkbox, FormControl, FormControlLabel, TextField, Typography } from "@mui/material";
-import { Dispatch, SetStateAction } from "react";
-import { Score, StatBlock, Stats } from "../../types/statBlock";
+import { useStatBlock } from "../../context/StatBlockContext";
+import { Score, Stats } from "../../types/statBlock";
 import { getModifier, getProficiencyBonus, modifierToString } from "../../utils/abilityUtils";
 import { updateField, updateStatField } from "../../utils/statBlockUtils";
 
-interface StatBlockFormStatSectionProps {
-	statBlock: StatBlock;
-	setStatBlock: Dispatch<SetStateAction<StatBlock>>;
-}
+function StatBlockFormStatSection() {
+	const { statBlock, setStatBlock } = useStatBlock();
 
-function StatBlockFormStatSection({ statBlock, setStatBlock }: StatBlockFormStatSectionProps) {
 	return (
 		<>
 			<Box sx={{

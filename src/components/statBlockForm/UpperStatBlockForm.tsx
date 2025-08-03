@@ -1,14 +1,11 @@
 import { Box, FormControl, InputLabel, MenuItem, Select, TextField } from "@mui/material";
-import { Dispatch, SetStateAction } from "react";
-import { Alignment, CR_VALUES, Size, StatBlock } from "../../types/statBlock";
+import { useStatBlock } from "../../context/StatBlockContext";
+import { Alignment, CR_VALUES, Size } from "../../types/statBlock";
 import { updateField, updateIntegerField } from "../../utils/statBlockUtils";
 
-interface UpperStatBlockFormProps {
-	statBlock: StatBlock;
-	setStatBlock: Dispatch<SetStateAction<StatBlock>>;
-}
+function UpperStatBlockForm() {
+	const { statBlock, setStatBlock } = useStatBlock();
 
-function UpperStatBlockForm({ statBlock, setStatBlock }: UpperStatBlockFormProps) {
 	return (
 		<>
 			<Box sx={{

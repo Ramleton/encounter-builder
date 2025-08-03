@@ -1,14 +1,11 @@
 import { Box, FormControl, MenuItem, Select, Typography } from "@mui/material";
-import { Dispatch, SetStateAction } from "react";
-import { Ability, ProficiencyLevel, StatBlock } from "../../types/statBlock";
+import { useStatBlock } from "../../context/StatBlockContext";
+import { Ability, ProficiencyLevel } from "../../types/statBlock";
 import { updateField } from "../../utils/statBlockUtils";
 
-interface StatBlockFormAbilitySectionProps {
-	statBlock: StatBlock;
-	setStatBlock: Dispatch<SetStateAction<StatBlock>>;
-}
+function StatBlockFormAbilitySection() {
+	const { statBlock, setStatBlock } = useStatBlock();
 
-function StatBlockFormAbilitySection({ statBlock, setStatBlock }: StatBlockFormAbilitySectionProps) {
 	return (
 		<>
 			<Box sx={{
