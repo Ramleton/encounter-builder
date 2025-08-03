@@ -5,6 +5,7 @@ import StatBlockFormAbilitySection from "./statBlockForm/StatBlockFormAbilitySec
 import StatBlockFormActionsSection from "./statBlockForm/StatBlockFormActionsSection";
 import StatBlockFormDamageConditionSection from "./statBlockForm/StatBlockFormDamageConditionSection";
 import StatBlockFormSenseLanguages from "./statBlockForm/StatBlockFormSenseLanguages";
+import StatBlockFormSpellSection from "./statBlockForm/StatBlockFormSpellSection";
 import StatBlockFormStatSection from "./statBlockForm/StatBlockFormStatSection";
 import StatBlockFormTraitsSection from "./statBlockForm/StatBlockFormTraitsSection";
 import UpperStatBlockForm from "./statBlockForm/UpperStatBlockForm";
@@ -61,6 +62,8 @@ function StatBlockForm({ statBlock, setStatBlock }: StatBlockFormProps) {
 					<StatBlockFormTraitsSection statBlock={statBlock} setStatBlock={setStatBlock} />
 				</Box>
 			</Box>
+			<Divider />
+			<StatBlockFormSpellSection statBlock={statBlock} setStatBlock={setStatBlock} />
 			<Divider />
 			<StatBlockFormActionsSection statBlock={statBlock} setStatBlock={setStatBlock} />
 		</Box>

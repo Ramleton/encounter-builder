@@ -155,7 +155,7 @@ export interface StatBlock {
 	condition_immunities: ConditionType[];
 	cr: CR;
 	traits: Trait[];
-	spells: Spells;
+	spells?: Spells;
 	actions: Action[];
 	legendary_actions: Action[];
 	legendary_description: string;

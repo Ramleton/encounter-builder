@@ -192,7 +192,8 @@ pub struct StatBlock {
     pub condition_immunities: Vec<ConditionType>,
     pub cr: String,
     pub traits: Vec<Trait>,
-    pub spells: Spells,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub spells: Option<Spells>,
     pub actions: Vec<Action>,
     pub legendary_actions: Vec<Action>,
     pub legendary_description: String,
