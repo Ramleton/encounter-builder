@@ -1,5 +1,5 @@
 import { Dispatch, SetStateAction } from "react";
-import { Alignment, Size, StatBlock, Stats } from "../types/statBlock";
+import { Alignment, Size, StatBlock, StatBlockActionKey, Stats } from "../types/statBlock";
 
 export const generateEmptyStatBlock = (): StatBlock => {
 	return {
@@ -64,16 +64,9 @@ export const updateIntegerField = (
 	updateField(key, isNaN(parsed) ? 0 : parsed, setStatBlock);
 }
 
-export const STATBLOCK_KEY_LABELS = {
-	saves: "Save",
-    skill_saves: "Skill Save", 
-    damage_vulnerabilities: "Damage Vulnerability",
-    damage_resistances: "Damage Resistance",
-    damage_immunities: "Damage Immunity",
-    condition_immunities: "Condition Immunity",
-    traits: "Trait",
-    actions: "Action",
-    legendary_actions: "Legendary Action",
-    bonus_actions: "Bonus Action",
-    reactions: "Reaction"
+export const STATBLOCK_KEY_LABELS: Record<StatBlockActionKey, string> = {
+    actions: "Actions",
+    legendary_actions: "Legendary Actions", 
+    bonus_actions: "Bonus Actions",
+    reactions: "Reactions"
 };

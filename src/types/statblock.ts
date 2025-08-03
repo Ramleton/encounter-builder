@@ -164,8 +164,32 @@ export interface StatBlock {
 	last_modified: string;
 }
 
+
 export type ActionKeys<T> = {
-	[K in keyof T]: T[K] extends Action[] ? K : never;
+    [K in keyof T]: K extends 'spells'
+        ? never
+        : T[K] extends Action[] | Trait[]
+            ? K
+            : never;
 }[keyof T];
 
-export type StatBlockArrayKey = ActionKeys<StatBlock>;
+export type ActionOnlyKeys<T> = {
+    [K in keyof T]: K extends 'spells'  | 'traits'
+        ? never 
+        : T[K] extends Action[] 
+            ? K 
+            : never;
+}[keyof T];
+
+export type TraitKeys<T> = {
+    [K in keyof T]: T[K] extends Trait[] ? K : never;
+}[keyof T];
+
+export type StatBlockActionKey = 'actions' | 'legendary_actions' | 'bonus_actions' | 'reactions';
+
+export const ACTION_KEY_LABELS: Record<StatBlockActionKey, string> = {
+    actions: "Action",
+    legendary_actions: "Legendary Action", 
+    bonus_actions: "Bonus Action",
+    reactions: "Reaction"
+};
