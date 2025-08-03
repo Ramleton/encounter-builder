@@ -27,6 +27,7 @@ function StatBlockForm({ statBlock, setStatBlock }: StatBlockFormProps) {
 			border: '1px solid',
 			borderColor: theme.palette.secondary.main,
 			padding: '1rem 2rem',
+			mb: '1rem'
 		}}>
 			<Box sx={{ flexShrink: 0 }}>
 				<UpperStatBlockForm statBlock={statBlock} setStatBlock={setStatBlock} />
@@ -42,7 +43,7 @@ function StatBlockForm({ statBlock, setStatBlock }: StatBlockFormProps) {
 				width: '100%',
 				justifyContent: 'center',
 				alignItems: 'stretch',
-				height: '100%',
+				height: '75vh',
 				minHeight: 0,
 			}}>
 				<StatBlockFormAbilitySection statBlock={statBlock} setStatBlock={setStatBlock} />

@@ -120,6 +120,20 @@ export const CR_VALUES = [
 
 export type CR = typeof CR_VALUES[number];
 
+
+export enum SpellcastingAbility {
+	Intelligence = "Intelligence",
+	Wisdom = "Wisdom",
+	Charisma = "Charisma",
+}
+
+export interface Spells {
+	ability: SpellcastingAbility;
+	save_dc?: number;
+	attack_bonus?: number;
+	spells: Record<string, string>;
+}
+
 export interface StatBlock {
 	name: string;
 	size: Size;
@@ -141,6 +155,7 @@ export interface StatBlock {
 	condition_immunities: ConditionType[];
 	cr: CR;
 	traits: Trait[];
+	spells: Spells;
 	actions: Action[];
 	legendary_actions: Action[];
 	legendary_description: string;

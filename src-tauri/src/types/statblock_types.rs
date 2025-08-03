@@ -1,6 +1,8 @@
 use serde::{Deserialize, Serialize};
 use typeshare::typeshare;
 
+use crate::types;
+
 #[derive(Serialize, Deserialize, Debug)]
 #[typeshare]
 #[serde(rename_all = "PascalCase")]
@@ -100,6 +102,31 @@ pub enum Ability {
 
 #[derive(Serialize, Deserialize, Debug)]
 #[typeshare]
+pub enum ProficiencyLevel {
+    #[serde(rename = "none")]
+    None,
+    #[serde(rename = "proficient")]
+    Proficient,
+    #[serde(rename = "expertise")]
+    Expertise,
+}
+
+#[derive(Serialize, Deserialize, Debug)]
+#[typeshare]
+pub struct SkillProficiency {
+    pub ability: Ability,
+    pub level: ProficiencyLevel,
+}
+
+#[derive(Serialize, Deserialize, Debug)]
+#[typeshare]
+pub struct SaveProficiency {
+    pub score: Score,
+    pub level: ProficiencyLevel,
+}
+
+#[derive(Serialize, Deserialize, Debug)]
+#[typeshare]
 pub struct Action {
     name: String,
     description: String,
@@ -121,6 +148,25 @@ pub struct Stats {
     intelligence: u32,
     wisdom: u32,
     charisma: u32,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[typeshare]
+pub enum SpellcastingAbility {
+    Intelligence,
+    Wisdom,
+    Charisma,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[typeshare]
+pub struct Spells {
+    pub ability: SpellcastingAbility,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub save_dc: Option<u8>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub attack_bonus: Option<i8>,
+    pub spells: std::collections::HashMap<String, String>,
 }
 
 #[derive(Serialize, Deserialize, Debug)]
@@ -146,6 +192,7 @@ pub struct StatBlock {
     pub condition_immunities: Vec<ConditionType>,
     pub cr: String,
     pub traits: Vec<Trait>,
+    pub spells: Spells,
     pub actions: Vec<Action>,
     pub legendary_actions: Vec<Action>,
     pub legendary_description: String,
