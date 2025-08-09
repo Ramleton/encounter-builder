@@ -94,6 +94,57 @@ function UpperStatBlockForm() {
 						}
 					</Select>
 				</FormControl>
+				<FormControl fullWidth sx={{ flex: 1 }}>
+					<InputLabel id="initiative-select-label" sx={{ color: 'secondary.main' }}>Initiative</InputLabel>
+					<Select
+						required
+						labelId="initiative-select-label"
+						id="initiative-select"
+						value={statBlock.initiative}
+						label="Initiative"
+						onChange={(e) => updateField("initiative", e.target.value, setStatBlock)}
+					>
+						<MenuItem value="none">
+							<Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+								<Box
+									sx={{
+										width: 8,
+										height: 8,
+										borderRadius: '50%',
+										backgroundColor: 'grey.400',
+									}}
+								/>
+								None
+							</Box>
+						</MenuItem>
+						<MenuItem value="proficient">
+							<Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+								<Box
+									sx={{
+										width: 8,
+										height: 8,
+										borderRadius: '50%',
+										backgroundColor: 'success.main',
+									}}
+								/>
+								Proficient
+							</Box>
+						</MenuItem>
+						<MenuItem value="expertise">
+							<Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+								<Box
+									sx={{
+										width: 8,
+										height: 8,
+										borderRadius: '50%',
+										backgroundColor: 'warning.main',
+									}}
+								/>
+								Expertise
+							</Box>
+						</MenuItem>
+					</Select>
+				</FormControl>
 			</Box>
 			<Box sx={{
 				display: 'flex',

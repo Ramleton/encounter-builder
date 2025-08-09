@@ -10,6 +10,7 @@ export const generateEmptyStatBlock = (): StatBlock => {
 		alignment: Alignment.LawfulGood,
 		ac: 0,
 		hp: 0,
+		initiative: "none",
 		hit_dice: "",
 		speed: "",
 		stats: {

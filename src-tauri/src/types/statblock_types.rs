@@ -1,8 +1,6 @@
 use serde::{Deserialize, Serialize};
 use typeshare::typeshare;
 
-use crate::types;
-
 #[derive(Serialize, Deserialize, Debug)]
 #[typeshare]
 #[serde(rename_all = "PascalCase")]
@@ -179,6 +177,7 @@ pub struct StatBlock {
     pub alignment: Alignment,
     pub ac: u32,
     pub hp: u32,
+    pub initiative: ProficiencyLevel,
     pub hit_dice: String,
     pub speed: String,
     pub stats: Stats,

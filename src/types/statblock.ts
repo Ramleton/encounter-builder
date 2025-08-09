@@ -142,6 +142,7 @@ export interface StatBlock {
 	alignment: Alignment;
 	ac: number;
 	hp: number;
+	initiative: ProficiencyLevel;
 	hit_dice: string;
 	speed: string;
 	stats: Stats;
