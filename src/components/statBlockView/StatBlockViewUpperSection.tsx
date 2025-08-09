@@ -2,17 +2,16 @@ import { Box, Divider, Typography } from "@mui/material";
 import { useStatBlock } from "../../context/StatBlockContext";
 import { getModifier, getProficiencyBonus, modifierToString } from "../../utils/abilityUtils";
 
-function StatBlockViewTopSection() {
+function StatBlockViewUpperSection() {
 	const { statBlock } = useStatBlock();
 
 	const creatureSizeTypeAlignmentText = `
 		${statBlock.size}
-		${statBlock.type_},
+		${statBlock.type_ ? statBlock.type_ : "[Type]"},
 		${statBlock.alignment.toString().replace(/([a-z])([A-Z])/g, `$1 $2`)}
 	`
 
 	const creatureInitiative = () => {
-		console.log(getProficiencyBonus(statBlock));
 		const multiplier = ["none", "proficient", "expertise"].findIndex(
 			value => value === statBlock.initiative.toString()
 		);
@@ -58,4 +57,4 @@ function StatBlockViewTopSection() {
 	)
 }
 
-export default StatBlockViewTopSection;
+export default StatBlockViewUpperSection;

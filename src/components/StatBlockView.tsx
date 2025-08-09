@@ -1,6 +1,7 @@
 import { Box, Divider } from "@mui/material";
+import StatBlockViewLowerSection from "./statBlockView/StatBlockViewLowerSection";
 import StatBlockViewStatSection from "./statBlockView/StatBlockViewStatSection";
-import StatBlockViewTopSection from "./statBlockView/StatBlockViewTopSection";
+import StatBlockViewUpperSection from "./statBlockView/StatBlockViewUpperSection";
 
 function StatBlockView() {
 	return (
@@ -82,10 +83,11 @@ function StatBlockView() {
                 }
 			}}
 		>
-			<StatBlockViewTopSection />
+			<StatBlockViewUpperSection />
 			<Divider sx={{ borderBottomWidth: 4 }} />
 			<StatBlockViewStatSection />
 			<Divider sx={{ borderBottomWidth: 4 }} />
+            <StatBlockViewLowerSection />
 		</Box>
 	)
 }
