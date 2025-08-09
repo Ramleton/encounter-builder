@@ -1,14 +1,16 @@
-import { Box, Divider } from "@mui/material";
+import { Box, Divider, useTheme } from "@mui/material";
 import StatBlockViewLowerSection from "./statBlockView/StatBlockViewLowerSection";
 import StatBlockViewStatSection from "./statBlockView/StatBlockViewStatSection";
 import StatBlockViewUpperSection from "./statBlockView/StatBlockViewUpperSection";
 
 function StatBlockView() {
+    const theme = useTheme();
+
 	return (
 		<Box
 			sx={{
 				flex: 1,
-                backgroundColor: '#3a3528',
+                backgroundColor: theme.palette.background.default,
                 backgroundImage: `
                     url(
 						"data:image/svg+xml,%3Csvg
@@ -46,11 +48,11 @@ function StatBlockView() {
                     0 4px 12px rgba(0, 0, 0, 0.6),
                     0 0 0 1px rgba(80, 70, 50, 0.3)
                 `,
-                border: '1px solid #4a4235',
+                border: '1px solid ' + theme.palette.secondary.main,
                 padding: 3,
 				mb: '1rem',
                 borderRadius: 1,
-                color: '#d4c5a0',
+                color: theme.palette.primary.main,
                 position: 'relative',
                 
                 // Subtle edge highlighting for contrast against dark background

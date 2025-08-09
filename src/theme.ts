@@ -18,3 +18,19 @@ export const darkTheme = createTheme({
 		fontFamily: "Consolas, monospace"
 	}
 });
+
+export const statBlockViewTheme = createTheme({
+	palette: {
+		mode: "dark",
+		background: {
+			default: "#3a3528",
+		},
+		primary: {
+			main: "#d4c5a0",
+			contrastText: "#a59a7eff"
+		},
+		secondary: {
+			main: "#4a4235"
+		}
+	}
+});

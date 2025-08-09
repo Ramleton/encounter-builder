@@ -1,4 +1,4 @@
-import { Box, Typography } from "@mui/material";
+import { Box, Typography, useTheme } from "@mui/material";
 import { useStatBlock } from "../../context/StatBlockContext";
 import { ConditionType, DamageType, SkillProficiency, Stats } from "../../types/statBlock";
 import { abilityToScore, getModifier, getProficiencyBonus, modifierToString } from "../../utils/abilityUtils";
@@ -9,10 +9,12 @@ interface DamageTypeSectionProps {
 }
 
 function TypeSection({ label, damageTypes }: DamageTypeSectionProps) {
+	const theme = useTheme();
+
 	return (
 		<Typography variant="body1" sx={{ display: 'flex', flexDirection: 'row', whiteSpace: 'pre', alignItems: "baseline" }}>
 			{`${label} `}
-			<Typography variant="body2" sx={{ color: '#a59a7eff' }}>
+			<Typography variant="body2" sx={{ color: theme.palette.primary.contrastText }}>
 				{damageTypes.map((type, i) => i !== damageTypes.length - 1
 					? `${type}, `
 					: `${type}`
@@ -24,6 +26,7 @@ function TypeSection({ label, damageTypes }: DamageTypeSectionProps) {
 
 function StatBlockViewLowerSection() {
 	const { statBlock } = useStatBlock();
+	const theme = useTheme();
 
 	const calcSkillSave = (skill: SkillProficiency) => {
 		const score = abilityToScore(skill.ability);
@@ -45,7 +48,7 @@ function StatBlockViewLowerSection() {
 		}}>
 			<Typography variant="body1" sx={{ display: 'flex', flexDirection: 'row', whiteSpace: 'pre', alignItems: "baseline" }}>
 				Skills{" "}
-				<Typography variant="body2" sx={{ color: '#a59a7eff', whiteSpace: "collapse" }}>{
+				<Typography variant="body2" sx={{ color: theme.palette.primary.contrastText, whiteSpace: "collapse" }}>{
 				upgradedSkillSaves
 					.map((skill, i) => `${skill.ability.replace(/([a-z])([A-Z])/g, `$1 $2`)} ${calcSkillSave(skill)}${i !== upgradedSkillSaves.length - 1 ? ', ' : ''}`)
 				}
@@ -63,18 +66,24 @@ function StatBlockViewLowerSection() {
 				label={"Vulnerabilities"}
 				damageTypes={statBlock.damage_vulnerabilities}
 			/>}
-			<Typography variant="body1" sx={{ display: 'flex', flexDirection: 'row', alignItems: "baseline", whiteSpace: 'pre' }}>
-				Senses{" "}
-				<Typography variant="body2" sx={{ color: '#a59a7eff', whiteSpace: "collapse"}}>
-					{statBlock.senses}
+			{
+				statBlock.senses && 
+				<Typography variant="body1" sx={{ display: 'flex', flexDirection: 'row', alignItems: "baseline", whiteSpace: 'pre' }}>
+					Senses{" "}
+					<Typography variant="body2" sx={{ color: theme.palette.primary.contrastText, whiteSpace: "collapse"}}>
+						{statBlock.senses}
+					</Typography>
 				</Typography>
-			</Typography>
-			<Typography variant="body1" sx={{ display: 'flex', flexDirection: 'row', alignItems: "baseline", whiteSpace: 'pre' }}>
-				Languages{" "}
-				<Typography variant="body2" sx={{ color: '#a59a7eff', whiteSpace: "collapse"}}>
-					{statBlock.languages}
+			}
+			{
+				statBlock.languages &&
+				<Typography variant="body1" sx={{ display: 'flex', flexDirection: 'row', alignItems: "baseline", whiteSpace: 'pre' }}>
+					Languages{" "}
+					<Typography variant="body2" sx={{ color: theme.palette.primary.contrastText, whiteSpace: "collapse"}}>
+						{statBlock.languages}
+					</Typography>
 				</Typography>
-			</Typography>
+			}
 		</Box>
 	)
 }
