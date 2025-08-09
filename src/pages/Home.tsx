@@ -1,13 +1,10 @@
 import { Box, Button, Divider, List, ListItem, Stack, Typography } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import EncounterCard from "../components/EncounterCard";
-import StatBlockCard from "../components/StatblockCard";
 import { useEncounters } from "../context/EncounterContext";
-import { useStatBlocks } from "../context/StatBlockContext";
 
 function Home() {
 	const { encounters } = useEncounters();
-	const { statBlocks } = useStatBlocks();
 	const navigate = useNavigate();
 
 	return (
@@ -77,7 +74,7 @@ function Home() {
 				}}>
 					<Typography variant="h6" textAlign="center">Recent Statblocks</Typography>
 					<List>
-						{statBlocks
+						{/* {statBlocks
 							.sort((a, b) => {
 								const dateA = new Date(a.last_modified);
 								const dateB = new Date(b.last_modified);
@@ -85,7 +82,7 @@ function Home() {
 							})
 							.map(statBlock => (
 							<ListItem key={statBlock.name}><StatBlockCard statblock={statBlock} /></ListItem>
-						))}
+						))} */}
 					</List>
 				</Box>
 			</Stack>

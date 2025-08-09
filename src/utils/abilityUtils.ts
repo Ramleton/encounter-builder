@@ -2,7 +2,9 @@ import { Ability, Score, StatBlock } from "../types/statBlock";
 
 
 export function modifierToString(modifier: number): string {
-	return (modifier > 0 ? "+" : "") + modifier;
+	if (modifier > 0) return "+" + modifier;
+	if (modifier < 0) return "" + modifier;
+	return " " + modifier;
 }
 
 export function getModifier(score: number): number {

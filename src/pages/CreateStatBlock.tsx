@@ -1,27 +1,9 @@
 import { Box } from "@mui/material";
-import { useState } from "react";
 import StatBlockForm from "../components/StatBlockForm";
+import StatBlockView from "../components/StatBlockView";
 import { StatBlockProvider } from "../context/StatBlockContext";
-import { StatBlock } from "../types/statBlock";
-import { generateEmptyStatBlock } from "../utils/statBlockUtils";
-
-interface StatBlockPreviewProps {
-	statBlock: StatBlock;
-}
-
-function StatBlockPreview({ statBlock }: StatBlockPreviewProps) {
-	return (
-		<Box
-			sx={{
-				flex: 1
-			}}
-		>
-		</Box>
-	)
-}
 
 function CreateStatBlock() {
-	const [statBlock, setStatBlock] = useState<StatBlock>(generateEmptyStatBlock());	
 
 	return (
 		<Box sx={{
@@ -33,7 +15,7 @@ function CreateStatBlock() {
 		}}>
 			<StatBlockProvider>
 				<StatBlockForm />
-				<StatBlockPreview statBlock={statBlock} />
+				<StatBlockView />
 			</StatBlockProvider>
 		</Box>
 	)
