@@ -44,7 +44,7 @@ function StatBlockViewStatSection() {
 				return acc;
 			}, []).map(score => 
 				<Box sx={{ display: 'grid', gridTemplateRows: 'repeat(2, 1fr)' }}>
-					<Box sx={{ display: 'flex', flexDirection: 'row', gap: 2 }}>
+					<Box sx={{ display: 'flex', flexDirection: 'row' }}>
 						<Box sx={{ flex: 1 }}></Box>
 						<Typography textAlign="center" sx={{ flex: 1 }}>Mod</Typography>
 						<Typography textAlign="center" sx={{ flex: 1 }}>Save</Typography>
