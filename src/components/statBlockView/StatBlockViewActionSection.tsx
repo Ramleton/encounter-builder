@@ -42,20 +42,25 @@ function StatBlockViewActionSection({ label, actions, children }: StatBlockViewA
 		<Box sx={{
 			display: 'flex',
 			flexDirection: 'column',
-			gap: '0.25rem'
 		}}>
 			<Typography variant="h5">{label}</Typography>
 			<Divider sx={{ borderBottomWidth: 2, mb: 1 }} />
-			{label === "Legendary Actions" && (
-				<Typography
-					sx={{
-						mb: '0.25rem',
-						color: theme.palette.primary.contrastText,
-					}}
-				>{statBlock.legendary_description}</Typography>
-			)}
-			{actions.map(action => <ActionSection action={action} />)}
-			{children}
+			<Box sx={{
+				display: 'inherit',
+				flexDirection: 'inherit',
+				gap: '0.25rem'
+			}}>
+				{label === "Legendary Actions" && (
+					<Typography
+						sx={{
+							mb: '0.25rem',
+							color: theme.palette.primary.contrastText,
+						}}
+					>{statBlock.legendary_description}</Typography>
+				)}
+				{actions.map(action => <ActionSection action={action} />)}
+				{children}
+			</Box>
 		</Box>
 	)
 }
