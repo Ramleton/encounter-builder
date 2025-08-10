@@ -3,6 +3,7 @@ import { Box, Button, ButtonGroup, Divider, TextField, Typography, useTheme } fr
 import { Dispatch, SetStateAction, useState } from "react";
 import { useStatBlock } from "../../context/StatBlockContext";
 import { Action, ACTION_KEY_LABELS, StatBlockActionKey } from "../../types/statBlock";
+import { updateField } from "../../utils/statBlockUtils";
 import StatBlockFormActionCard from "./StatBlockFormActionCard";
 
 const handleUpdateAction = (
@@ -95,6 +96,7 @@ function StatBlockFormActionSection({
 					multiline
 					variant="outlined"
 					label={`${label} Description`}
+					onChange={(e) => updateField("legendary_description", e.target.value, setStatBlock)}
 				/>
 			}
 			{editing && (

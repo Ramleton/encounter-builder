@@ -35,14 +35,21 @@ function StatBlockViewUpperSection() {
 					<Divider sx={{ borderBottomWidth: 4, mb: '0.5rem' }} />
 				</>
 			)}
-			<Typography variant="body1">{creatureSizeTypeAlignmentText}</Typography>
+			<Box sx={{
+				display: 'flex',
+				flexDirection: 'row',
+				justifyContent: 'space-between'
+			}}>
+				<Typography variant="body1">{creatureSizeTypeAlignmentText}</Typography>
+				<Typography variant="body1">CR {statBlock.cr}</Typography>
+			</Box>
 			<Box sx={{
 				display: 'flex',
 				flexDirection: 'row',
 				justifyContent: 'space-between'
 			}}>
 				<Typography variant="body1">AC {statBlock.ac}</Typography>
-				<Typography variant="body1">CR {statBlock.cr}</Typography>
+				<Typography variant="body1">PB {modifierToString(getProficiencyBonus(statBlock))}</Typography>
 			</Box>
 			<Box sx={{
 				display: 'flex',

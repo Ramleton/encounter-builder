@@ -1,5 +1,6 @@
 import { Box, Divider, Typography, useTheme } from "@mui/material";
 import { ReactNode } from "react";
+import { useStatBlock } from "../../context/StatBlockContext";
 import { Action } from "../../types/statBlock";
 
 interface StatBlockViewActionSectionProps {
@@ -34,6 +35,9 @@ function ActionSection({ action }: ActionSectionProps) {
 }
 
 function StatBlockViewActionSection({ label, actions, children }: StatBlockViewActionSectionProps) {
+	const { statBlock } = useStatBlock();
+	const theme = useTheme();
+
 	return (
 		<Box sx={{
 			display: 'flex',
@@ -42,6 +46,14 @@ function StatBlockViewActionSection({ label, actions, children }: StatBlockViewA
 		}}>
 			<Typography variant="h5">{label}</Typography>
 			<Divider sx={{ borderBottomWidth: 2, mb: 1 }} />
+			{label === "Legendary Actions" && (
+				<Typography
+					sx={{
+						mb: '0.25rem',
+						color: theme.palette.primary.contrastText,
+					}}
+				>{statBlock.legendary_description}</Typography>
+			)}
 			{actions.map(action => <ActionSection action={action} />)}
 			{children}
 		</Box>

@@ -16,6 +16,7 @@ function StatBlockView() {
 		<Box
 			sx={{
 				flex: 1,
+                maxHeight: 'fit-content',
                 backgroundColor: theme.palette.background.default,
                 backgroundImage: `
                     url(
