@@ -56,7 +56,10 @@ function StatBlockViewUpperSection() {
 				flexDirection: 'row',
 				justifyContent: 'space-between'
 			}}>
-				<Typography variant="body1">HP {statBlock.hp}</Typography>
+				<Typography variant="body1">
+					HP {statBlock.hp + " "}
+					<Typography component="span" variant="body1">{statBlock.hit_dice}</Typography>
+				</Typography>
 				{statBlock.initiative && <Typography variant="body1">Initiative {creatureInitiative()}</Typography>}
 			</Box>
 			{statBlock.speed && <Typography variant="body1">Speed {statBlock.speed}</Typography>}

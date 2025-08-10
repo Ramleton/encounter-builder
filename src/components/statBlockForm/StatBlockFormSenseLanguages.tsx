@@ -12,6 +12,7 @@ function StatBlockFormSenseLanguages() {
 				justifyContent: 'start',
 				width: '100%',
 				gap: '0.5rem',
+				paddingTop: '1rem',
 				paddingBottom: '1rem',
 				paddingLeft: '1rem'
 			}}

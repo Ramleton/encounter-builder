@@ -167,6 +167,16 @@ function UpperStatBlockForm() {
 				<TextField
 					required
 					id="standard-required"
+					label="Hit Dice"
+					type="text"
+					value={statBlock.hit_dice}
+					onChange={(e) => updateField("hit_dice", e.target.value, setStatBlock)}
+					variant="standard"
+					sx={{ flex: 1 }}
+				/>
+				<TextField
+					required
+					id="standard-required"
 					label="Armor Class"
 					type="text"
 					value={typeof statBlock.ac === 'number' ? statBlock.ac : ""}
