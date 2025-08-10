@@ -1,10 +1,15 @@
 import { Box, Divider, useTheme } from "@mui/material";
+import { useStatBlock } from "../context/StatBlockContext";
+import StatBlockViewActionSection from "./statBlockView/StatBlockViewActionSection";
 import StatBlockViewLowerSection from "./statBlockView/StatBlockViewLowerSection";
+import StatBlockViewSpellcastingSection from "./statBlockView/StatBlockViewSpellcastingSection";
 import StatBlockViewStatSection from "./statBlockView/StatBlockViewStatSection";
 import StatBlockViewTraitSection from "./statBlockView/StatBlockViewTraitSection";
 import StatBlockViewUpperSection from "./statBlockView/StatBlockViewUpperSection";
 
 function StatBlockView() {
+    const { statBlock } = useStatBlock();
+
     const theme = useTheme();
 
 	return (
@@ -92,6 +97,12 @@ function StatBlockView() {
 			<Divider sx={{ borderBottomWidth: 4 }} />
             <StatBlockViewLowerSection />
             <StatBlockViewTraitSection />
+            <StatBlockViewActionSection label="Actions" actions={statBlock.actions}>
+                {statBlock.spells && <StatBlockViewSpellcastingSection />}
+            </StatBlockViewActionSection>
+            {statBlock.bonus_actions.length !== 0 && <StatBlockViewActionSection label="Bonus Actions" actions={statBlock.bonus_actions} />}
+            {statBlock.reactions.length !== 0 && <StatBlockViewActionSection label="Reactions" actions={statBlock.reactions} />}
+            {statBlock.legendary_actions.length !== 0 && <StatBlockViewActionSection label="Legendary Actions" actions={statBlock.legendary_actions} />}
 		</Box>
 	)
 }

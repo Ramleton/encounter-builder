@@ -10,19 +10,20 @@ function TraitSection({ trait }: TraitSectionProps) {
 	const theme = useTheme();
 
 	return (
-		<Box sx={{
-			display: 'flex',
-			flexDirection: 'row',
-			alignItems: "baseline",
-			gap: 0.5
-		}}>
-			<Typography variant="body1" sx={{
-				fontStyle: 'italic'
-			}}>{trait.name}.</Typography>
-			<Typography variant="body2" sx={{ color: theme.palette.primary.contrastText }}>
+		<Typography variant="body1" sx={{
+			fontStyle: 'oblique',
+		}}>{trait.name}.{" "}
+			<Typography
+				variant="body2"
+				component="span"
+				sx={{
+					color: theme.palette.primary.contrastText,
+					fontStyle: 'normal'
+				}}
+			>
 				{trait.description}
 			</Typography>
-		</Box>
+		</Typography>
 	)
 }
 

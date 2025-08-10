@@ -46,14 +46,16 @@ function StatBlockViewLowerSection() {
 			flexDirection: 'column',
 			margin: '0.5rem 0'
 		}}>
-			<Typography variant="body1" sx={{ display: 'flex', flexDirection: 'row', whiteSpace: 'pre', alignItems: "baseline" }}>
-				Skills{" "}
-				<Typography variant="body2" sx={{ color: theme.palette.primary.contrastText, whiteSpace: "collapse" }}>{
-				upgradedSkillSaves
-					.map((skill, i) => `${skill.ability.replace(/([a-z])([A-Z])/g, `$1 $2`)} ${calcSkillSave(skill)}${i !== upgradedSkillSaves.length - 1 ? ', ' : ''}`)
-				}
+			{statBlock.skill_saves.length !== 0 &&
+				<Typography variant="body1" sx={{ display: 'flex', flexDirection: 'row', whiteSpace: 'pre', alignItems: "baseline" }}>
+					Skills{" "}
+					<Typography variant="body2" sx={{ color: theme.palette.primary.contrastText, whiteSpace: "collapse" }}>{
+					upgradedSkillSaves
+						.map((skill, i) => `${skill.ability.replace(/([a-z])([A-Z])/g, `$1 $2`)} ${calcSkillSave(skill)}${i !== upgradedSkillSaves.length - 1 ? ', ' : ''}`)
+					}
+					</Typography>
 				</Typography>
-			</Typography>
+			}
 			{statBlock.damage_resistances.length !== 0 && <TypeSection
 				label={"Resistances"}
 				damageTypes={statBlock.damage_resistances}
