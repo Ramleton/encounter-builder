@@ -97,13 +97,13 @@ function StatBlockView() {
 			<StatBlockViewStatSection />
 			<Divider sx={{ borderBottomWidth: 4 }} />
             <StatBlockViewLowerSection />
-            <StatBlockViewTraitSection />
+            {!statBlock.traits && <StatBlockViewTraitSection />}
             <StatBlockViewActionSection label="Actions" actions={statBlock.actions}>
                 {statBlock.spells && <StatBlockViewSpellcastingSection />}
             </StatBlockViewActionSection>
-            {statBlock.bonus_actions.length !== 0 && <StatBlockViewActionSection label="Bonus Actions" actions={statBlock.bonus_actions} />}
-            {statBlock.reactions.length !== 0 && <StatBlockViewActionSection label="Reactions" actions={statBlock.reactions} />}
-            {statBlock.legendary_actions.length !== 0 && <StatBlockViewActionSection label="Legendary Actions" actions={statBlock.legendary_actions} />}
+            {!statBlock.bonus_actions && <StatBlockViewActionSection label="Bonus Actions" actions={statBlock.bonus_actions} />}
+            {!statBlock.reactions && <StatBlockViewActionSection label="Reactions" actions={statBlock.reactions} />}
+            {!statBlock.legendary_actions && <StatBlockViewActionSection label="Legendary Actions" actions={statBlock.legendary_actions} />}
 		</Box>
 	)
 }
