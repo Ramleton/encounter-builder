@@ -1,10 +1,23 @@
-import { Box, FormControl, InputLabel, MenuItem, Select, TextField } from "@mui/material";
+import { Save } from "@mui/icons-material";
+import { Box, Button, FormControl, InputLabel, MenuItem, Select, TextField } from "@mui/material";
 import { useStatBlock } from "../../context/StatBlockContext";
 import { Alignment, CR_VALUES, Size } from "../../types/statBlock";
 import { updateField, updateIntegerField } from "../../utils/statBlockUtils";
 
 function UpperStatBlockForm() {
 	const { statBlock, setStatBlock } = useStatBlock();
+
+	const handleSave = () => {
+		if (!statBlock.name) return;
+		if (!statBlock.type_) return;
+		if (!statBlock.hit_dice) return;
+		if (!statBlock.speed) return;
+		if (!statBlock.languages) return;
+		if (!statBlock.senses) return;
+		if (!statBlock.hp) return;
+
+		// Handle save
+	}
 
 	return (
 		<>
@@ -28,6 +41,16 @@ function UpperStatBlockForm() {
 					sx={{ flex: 2 }}
 					variant="standard"
 				/>
+				<TextField
+					required
+					id="standard-required"
+					label="Type"
+					type="text"
+					value={statBlock.type_}
+					onChange={(e) => updateField("type_", e.target.value, setStatBlock)}
+					variant="standard"
+					sx={{ flex: 1 }}
+				/>
 				<FormControl variant="standard" sx={{ flex: 1 }}>
 					<InputLabel id="size-select-label" sx={{ color: 'secondary.main' }}>Size</InputLabel>
 					<Select
@@ -42,6 +65,13 @@ function UpperStatBlockForm() {
 						}
 					</Select>
 				</FormControl>
+				<Button
+					variant="contained"
+					endIcon={<Save />}
+					onClick={handleSave}
+				>
+					Save
+				</Button>
 			</Box>
 			<Box sx={{
 				display: 'flex',
@@ -55,10 +85,10 @@ function UpperStatBlockForm() {
 				<TextField
 					required
 					id="standard-required"
-					label="Type"
+					label="Subtype"
 					type="text"
-					value={statBlock.type_}
-					onChange={(e) => updateField("type_", e.target.value, setStatBlock)}
+					value={statBlock.subtype}
+					onChange={(e) => updateField("subtype", e.target.value, setStatBlock)}
 					variant="standard"
 					sx={{ flex: 1 }}
 				/>

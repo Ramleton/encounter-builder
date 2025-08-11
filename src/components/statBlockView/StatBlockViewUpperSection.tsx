@@ -7,7 +7,11 @@ function StatBlockViewUpperSection() {
 
 	const creatureSizeTypeAlignmentText = `
 		${statBlock.size}
-		${statBlock.type_ ? statBlock.type_ : "[Type]"},
+		${statBlock.type_
+			? statBlock.subtype
+				? `${statBlock.type_} (${statBlock.subtype})`
+				: statBlock.type_
+			: "[Type]"},
 		${statBlock.alignment.toString().replace(/([a-z])([A-Z])/g, `$1 $2`)}
 	`
 
