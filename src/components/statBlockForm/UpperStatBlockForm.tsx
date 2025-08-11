@@ -9,28 +9,17 @@ function UpperStatBlockForm() {
 
 	const handleSave = () => {
 		// Input Validation
+		const newErrors: Record<string, string> = {};
 		setErrors({});
-		if (!statBlock.name) setErrors(prev => ({
-			...prev,
-			"name": "Name field must be filled out."
-		}));
-		if (!statBlock.type_) setErrors(prev => ({
-			...prev,
-			"type": "Type field must be filled out."
-		}));
-		if (!statBlock.hit_dice) setErrors(prev => ({
-			...prev,
-			"hit_dice": "Hit Dice field must be filled out."
-		}));
-		if (!statBlock.speed) setErrors(prev => ({
-			...prev,
-			"speed": "Speed field must be filled out."
-		}));
-		if (!statBlock.hp) setErrors(prev => ({
-			...prev,
-			"hp": "HP cannot be 0."
-		}));
-		if (errors) return;
+		if (!statBlock.name) newErrors["name"] = "Name field must be filled out.";
+		if (!statBlock.type_) newErrors["type"] = "Type field must be filled out.";
+		if (!statBlock.hit_dice) newErrors["hit_dice"] = "Hit Dice field must be filled out.";
+		if (!statBlock.speed) newErrors["speed"] = "Speed field must be filled out.";
+		if (!statBlock.hp) newErrors["hp"] = "HP cannot be 0.";
+		
+		setErrors(newErrors);
+
+		if (Object.keys(newErrors)) return;
 
 		// Handle save
 		console.log('Valid statblock');
