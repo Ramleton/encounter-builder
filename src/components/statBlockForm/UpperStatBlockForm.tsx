@@ -10,7 +10,7 @@ function UpperStatBlockForm() {
 	const handleSave = () => {
 		// Input Validation
 		const newErrors: Record<string, string> = {};
-		setErrors({});
+
 		if (!statBlock.name) newErrors["name"] = "Name field must be filled out.";
 		if (!statBlock.type_) newErrors["type"] = "Type field must be filled out.";
 		if (!statBlock.hit_dice) newErrors["hit_dice"] = "Hit Dice field must be filled out.";
@@ -23,7 +23,7 @@ function UpperStatBlockForm() {
 
 		// Handle save
 		console.log('Valid statblock');
-	}
+	};
 
 	return (
 		<>
