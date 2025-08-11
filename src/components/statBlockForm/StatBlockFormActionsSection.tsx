@@ -1,7 +1,7 @@
 import { Add } from "@mui/icons-material";
 import { Box, Button, ButtonGroup, Divider, TextField, Typography, useTheme } from "@mui/material";
 import { Dispatch, SetStateAction, useState } from "react";
-import { useStatBlock } from "../../context/StatBlockContext";
+import { useCreateStatBlock } from "../../context/CreateStatBlockContext";
 import { Action, ACTION_KEY_LABELS, StatBlockActionKey } from "../../types/statBlock";
 import { updateField } from "../../utils/statBlockUtils";
 import StatBlockFormActionCard from "./StatBlockFormActionCard";
@@ -29,7 +29,7 @@ function StatBlockFormActionSection({
 	const label = ACTION_KEY_LABELS[statblockKey];
 	
 	const theme = useTheme();
-	const { statBlock, setStatBlock } = useStatBlock();
+	const { statBlock, setStatBlock } = useCreateStatBlock();
 
 	const handleCreatingAction = () => {
 		if (!editing) return;

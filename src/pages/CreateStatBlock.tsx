@@ -1,7 +1,7 @@
 import { Box, ThemeProvider } from "@mui/material";
 import StatBlockForm from "../components/StatBlockForm";
 import StatBlockView from "../components/StatBlockView";
-import { StatBlockProvider } from "../context/StatBlockContext";
+import { CreateStatBlockProvider } from "../context/CreateStatBlockContext";
 import { statBlockViewTheme } from "../theme";
 
 function CreateStatBlock() {
@@ -14,12 +14,12 @@ function CreateStatBlock() {
 			minHeight: '100%',
 			gap: '4rem'
 		}}>
-			<StatBlockProvider>
+			<CreateStatBlockProvider>
 				<StatBlockForm />
 				<ThemeProvider theme={statBlockViewTheme}>
 					<StatBlockView />
 				</ThemeProvider>
-			</StatBlockProvider>
+			</CreateStatBlockProvider>
 		</Box>
 	)
 }

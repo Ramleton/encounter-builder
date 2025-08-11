@@ -1,6 +1,6 @@
 import { Box, Divider, Typography, useTheme } from "@mui/material";
 import { ReactNode } from "react";
-import { useStatBlock } from "../../context/StatBlockContext";
+import { useCreateStatBlock } from "../../context/CreateStatBlockContext";
 import { Action } from "../../types/statBlock";
 
 interface StatBlockViewActionSectionProps {
@@ -35,7 +35,7 @@ function ActionSection({ action }: ActionSectionProps) {
 }
 
 function StatBlockViewActionSection({ label, actions, children }: StatBlockViewActionSectionProps) {
-	const { statBlock } = useStatBlock();
+	const { statBlock } = useCreateStatBlock();
 	const theme = useTheme();
 
 	return (

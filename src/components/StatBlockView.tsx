@@ -1,5 +1,5 @@
 import { Box, Divider, useTheme } from "@mui/material";
-import { useStatBlock } from "../context/StatBlockContext";
+import { useCreateStatBlock } from "../context/CreateStatBlockContext";
 import StatBlockViewActionSection from "./statBlockView/StatBlockViewActionSection";
 import StatBlockViewLowerSection from "./statBlockView/StatBlockViewLowerSection";
 import StatBlockViewSpellcastingSection from "./statBlockView/StatBlockViewSpellcastingSection";
@@ -8,7 +8,7 @@ import StatBlockViewTraitSection from "./statBlockView/StatBlockViewTraitSection
 import StatBlockViewUpperSection from "./statBlockView/StatBlockViewUpperSection";
 
 function StatBlockView() {
-    const { statBlock } = useStatBlock();
+    const { statBlock } = useCreateStatBlock();
 
     const theme = useTheme();
 

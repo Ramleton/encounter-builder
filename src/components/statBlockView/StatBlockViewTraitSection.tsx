@@ -1,5 +1,5 @@
 import { Box, Divider, Typography, useTheme } from "@mui/material";
-import { useStatBlock } from "../../context/StatBlockContext";
+import { useCreateStatBlock } from "../../context/CreateStatBlockContext";
 import { Trait } from "../../types/statBlock";
 
 interface TraitSectionProps {
@@ -28,7 +28,7 @@ function TraitSection({ trait }: TraitSectionProps) {
 }
 
 function StatBlockViewTraitSection() {
-	const { statBlock } = useStatBlock();
+	const { statBlock } = useCreateStatBlock();
 
 	return (
 		<Box sx={{

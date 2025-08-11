@@ -1,11 +1,11 @@
 import { Box, Button, FormControl, InputLabel, MenuItem, Select, TextField, Typography } from "@mui/material";
 import { useEffect, useState } from "react";
-import { useStatBlock } from "../../context/StatBlockContext";
+import { useCreateStatBlock } from "../../context/CreateStatBlockContext";
 import { SpellcastingAbility, Spells } from "../../types/statBlock";
 import { updateField } from "../../utils/statBlockUtils";
 
 function StatBlockFormSpellSection() {
-	const { statBlock, setStatBlock } = useStatBlock();
+	const { statBlock, setStatBlock } = useCreateStatBlock();
 	
 	const [localSpells, setLocalSpells] = useState<Spells | undefined>(statBlock.spells);
 	const [newSpellLevel, setNewSpellLevel] = useState<string>("");

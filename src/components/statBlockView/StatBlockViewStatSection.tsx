@@ -1,5 +1,5 @@
 import { Box, Typography } from "@mui/material";
-import { useStatBlock } from "../../context/StatBlockContext";
+import { useCreateStatBlock } from "../../context/CreateStatBlockContext";
 import { Score, Stats } from "../../types/statBlock";
 import { getModifier, getProficiencyBonus, modifierToString } from "../../utils/abilityUtils";
 
@@ -8,7 +8,7 @@ interface StatSectionProps {
 }
 
 function StatSection({ score }: StatSectionProps) {
-	const { statBlock } = useStatBlock();
+	const { statBlock } = useCreateStatBlock();
 
 	const calcSaveMod = (score: Score): string => {
 		if (statBlock.saves.filter(save => save.score == score)[0]?.level === "proficient") {
@@ -43,7 +43,7 @@ function StatBlockViewStatSection() {
 				if (i % 2 === 0) acc.push([arr[i], arr[i + 1]]);
 				return acc;
 			}, []).map(score => 
-				<Box sx={{ display: 'grid', gridTemplateRows: 'repeat(2, 1fr)' }}>
+				<Box key={score.toString()} sx={{ display: 'grid', gridTemplateRows: 'repeat(2, 1fr)' }}>
 					<Box sx={{ display: 'flex', flexDirection: 'row' }}>
 						<Box sx={{ flex: 1 }}></Box>
 						<Typography textAlign="center" sx={{ flex: 1 }}>Mod</Typography>

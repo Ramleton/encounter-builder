@@ -1,9 +1,9 @@
 import { Box, Divider, Typography } from "@mui/material";
-import { useStatBlock } from "../../context/StatBlockContext";
+import { useCreateStatBlock } from "../../context/CreateStatBlockContext";
 import { getModifier, getProficiencyBonus, modifierToString } from "../../utils/abilityUtils";
 
 function StatBlockViewUpperSection() {
-	const { statBlock } = useStatBlock();
+	const { statBlock } = useCreateStatBlock();
 
 	const creatureSizeTypeAlignmentText = `
 		${statBlock.size}

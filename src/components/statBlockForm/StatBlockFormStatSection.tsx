@@ -1,11 +1,11 @@
 import { Box, Checkbox, FormControl, FormControlLabel, TextField, Typography } from "@mui/material";
-import { useStatBlock } from "../../context/StatBlockContext";
+import { useCreateStatBlock } from "../../context/CreateStatBlockContext";
 import { Score, Stats } from "../../types/statBlock";
 import { getModifier, getProficiencyBonus, modifierToString } from "../../utils/abilityUtils";
 import { updateField, updateStatField } from "../../utils/statBlockUtils";
 
 function StatBlockFormStatSection() {
-	const { statBlock, setStatBlock } = useStatBlock();
+	const { statBlock, setStatBlock } = useCreateStatBlock();
 
 	return (
 		<>

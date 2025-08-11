@@ -1,10 +1,10 @@
 import { Box, FormControl, MenuItem, Select, Typography } from "@mui/material";
-import { useStatBlock } from "../../context/StatBlockContext";
+import { useCreateStatBlock } from "../../context/CreateStatBlockContext";
 import { Ability, ProficiencyLevel } from "../../types/statBlock";
 import { updateField } from "../../utils/statBlockUtils";
 
 function StatBlockFormAbilitySection() {
-	const { statBlock, setStatBlock } = useStatBlock();
+	const { statBlock, setStatBlock } = useCreateStatBlock();
 
 	return (
 		<>

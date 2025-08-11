@@ -1,6 +1,6 @@
 import { Box, Typography, useTheme } from "@mui/material";
-import { useStatBlock } from "../../context/StatBlockContext";
-import { ConditionType, DamageType, SkillProficiency, Stats } from "../../types/statBlock";
+import { useCreateStatBlock } from "../../context/CreateStatBlockContext";
+import { Ability, ConditionType, DamageType, SkillProficiency, Stats } from "../../types/statBlock";
 import { abilityToScore, getModifier, getProficiencyBonus, modifierToString } from "../../utils/abilityUtils";
 
 interface DamageTypeSectionProps {
@@ -25,7 +25,7 @@ function TypeSection({ label, damageTypes }: DamageTypeSectionProps) {
 }
 
 function StatBlockViewLowerSection() {
-	const { statBlock } = useStatBlock();
+	const { statBlock } = useCreateStatBlock();
 	const theme = useTheme();
 
 	const calcSkillSave = (skill: SkillProficiency) => {
@@ -35,7 +35,18 @@ function StatBlockViewLowerSection() {
 		);
 		const statMod = getModifier(statBlock.stats[score.toString().toLowerCase() as keyof Stats]);
 		return modifierToString(statMod + multiplier * getProficiencyBonus(statBlock));
-	}
+	};
+
+	const generateSenseText = (): string => {
+		const multiplier = ["none", "proficient", "expertise"].findIndex(
+			value => value === statBlock.skill_saves.filter(skill => skill.ability === Ability.Perception)[0]?.level
+		);
+		const passivePerception = 10 + getModifier(statBlock.stats.wisdom) + (multiplier !== -1 ? multiplier * getProficiencyBonus(statBlock) : 0);
+
+		return statBlock.senses
+			? `${statBlock.senses}, Passive Perception ${passivePerception}`
+			: `Passive Perception ${passivePerception}`;
+	};
 
 	const upgradedSkillSaves = statBlock.skill_saves.filter(skill => skill.level !== "none");
 	const immunities = [...statBlock.damage_immunities, ...statBlock.condition_immunities];
@@ -68,24 +79,18 @@ function StatBlockViewLowerSection() {
 				label={"Vulnerabilities"}
 				damageTypes={statBlock.damage_vulnerabilities}
 			/>}
-			{
-				statBlock.senses && 
-				<Typography variant="body1" sx={{ display: 'flex', flexDirection: 'row', alignItems: "baseline", whiteSpace: 'pre' }}>
-					Senses{" "}
-					<Typography variant="body2" sx={{ color: theme.palette.primary.contrastText, whiteSpace: "collapse"}}>
-						{statBlock.senses}
-					</Typography>
+			{<Typography variant="body1" sx={{ display: 'flex', flexDirection: 'row', alignItems: "baseline", whiteSpace: 'pre' }}>
+				Senses{" "}
+				<Typography variant="body2" sx={{ color: theme.palette.primary.contrastText, whiteSpace: "collapse"}}>
+					{generateSenseText()}
 				</Typography>
-			}
-			{
-				statBlock.languages &&
-				<Typography variant="body1" sx={{ display: 'flex', flexDirection: 'row', alignItems: "baseline", whiteSpace: 'pre' }}>
-					Languages{" "}
-					<Typography variant="body2" sx={{ color: theme.palette.primary.contrastText, whiteSpace: "collapse"}}>
-						{statBlock.languages}
-					</Typography>
+			</Typography>}
+			<Typography variant="body1" sx={{ display: 'flex', flexDirection: 'row', alignItems: "baseline", whiteSpace: 'pre' }}>
+				Languages{" "}
+				<Typography variant="body2" sx={{ color: theme.palette.primary.contrastText, whiteSpace: "collapse"}}>
+					{statBlock.languages ? statBlock.languages : "None"}
 				</Typography>
-			}
+			</Typography>
 		</Box>
 	)
 }

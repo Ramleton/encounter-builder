@@ -1,8 +1,8 @@
 import { Box, Typography, useTheme } from "@mui/material";
-import { useStatBlock } from "../../context/StatBlockContext";
+import { useCreateStatBlock } from "../../context/CreateStatBlockContext";
 
 function StatBlockViewSpellcastingSection() {
-	const { statBlock } = useStatBlock();
+	const { statBlock } = useCreateStatBlock();
 	
 	const theme = useTheme();
 

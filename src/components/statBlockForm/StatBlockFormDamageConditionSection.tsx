@@ -1,10 +1,10 @@
 import { Box, FormControl, InputLabel, MenuItem, Select } from "@mui/material";
-import { useStatBlock } from "../../context/StatBlockContext";
+import { useCreateStatBlock } from "../../context/CreateStatBlockContext";
 import { ConditionType, DamageType } from "../../types/statBlock";
 import { updateField } from "../../utils/statBlockUtils";
 
 function StatBlockFormDamageConditionSection() {
-	const { statBlock, setStatBlock } = useStatBlock();
+	const { statBlock, setStatBlock } = useCreateStatBlock();
 
 	return (
 		<Box

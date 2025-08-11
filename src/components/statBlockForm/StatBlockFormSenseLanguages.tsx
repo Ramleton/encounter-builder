@@ -1,9 +1,9 @@
 import { Box, TextField } from "@mui/material";
-import { useStatBlock } from "../../context/StatBlockContext";
+import { useCreateStatBlock } from "../../context/CreateStatBlockContext";
 import { updateField } from "../../utils/statBlockUtils";
 
 function StatBlockFormSenseLanguages() {
-	const { statBlock, setStatBlock } = useStatBlock();
+	const { statBlock, setStatBlock } = useCreateStatBlock();
 
 	return (
 		<Box sx={{
@@ -18,8 +18,7 @@ function StatBlockFormSenseLanguages() {
 			}}
 		>
 			<TextField
-				required
-				id="standard-required"
+				id="standard"
 				label="Languages"
 				type="text"
 				value={statBlock.languages}
@@ -28,8 +27,7 @@ function StatBlockFormSenseLanguages() {
 				variant="standard"
 			/>
 			<TextField
-				required
-				id="standard-required"
+				id="standard"
 				label="Senses"
 				type="text"
 				value={statBlock.senses}

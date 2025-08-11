@@ -1,22 +1,39 @@
 import { Save } from "@mui/icons-material";
 import { Box, Button, FormControl, InputLabel, MenuItem, Select, TextField } from "@mui/material";
-import { useStatBlock } from "../../context/StatBlockContext";
+import { useCreateStatBlock } from "../../context/CreateStatBlockContext";
 import { Alignment, CR_VALUES, Size } from "../../types/statBlock";
 import { updateField, updateIntegerField } from "../../utils/statBlockUtils";
 
 function UpperStatBlockForm() {
-	const { statBlock, setStatBlock } = useStatBlock();
+	const { statBlock, setStatBlock, errors, setErrors } = useCreateStatBlock();
 
 	const handleSave = () => {
-		if (!statBlock.name) return;
-		if (!statBlock.type_) return;
-		if (!statBlock.hit_dice) return;
-		if (!statBlock.speed) return;
-		if (!statBlock.languages) return;
-		if (!statBlock.senses) return;
-		if (!statBlock.hp) return;
+		// Input Validation
+		setErrors({});
+		if (!statBlock.name) setErrors(prev => ({
+			...prev,
+			"name": "Name field must be filled out."
+		}));
+		if (!statBlock.type_) setErrors(prev => ({
+			...prev,
+			"type": "Type field must be filled out."
+		}));
+		if (!statBlock.hit_dice) setErrors(prev => ({
+			...prev,
+			"hit_dice": "Hit Dice field must be filled out."
+		}));
+		if (!statBlock.speed) setErrors(prev => ({
+			...prev,
+			"speed": "Speed field must be filled out."
+		}));
+		if (!statBlock.hp) setErrors(prev => ({
+			...prev,
+			"hp": "HP cannot be 0."
+		}));
+		if (errors) return;
 
 		// Handle save
+		console.log('Valid statblock');
 	}
 
 	return (
@@ -37,6 +54,8 @@ function UpperStatBlockForm() {
 					label="Name"
 					type="text"
 					value={statBlock.name}
+					error={!!errors["name"]}
+					helperText={errors["name"] || ""}
 					onChange={(e) => updateField("name", e.target.value, setStatBlock)}
 					sx={{ flex: 2 }}
 					variant="standard"
@@ -46,6 +65,8 @@ function UpperStatBlockForm() {
 					id="standard-required"
 					label="Type"
 					type="text"
+					error={!!errors["type"]}
+					helperText={errors["type"] || ""}
 					value={statBlock.type_}
 					onChange={(e) => updateField("type_", e.target.value, setStatBlock)}
 					variant="standard"
@@ -83,8 +104,7 @@ function UpperStatBlockForm() {
 				padding: '1rem 0'
 			}}>
 				<TextField
-					required
-					id="standard-required"
+					id="standard"
 					label="Subtype"
 					type="text"
 					value={statBlock.subtype}
@@ -189,6 +209,8 @@ function UpperStatBlockForm() {
 					id="standard-required"
 					label="Hit Points"
 					type="text"
+					error={!!errors["hp"]}
+					helperText={errors["hp"] || ""}
 					value={typeof statBlock.hp === 'number' ? statBlock.hp : ""}
 					onChange={(e) => updateIntegerField("hp", e.target.value, setStatBlock)}
 					variant="standard"
@@ -199,6 +221,8 @@ function UpperStatBlockForm() {
 					id="standard-required"
 					label="Hit Dice"
 					type="text"
+					error={!!errors["hit_dice"]}
+					helperText={errors["hit_dice"] || ""}
 					value={statBlock.hit_dice}
 					onChange={(e) => updateField("hit_dice", e.target.value, setStatBlock)}
 					variant="standard"
@@ -219,6 +243,8 @@ function UpperStatBlockForm() {
 					id="standard-required"
 					label="Speed"
 					type="text"
+					error={!!errors["speed"]}
+					helperText={errors["speed"] || ""}
 					value={statBlock.speed}
 					onChange={(e) => updateField("speed", e.target.value, setStatBlock)}
 					variant="standard"
