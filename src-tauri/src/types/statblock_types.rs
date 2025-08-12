@@ -168,6 +168,7 @@ pub struct Spells {
 #[derive(Serialize, Deserialize, Debug)]
 #[typeshare]
 pub struct StatBlock {
+    pub id: Option<i64>,
     pub name: String,
     pub size: Size,
     pub type_: String,

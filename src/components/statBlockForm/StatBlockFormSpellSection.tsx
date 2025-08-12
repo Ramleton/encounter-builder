@@ -1,7 +1,8 @@
 import { Box, Button, FormControl, InputLabel, MenuItem, Select, TextField, Typography } from "@mui/material";
 import { useEffect, useState } from "react";
 import { useCreateStatBlock } from "../../context/CreateStatBlockContext";
-import { SpellcastingAbility, Spells } from "../../types/statBlock";
+import { SpellcastingAbility, Spells, Stats } from "../../types/statBlock";
+import { getModifier, getProficiencyBonus } from "../../utils/abilityUtils";
 import { updateField } from "../../utils/statBlockUtils";
 
 function StatBlockFormSpellSection() {
@@ -19,8 +20,11 @@ function StatBlockFormSpellSection() {
 	const handleSpellcastingAbilityChange = (ability: SpellcastingAbility) => {
 		setLocalSpells(prev => {
 			if (!prev) {
+				const proficiencyBonus = getProficiencyBonus(statBlock)
 				return {
 					ability,
+					save_dc: 8 + getModifier(statBlock.stats[ability.toString() as keyof Stats]) + proficiencyBonus,
+					attack_bonus: getModifier(statBlock.stats[ability.toString() as keyof Stats]) + proficiencyBonus,
 					spells: {}
 				};
 			}
@@ -31,30 +35,16 @@ function StatBlockFormSpellSection() {
 		});
 	};
 
-	const handleNumericSpellChange = (key: keyof Spells, value: string) => {
-        const numericValue = value === "" ? undefined : parseInt(value, 10);
-        setLocalSpells(prev => {
-            if (!prev) {
-                return {
-                    ability: SpellcastingAbility.Intelligence,
-                    [key]: numericValue,
-                    spells: {}
-                };
-            }
-            return {
-                ...prev,
-                [key]: numericValue
-            };
-        });
-    };
-
 	const addSpellLevel = () => {
 		if (!newSpellLevel || !newSpellList) return;
 
 		setLocalSpells(prev => {
 			if (!prev) {
+				const proficiencyBonus = getProficiencyBonus(statBlock);
 				return {
 					ability: SpellcastingAbility.Intelligence,
+					save_dc: 8 + getModifier(statBlock.stats["Intelligence" as keyof Stats]) + proficiencyBonus,
+					attack_bonus: getModifier(statBlock.stats["Intelligence" as keyof Stats]) + proficiencyBonus,
 					spells: { [newSpellLevel]: newSpellList }
 				};
 			}
@@ -96,8 +86,11 @@ function StatBlockFormSpellSection() {
 	};
 
 	const enableSpellcasting = () => {
+		const proficiencyBonus = getProficiencyBonus(statBlock);
 		setLocalSpells({
 			ability: SpellcastingAbility.Intelligence,
+			save_dc: 8 + getModifier(statBlock.stats["Intelligence" as keyof Stats]) + proficiencyBonus,
+			attack_bonus: getModifier(statBlock.stats["Intelligence" as keyof Stats]) + proficiencyBonus,
 			spells: {}
 		});
 	};
@@ -173,30 +166,6 @@ function StatBlockFormSpellSection() {
 						)}
 					</Select>
 				</FormControl>
-                <Box sx={{
-					display: 'flex',
-					flexDirection: 'row',
-					flex: 1,
-					gap: '1rem'
-				}}>
-					<TextField
-						id="spell-save-dc"
-						label="Spell Save DC"
-						type="number"
-						value={localSpells.save_dc || ""}
-						onChange={(e) => handleNumericSpellChange("save_dc", e.target.value)}
-						variant="outlined"
-					/>
-					
-					<TextField
-						id="spell-attack-bonus"
-						label="Spell Attack Bonus"
-						type="number"
-						value={localSpells.attack_bonus || ""}
-						onChange={(e) => handleNumericSpellChange("attack_bonus", e.target.value)}
-						variant="outlined"
-					/>
-				</Box>
             </Box>
 
             <Typography variant="subtitle1" sx={{ mt: 2 }}>Spell Lists</Typography>

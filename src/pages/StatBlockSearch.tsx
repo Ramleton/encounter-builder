@@ -56,7 +56,7 @@ function StatBlockHeader({ search, setSearch }: StatBlockHeaderProps) {
 
 function StatBlockSearch() {
 	const [search, setSearch] = useState<string>("");
-	const [statBlocks, setStatBlocks] = useState<StatBlock[]>([]);
+	const [statBlocks] = useState<StatBlock[]>([]);
 
 	useEffect(() => {
 		// refreshStatBlocks();

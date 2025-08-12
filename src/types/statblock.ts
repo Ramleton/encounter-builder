@@ -135,6 +135,7 @@ export interface Spells {
 }
 
 export interface StatBlock {
+	id?: number,
 	name: string;
 	size: Size;
 	type_: string;

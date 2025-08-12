@@ -6,13 +6,18 @@ import { useCreateStatBlock } from "../../context/CreateStatBlockContext";
 import { Alignment, CR_VALUES, Size } from "../../types/statBlock";
 import { updateField, updateIntegerField } from "../../utils/statBlockUtils";
 
+type SaveStatBlockResponse = {
+	id: number;
+    name: string;
+    message: string;
+    was_updated: boolean;
+}
+
 function UpperStatBlockForm() {
 	const { statBlock, setStatBlock, errors, setErrors } = useCreateStatBlock();
 	const { user, getAccessToken } = useAuth();
 
-	const handleSave = async () => {
-		if (!user) return;
-		// Input Validation
+	const input_validation = (): boolean => {
 		const newErrors: Record<string, string> = {};
 
 		if (!statBlock.name) newErrors["name"] = "Name field must be filled out.";
@@ -21,15 +26,17 @@ function UpperStatBlockForm() {
 		if (!statBlock.hit_dice) newErrors["hit_dice"] = "Hit Dice field must be filled out.";
 		if (!statBlock.speed) newErrors["speed"] = "Speed field must be filled out.";
 		if (!statBlock.hp) newErrors["hp"] = "HP cannot be 0.";
-		
+
 		setErrors(newErrors);
 
-		if (Object.keys(newErrors).length) return;
+		return !!Object.keys(newErrors).length;
+	}
 
-		// Handle save
-		console.log('Valid statblock');
+	const handleSave = async () => {
+		if (input_validation()) return;
+		if (!user) return;
 
-		const updatedStatBlock = {
+		let updatedStatBlock = {
 			...statBlock,
 			last_modified: new Date().toISOString(),
 			user_id: user.uuid
@@ -37,8 +44,14 @@ function UpperStatBlockForm() {
 
 		const accessToken = await getAccessToken();
 
-		setStatBlock(updatedStatBlock);
-		await invoke<string>("save_statblock", { stat_block: updatedStatBlock, access_token: accessToken });
+		const res = await invoke<SaveStatBlockResponse>("save_statblock", { statBlock: updatedStatBlock, accessToken: accessToken });
+
+		console.log(res.message);
+
+		if (!res.was_updated) {
+			updatedStatBlock.id = res.id;
+			setStatBlock(updatedStatBlock);
+		}
 	};
 
 	return (
