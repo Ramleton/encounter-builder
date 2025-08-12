@@ -2,7 +2,7 @@ import { AccountCircle, Ballot, ListAlt, Settings } from '@mui/icons-material';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import MenuIcon from '@mui/icons-material/Menu';
-import { Avatar } from '@mui/material';
+import { Avatar, Button, Typography } from '@mui/material';
 import MuiAppBar, { AppBarProps as MuiAppBarProps } from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
 import CssBaseline from '@mui/material/CssBaseline';
@@ -16,7 +16,6 @@ import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import { CSSObject, styled, Theme, useTheme } from '@mui/material/styles';
 import Toolbar from '@mui/material/Toolbar';
-import Typography from '@mui/material/Typography';
 import * as React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
@@ -147,9 +146,11 @@ function MainLayout({ children }: MainLayoutProps) {
 			>
 				<MenuIcon />
 			</IconButton>
-			<Typography variant="h6" noWrap component="div">
-				EncounterArchitect
-			</Typography>
+			<Button variant="text" onClick={() => navigate("")}>
+				<Typography variant="h6" sx={{ color: theme.palette.secondary.main, border: "none" }}>
+					EncounterArchitect
+				</Typography>
+			</Button>
 			</Toolbar>
 		</AppBar>
 		<Drawer variant="permanent" open={open}>

@@ -62,7 +62,7 @@ function StatBlockViewUpperSection() {
 			}}>
 				<Typography variant="body1">
 					HP {statBlock.hp + " "}
-					<Typography component="span" variant="body1">{statBlock.hit_dice}</Typography>
+					<Typography component="span" variant="body1">({statBlock.hit_dice})</Typography>
 				</Typography>
 				{statBlock.initiative && <Typography variant="body1">Initiative {creatureInitiative()}</Typography>}
 			</Box>

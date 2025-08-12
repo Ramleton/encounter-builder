@@ -12,6 +12,7 @@ interface AuthContextType {
 	loginWithEmail: (loginRequest: LoginRequest) => Promise<void>;
 	registerWithEmail: (registerRequest: RegisterRequest) => Promise<RegisterResult>;
 	logout: () => Promise<void>;
+	getAccessToken: () => Promise<string>;
 	clearError: () => void;
 }
 
@@ -130,7 +131,10 @@ export const AuthProvider: FC<AuthProviderProps> = ({ children }) => {
 				accessToken
 			});
 
+			console.log(res);
+
 			const user = {
+				uuid: res.id,
 				email: res.email,
 				username: res.user_metadata.full_name,
 				avatarUrl: res.user_metadata.avatar_url || ""
@@ -168,6 +172,7 @@ export const AuthProvider: FC<AuthProviderProps> = ({ children }) => {
 				await invoke('store_value', { key: 'user', value: JSON.stringify(response.user) });
 
 				const user: User = {
+					uuid: response.user.uuid,
 					username: response.user.username,
 					email: response.user.email,
 					avatarUrl: response.user.avatarUrl
@@ -180,6 +185,10 @@ export const AuthProvider: FC<AuthProviderProps> = ({ children }) => {
 			throw new Error('Failed to save authentication data');
 		}
 	};
+
+	const getAccessToken = async () => {
+		return await invoke<string>("get_stored_value", { key: "access_token" });
+	}
 
 	const loginWithEmail = async (loginRequest: LoginRequest): Promise<void> => {
 		try {
@@ -227,6 +236,7 @@ export const AuthProvider: FC<AuthProviderProps> = ({ children }) => {
 				return {
 					status: "registered",
 					user: {
+						uuid: response.user.uuid,
 						username: response.user.username,
 						email: response.user.email,
 						avatarUrl: response.user.avatarUrl
@@ -324,6 +334,7 @@ export const AuthProvider: FC<AuthProviderProps> = ({ children }) => {
 		loginWithEmail,
 		registerWithEmail,
 		logout,
+		getAccessToken,
 		clearError
 	};
 

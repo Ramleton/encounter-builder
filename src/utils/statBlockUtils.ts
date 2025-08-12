@@ -36,7 +36,8 @@ export const generateEmptyStatBlock = (): StatBlock => {
 		legendary_description: "",
 		bonus_actions: [],
 		reactions: [],
-		last_modified: ""
+		last_modified: "",
+		user_id: ""
 	}
 }
 

@@ -129,8 +129,8 @@ export enum SpellcastingAbility {
 
 export interface Spells {
 	ability: SpellcastingAbility;
-	save_dc?: number;
-	attack_bonus?: number;
+	save_dc: number;
+	attack_bonus: number;
 	spells: Record<string, string>;
 }
 
@@ -163,6 +163,7 @@ export interface StatBlock {
 	bonus_actions: Action[];
 	reactions: Action[];
 	last_modified: string;
+	user_id: string;
 }
 
 

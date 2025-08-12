@@ -1,7 +1,7 @@
 use serde::{Deserialize, Serialize};
 use typeshare::typeshare;
 
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug, Copy, Clone)]
 #[typeshare]
 #[serde(rename_all = "PascalCase")]
 pub enum Alignment {
@@ -16,7 +16,7 @@ pub enum Alignment {
     ChaoticEvil,
 }
 
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug, Copy, Clone)]
 #[typeshare]
 pub enum Size {
     Tiny,
@@ -75,7 +75,7 @@ pub enum Score {
     Charisma,
 }
 
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug, Copy, Clone)]
 #[typeshare]
 pub enum Ability {
     Acrobatics,
@@ -98,7 +98,7 @@ pub enum Ability {
     Survival,
 }
 
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug, Copy, Clone)]
 #[typeshare]
 pub enum ProficiencyLevel {
     #[serde(rename = "none")]
@@ -109,7 +109,7 @@ pub enum ProficiencyLevel {
     Expertise,
 }
 
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug, Copy, Clone)]
 #[typeshare]
 pub struct SkillProficiency {
     pub ability: Ability,
@@ -140,15 +140,15 @@ pub struct Trait {
 #[derive(Serialize, Deserialize, Debug)]
 #[typeshare]
 pub struct Stats {
-    strength: u32,
-    dexterity: u32,
-    constitution: u32,
-    intelligence: u32,
-    wisdom: u32,
-    charisma: u32,
+    strength: u8,
+    dexterity: u8,
+    constitution: u8,
+    intelligence: u8,
+    wisdom: u8,
+    charisma: u8,
 }
 
-#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[derive(Debug, Copy, Clone, PartialEq, Eq, Serialize, Deserialize)]
 #[typeshare]
 pub enum SpellcastingAbility {
     Intelligence,
@@ -160,10 +160,8 @@ pub enum SpellcastingAbility {
 #[typeshare]
 pub struct Spells {
     pub ability: SpellcastingAbility,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub save_dc: Option<u8>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub attack_bonus: Option<i8>,
+    pub save_dc: u8,
+    pub attack_bonus: i8,
     pub spells: std::collections::HashMap<String, String>,
 }
 
@@ -175,14 +173,14 @@ pub struct StatBlock {
     pub type_: String,
     pub subtype: String,
     pub alignment: Alignment,
-    pub ac: u32,
-    pub hp: u32,
+    pub ac: u16,
+    pub hp: u16,
     pub initiative: ProficiencyLevel,
     pub hit_dice: String,
     pub speed: String,
     pub stats: Stats,
-    pub saves: Vec<Score>,
-    pub skill_saves: Vec<Ability>,
+    pub saves: Vec<SaveProficiency>,
+    pub skill_saves: Vec<SkillProficiency>,
     pub senses: String,
     pub languages: String,
     pub damage_vulnerabilities: Vec<DamageType>,
@@ -198,4 +196,75 @@ pub struct StatBlock {
     pub legendary_description: String,
     pub bonus_actions: Vec<Action>,
     pub reactions: Vec<Action>,
+    pub last_modified: String,
+    pub user_id: String,
+}
+
+#[derive(Serialize, Deserialize, Debug)]
+pub struct StatBlockDB<'a> {
+    pub name: &'a str,
+    pub size: Size,
+    pub creature_type: &'a str,
+    pub subtype: Option<&'a str>,
+    pub alignment: Alignment,
+    pub ac: u16,
+    pub hp: u16,
+    pub initiative: ProficiencyLevel,
+    pub hit_dice: &'a str,
+    pub speed: &'a str,
+    pub senses: &'a str,
+    pub languages: &'a str,
+    pub strength: u8,
+    pub dexterity: u8,
+    pub constitution: u8,
+    pub intelligence: u8,
+    pub wisdom: u8,
+    pub charisma: u8,
+    pub cr: &'a str,
+    pub last_modified: &'a str,
+    pub legendary_description: Option<&'a str>,
+    pub user_id: &'a str,
+    pub spellcasting_ability: Option<SpellcastingAbility>,
+    pub save_dc: Option<u8>,
+    pub spell_attack_bonus: Option<i8>,
+}
+
+impl StatBlock {
+    pub fn to_db<'a>(&'a self) -> StatBlockDB<'a> {
+        StatBlockDB {
+            name: &self.name,
+            size: self.size,
+            creature_type: &self.type_,
+            subtype: if self.subtype.is_empty() {
+                None
+            } else {
+                Some(&self.subtype)
+            },
+            alignment: self.alignment,
+            ac: self.ac,
+            hp: self.hp,
+            initiative: self.initiative,
+            hit_dice: &self.hit_dice,
+            speed: &self.speed,
+            senses: &self.senses,
+            languages: &self.languages,
+            strength: self.stats.strength,
+            dexterity: self.stats.dexterity,
+            constitution: self.stats.constitution,
+            intelligence: self.stats.intelligence,
+            wisdom: self.stats.wisdom,
+            charisma: self.stats.charisma,
+            cr: &self.cr,
+            last_modified: &self.last_modified,
+            legendary_description: if self.legendary_description.is_empty() {
+                None
+            } else {
+                Some(&self.legendary_description)
+            },
+            user_id: &self.user_id,
+            spellcasting_ability: self.spells.as_ref().map(|s| s.ability),
+            save_dc: self.spells.as_ref().map(|s| s.save_dc),
+            spell_attack_bonus: self.spells.as_ref().map(|s| s.attack_bonus),
+        }
+    }
 }

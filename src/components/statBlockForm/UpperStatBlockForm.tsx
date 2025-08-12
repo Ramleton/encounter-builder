@@ -1,28 +1,44 @@
 import { Save } from "@mui/icons-material";
 import { Box, Button, FormControl, InputLabel, MenuItem, Select, TextField } from "@mui/material";
+import { invoke } from "@tauri-apps/api/core";
+import { useAuth } from "../../context/AuthContext";
 import { useCreateStatBlock } from "../../context/CreateStatBlockContext";
 import { Alignment, CR_VALUES, Size } from "../../types/statBlock";
 import { updateField, updateIntegerField } from "../../utils/statBlockUtils";
 
 function UpperStatBlockForm() {
 	const { statBlock, setStatBlock, errors, setErrors } = useCreateStatBlock();
+	const { user, getAccessToken } = useAuth();
 
-	const handleSave = () => {
+	const handleSave = async () => {
+		if (!user) return;
 		// Input Validation
 		const newErrors: Record<string, string> = {};
 
 		if (!statBlock.name) newErrors["name"] = "Name field must be filled out.";
 		if (!statBlock.type_) newErrors["type"] = "Type field must be filled out.";
+		// TODO: Properly validate formatting of hit_dice field
 		if (!statBlock.hit_dice) newErrors["hit_dice"] = "Hit Dice field must be filled out.";
 		if (!statBlock.speed) newErrors["speed"] = "Speed field must be filled out.";
 		if (!statBlock.hp) newErrors["hp"] = "HP cannot be 0.";
 		
 		setErrors(newErrors);
 
-		if (Object.keys(newErrors)) return;
+		if (Object.keys(newErrors).length) return;
 
 		// Handle save
 		console.log('Valid statblock');
+
+		const updatedStatBlock = {
+			...statBlock,
+			last_modified: new Date().toISOString(),
+			user_id: user.uuid
+		};
+
+		const accessToken = await getAccessToken();
+
+		setStatBlock(updatedStatBlock);
+		await invoke<string>("save_statblock", { stat_block: updatedStatBlock, access_token: accessToken });
 	};
 
 	return (
