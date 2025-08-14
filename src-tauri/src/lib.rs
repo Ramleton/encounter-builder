@@ -2,7 +2,7 @@ mod database;
 mod types;
 mod utils;
 
-use database::statblock_db::save_statblock;
+use database::statblock_db::{fetch_statblocks, save_statblock};
 use tauri::{Emitter, Manager};
 #[cfg(desktop)]
 use tauri_plugin_deep_link::DeepLinkExt;
@@ -80,7 +80,8 @@ pub fn run() {
             open_url,
             register_with_email,
             login_with_email,
-            save_statblock
+            save_statblock,
+            fetch_statblocks
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

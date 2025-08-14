@@ -163,7 +163,7 @@ pub enum SpellcastingAbility {
 pub struct Spells {
     pub ability: SpellcastingAbility,
     pub save_dc: u8,
-    pub attack_bonus: i8,
+    pub attack_bonus: u8,
     pub spells: std::collections::HashMap<String, String>,
 }
 
@@ -174,18 +174,21 @@ pub struct StatBlock {
     pub name: String,
     pub size: Size,
     pub type_: String,
-    pub subtype: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub subtype: Option<String>,
     pub alignment: Alignment,
-    pub ac: u16,
-    pub hp: u16,
+    pub ac: u8,
+    pub hp: u8,
     pub initiative: ProficiencyLevel,
     pub hit_dice: String,
     pub speed: String,
     pub stats: Stats,
     pub saves: Vec<SaveProficiency>,
     pub skill_saves: Vec<SkillProficiency>,
-    pub senses: String,
-    pub languages: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub senses: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub languages: Option<String>,
     pub damage_vulnerabilities: Vec<DamageType>,
     pub damage_resistances: Vec<DamageType>,
     pub damage_immunities: Vec<DamageType>,
@@ -196,7 +199,8 @@ pub struct StatBlock {
     pub spells: Option<Spells>,
     pub actions: Vec<Action>,
     pub legendary_actions: Vec<Action>,
-    pub legendary_description: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub legendary_description: Option<String>,
     pub bonus_actions: Vec<Action>,
     pub reactions: Vec<Action>,
     pub last_modified: String,
@@ -204,32 +208,62 @@ pub struct StatBlock {
 }
 
 #[derive(Serialize, Deserialize, Debug)]
-pub struct StatBlockDB<'a> {
-    pub name: &'a str,
-    pub size: Size,
-    pub creature_type: &'a str,
-    pub subtype: Option<&'a str>,
-    pub alignment: Alignment,
-    pub ac: u16,
-    pub hp: u16,
-    pub initiative: ProficiencyLevel,
-    pub hit_dice: &'a str,
-    pub speed: &'a str,
-    pub senses: &'a str,
-    pub languages: &'a str,
-    pub strength: u8,
-    pub dexterity: u8,
-    pub constitution: u8,
-    pub intelligence: u8,
-    pub wisdom: u8,
-    pub charisma: u8,
-    pub cr: &'a str,
-    pub last_modified: &'a str,
-    pub legendary_description: Option<&'a str>,
-    pub user_id: &'a str,
-    pub spellcasting_ability: Option<SpellcastingAbility>,
-    pub save_dc: Option<u8>,
-    pub spell_attack_bonus: Option<i8>,
+pub struct StatBlockToDB {
+    name: String,
+    size: Size,
+    creature_type: String,
+    subtype: Option<String>,
+    alignment: Alignment,
+    ac: u8,
+    hp: u8,
+    initiative: ProficiencyLevel,
+    hit_dice: String,
+    speed: String,
+    senses: Option<String>,
+    languages: Option<String>,
+    strength: u8,
+    dexterity: u8,
+    constitution: u8,
+    intelligence: u8,
+    wisdom: u8,
+    charisma: u8,
+    cr: String,
+    last_modified: String,
+    legendary_description: Option<String>,
+    user_id: String,
+    spellcasting_ability: Option<Score>,
+    save_dc: Option<u8>,
+    spell_attack_bonus: Option<u8>,
+}
+
+#[derive(Serialize, Deserialize, Debug)]
+pub struct StatBlockFromDB {
+    id: i64,
+    name: String,
+    size: Size,
+    creature_type: String,
+    subtype: Option<String>,
+    alignment: Alignment,
+    ac: u8,
+    hp: u8,
+    initiative: ProficiencyLevel,
+    hit_dice: String,
+    speed: String,
+    senses: Option<String>,
+    languages: Option<String>,
+    strength: u8,
+    dexterity: u8,
+    constitution: u8,
+    intelligence: u8,
+    wisdom: u8,
+    charisma: u8,
+    cr: String,
+    last_modified: String,
+    legendary_description: Option<String>,
+    user_id: String,
+    spellcasting_ability: Option<Score>,
+    save_dc: Option<u8>,
+    spell_attack_bonus: Option<u8>,
 }
 
 #[derive(Serialize, Deserialize, Debug, Copy, Clone)]
@@ -240,45 +274,83 @@ pub struct ActionDB<'a> {
 }
 
 impl StatBlock {
-    pub fn to_db<'a>(&'a self) -> StatBlockDB<'a> {
-        StatBlockDB {
-            name: &self.name,
+    pub fn statblock_to_db(&self) -> StatBlockToDB {
+        StatBlockToDB {
+            name: self.name.clone(),
             size: self.size,
-            creature_type: &self.type_,
-            subtype: if self.subtype.is_empty() {
-                None
-            } else {
-                Some(&self.subtype)
-            },
+            creature_type: self.type_.clone(),
+            subtype: self.subtype.clone(),
             alignment: self.alignment,
             ac: self.ac,
             hp: self.hp,
             initiative: self.initiative,
-            hit_dice: &self.hit_dice,
-            speed: &self.speed,
-            senses: &self.senses,
-            languages: &self.languages,
+            hit_dice: self.hit_dice.clone(),
+            speed: self.speed.clone(),
+            senses: self.senses.clone(),
+            languages: self.languages.clone(),
             strength: self.stats.strength,
             dexterity: self.stats.dexterity,
             constitution: self.stats.constitution,
             intelligence: self.stats.intelligence,
             wisdom: self.stats.wisdom,
             charisma: self.stats.charisma,
-            cr: &self.cr,
-            last_modified: &self.last_modified,
-            legendary_description: if self.legendary_description.is_empty() {
-                None
-            } else {
-                Some(&self.legendary_description)
-            },
-            user_id: &self.user_id,
-            spellcasting_ability: self.spells.as_ref().map(|s| s.ability),
+            cr: self.cr.clone(),
+            last_modified: self.last_modified.clone(),
+            legendary_description: self.legendary_description.clone(),
+            user_id: self.user_id.clone(),
+            spellcasting_ability: self.spells.as_ref().map(|s| match s.ability {
+                SpellcastingAbility::Charisma => Score::Charisma,
+                SpellcastingAbility::Intelligence => Score::Intelligence,
+                SpellcastingAbility::Wisdom => Score::Wisdom,
+            }),
             save_dc: self.spells.as_ref().map(|s| s.save_dc),
             spell_attack_bonus: self.spells.as_ref().map(|s| s.attack_bonus),
         }
     }
 
-    pub fn actions_to_db<'a>(&'a self) -> Result<HashMap<&str, Vec<ActionDB<'_>>>, String> {
+    pub fn statblock_from_db(db: &StatBlockFromDB) -> Self {
+        StatBlock {
+            id: Some(db.id),
+            name: db.name.clone(),
+            size: db.size,
+            type_: db.creature_type.clone(),
+            subtype: db.subtype.clone(),
+            alignment: db.alignment,
+            ac: db.ac,
+            hp: db.hp,
+            initiative: db.initiative,
+            hit_dice: db.hit_dice.clone(),
+            speed: db.speed.clone(),
+            stats: Stats {
+                strength: db.strength,
+                dexterity: db.dexterity,
+                constitution: db.constitution,
+                intelligence: db.intelligence,
+                wisdom: db.wisdom,
+                charisma: db.charisma,
+            },
+            saves: Vec::new(),
+            skill_saves: Vec::new(),
+            senses: db.senses.clone(),
+            languages: db.languages.clone(),
+            damage_vulnerabilities: Vec::new(),
+            damage_resistances: Vec::new(),
+            damage_immunities: Vec::new(),
+            condition_immunities: Vec::new(),
+            cr: db.cr.clone(),
+            traits: Vec::new(),
+            spells: None,
+            actions: Vec::new(),
+            legendary_actions: Vec::new(),
+            legendary_description: db.legendary_description.clone(),
+            bonus_actions: Vec::new(),
+            reactions: Vec::new(),
+            last_modified: db.last_modified.clone(),
+            user_id: db.user_id.clone(),
+        }
+    }
+
+    pub fn actions_to_db<'a>(&'a self) -> Result<HashMap<&'a str, Vec<ActionDB<'a>>>, String> {
         if let Some(statblock_id) = self.id {
             let mut map: HashMap<&str, Vec<ActionDB<'_>>> = HashMap::new();
 

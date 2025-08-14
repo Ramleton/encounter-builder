@@ -3,7 +3,10 @@ use serde::{Deserialize, Serialize};
 
 use crate::{
     database::action_db::{delete_actions_matching_statblock_id, insert_action},
-    types::{auth_types::SupabaseConfig, statblock_types::StatBlock},
+    types::{
+        auth_types::SupabaseConfig,
+        statblock_types::{StatBlock, StatBlockFromDB},
+    },
     utils::supabase_util::init_supabase,
 };
 
@@ -13,6 +16,12 @@ pub struct SaveStatBlockResponse {
     pub name: String,
     pub message: String,
     pub was_updated: bool,
+}
+
+#[derive(Serialize, Deserialize, Debug)]
+pub struct RetrieveStatBlockResponse {
+    pub statblocks: Vec<StatBlock>,
+    pub message: String,
 }
 
 async fn save_statblock_actions_helper(
@@ -73,7 +82,7 @@ pub async fn save_statblock(
 ) -> Result<SaveStatBlockResponse, String> {
     let config = init_supabase().await.map_err(|e| e.to_string())?;
     let client = reqwest::Client::new();
-    let insert_obj = stat_block.to_db();
+    let insert_obj = stat_block.statblock_to_db();
 
     let (method, url) = if let Some(id) = stat_block.id {
         (
@@ -142,4 +151,41 @@ pub async fn save_statblock(
     }
 
     Err("No data returned from Supabase".to_string())
+}
+
+#[tauri::command]
+pub async fn fetch_statblocks(access_token: String) -> Result<RetrieveStatBlockResponse, String> {
+    let config = init_supabase().await.map_err(|e| e.to_string())?;
+    let client = reqwest::Client::new();
+
+    let get_url = format!("{}/rest/v1/StatBlock", config.url);
+
+    let response = client
+        .get(&get_url)
+        .header("apikey", &config.anon_key)
+        .header("Authorization", format!("Bearer {}", access_token))
+        .header("Content-Type", "application/json")
+        .send()
+        .await
+        .map_err(|e| format!("StatBlock fetch failed: {}", e))?;
+
+    if !response.status().is_success() {
+        let error_text = response.text().await.unwrap_or_default();
+        return Err(format!("StatBlock fetch failed: {}", error_text));
+    }
+
+    let data: Vec<StatBlockFromDB> = response
+        .json()
+        .await
+        .map_err(|e| format!("Failed to parse StatBlock response: {}", e))?;
+
+    let statblocks = data
+        .iter()
+        .map(|db_sb| StatBlock::statblock_from_db(db_sb))
+        .collect();
+
+    Ok(RetrieveStatBlockResponse {
+        statblocks,
+        message: "Successfully retrieved statblocks".to_string(),
+    })
 }

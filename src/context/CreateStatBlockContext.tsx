@@ -11,8 +11,8 @@ interface CreateStatBlockContextType {
 
 const CreateStatBlockContext = createContext<CreateStatBlockContextType | undefined>(undefined);
 
-export const CreateStatBlockProvider: FC<{ children: ReactNode }> = ({ children }) => {
-	const [statBlock, setStatBlock] = useState<StatBlock>(generateEmptyStatBlock());
+export const CreateStatBlockProvider: FC<{ children: ReactNode, initialStatBlock: StatBlock | null }> = ({ children, initialStatBlock = null }) => {
+	const [statBlock, setStatBlock] = useState<StatBlock>(initialStatBlock || generateEmptyStatBlock());
 	const [errors, setErrors] = useState<Record<string, string>>({});
 
 	return (

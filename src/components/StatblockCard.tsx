@@ -7,10 +7,12 @@ import { StatBlock } from '../types/statBlock';
 
 interface StatBlockCardProps {
 	statblock: StatBlock;
+	handleEdit: () => void;
+	handleDelete: () => void;
 	informative?: boolean;
 }
 
-function StatBlockCard({ statblock, informative = false }: StatBlockCardProps) {
+function StatBlockCard({ statblock, informative = false, handleEdit, handleDelete }: StatBlockCardProps) {
 	return (
 		<Card variant="outlined" sx={{ width: "100%" }}>
 			<CardContent>
@@ -34,8 +36,8 @@ function StatBlockCard({ statblock, informative = false }: StatBlockCardProps) {
 				)}
 			</CardContent>
 			<CardActions>
-				<Button size="small">Edit</Button>
-				<Button size="small">Delete</Button>
+				<Button size="small" onClick={handleEdit}>Edit</Button>
+				<Button size="small" onClick={handleDelete}>Delete</Button>
 			</CardActions>
 		</Card>
 	);

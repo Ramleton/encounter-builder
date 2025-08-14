@@ -1,8 +1,10 @@
 import { Add, Search } from "@mui/icons-material";
-import { Box, Button, TextField, Typography } from "@mui/material";
+import { Box, Button, CircularProgress, TextField, Typography } from "@mui/material";
+import { invoke } from "@tauri-apps/api/core";
 import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import StatBlockCard from "../components/StatblockCard";
+import { useAuth } from "../context/AuthContext";
 import { StatBlock } from "../types/statBlock";
 
 interface StatBlockHeaderProps {
@@ -54,27 +56,55 @@ function StatBlockHeader({ search, setSearch }: StatBlockHeaderProps) {
 	)
 }
 
+interface FetchStatBlockResponse {
+	statblocks: StatBlock[];
+	message: string; 
+}
+
 function StatBlockSearch() {
 	const [search, setSearch] = useState<string>("");
-	const [statBlocks] = useState<StatBlock[]>([]);
+	const [statBlocks, setStatBlocks] = useState<StatBlock[]>([]);
+	const [loading, setLoading] = useState<boolean>(true);
+
+	const { getAccessToken } = useAuth();
+	const navigate = useNavigate();
 
 	useEffect(() => {
-		// refreshStatBlocks();
+		const fetchStatBlocks = async () => {
+			const accessToken = await getAccessToken();
+			const response = await invoke<FetchStatBlockResponse>("fetch_statblocks", { accessToken });
+
+			setStatBlocks(response.statblocks);
+		};
+
+		fetchStatBlocks();
+		setLoading(false);
 	}, [])
 
 	return (
 		<>
 			<StatBlockHeader search={search} setSearch={setSearch} />
-			<Box sx={{
-				display: 'grid',
-				gridTemplateColumns: 'repeat(4, 1fr)',
-				width: '100%'
-			}}>
-				{statBlocks
-					.filter(statBlock => statBlock.name.includes(search))
-					.map(statBlock => <StatBlockCard statblock={statBlock} />)
-				}
-			</Box>
+			{ loading && <CircularProgress color="secondary" /> }
+			{ !loading && (
+				<Box sx={{
+					display: 'grid',
+					gridTemplateColumns: 'repeat(4, 1fr)',
+					width: '100%',
+					margin: '1rem 0'
+				}}>
+					{statBlocks
+						.filter(statBlock => statBlock.name.includes(search))
+						.map(statBlock => <StatBlockCard
+							key={statBlock.id}
+							statblock={statBlock}
+							handleEdit={() => navigate("/create_statblock", {
+								state: { statBlock: statBlock }
+							})}
+							handleDelete={() => {}}
+						/>)
+					}
+				</Box>
+			)}	
 		</>
 	)
 }
