@@ -58,7 +58,7 @@ function StatBlockViewActionSection({ label, actions, children }: StatBlockViewA
 						}}
 					>{statBlock.legendary_description}</Typography>
 				)}
-				{actions.map(action => <ActionSection action={action} />)}
+				{actions.map((action, i) => <ActionSection key={i} action={action} />)}
 				{children}
 			</Box>
 		</Box>

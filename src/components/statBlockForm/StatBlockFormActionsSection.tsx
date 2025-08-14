@@ -156,6 +156,7 @@ function StatBlockFormActionSection({
 				</Box>
 			)}
 			{statBlock[statblockKey].map((action, idx) => <StatBlockFormActionCard
+				key={idx}
 				value={action}
 				idx={idx}
 				handleEdit={handleEditAction}
