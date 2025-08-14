@@ -1,3 +1,5 @@
+use std::collections::HashMap;
+
 use serde::{Deserialize, Serialize};
 use typeshare::typeshare;
 
@@ -230,6 +232,13 @@ pub struct StatBlockDB<'a> {
     pub spell_attack_bonus: Option<i8>,
 }
 
+#[derive(Serialize, Deserialize, Debug, Copy, Clone)]
+pub struct ActionDB<'a> {
+    pub statblock_id: i64,
+    pub name: &'a str,
+    pub description: &'a str,
+}
+
 impl StatBlock {
     pub fn to_db<'a>(&'a self) -> StatBlockDB<'a> {
         StatBlockDB {
@@ -267,5 +276,62 @@ impl StatBlock {
             save_dc: self.spells.as_ref().map(|s| s.save_dc),
             spell_attack_bonus: self.spells.as_ref().map(|s| s.attack_bonus),
         }
+    }
+
+    pub fn actions_to_db<'a>(&'a self) -> Result<HashMap<&str, Vec<ActionDB<'_>>>, String> {
+        if let Some(statblock_id) = self.id {
+            let mut map: HashMap<&str, Vec<ActionDB<'_>>> = HashMap::new();
+
+            map.insert(
+                "Action",
+                self.actions
+                    .iter()
+                    .map(|action| ActionDB {
+                        statblock_id,
+                        name: &action.name,
+                        description: &action.description,
+                    })
+                    .collect(),
+            );
+
+            map.insert(
+                "BonusAction",
+                self.bonus_actions
+                    .iter()
+                    .map(|bonus_action| ActionDB {
+                        statblock_id,
+                        name: &bonus_action.name,
+                        description: &bonus_action.description,
+                    })
+                    .collect(),
+            );
+
+            map.insert(
+                "Reaction",
+                self.reactions
+                    .iter()
+                    .map(|reaction| ActionDB {
+                        statblock_id,
+                        name: &reaction.name,
+                        description: &reaction.description,
+                    })
+                    .collect(),
+            );
+
+            map.insert(
+                "LegendaryAction",
+                self.legendary_actions
+                    .iter()
+                    .map(|legendary_actions| ActionDB {
+                        statblock_id,
+                        name: &legendary_actions.name,
+                        description: &legendary_actions.description,
+                    })
+                    .collect(),
+            );
+
+            return Ok(map);
+        }
+        Err("No StatBlock ID".to_string())
     }
 }

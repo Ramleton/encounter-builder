@@ -1,6 +1,11 @@
+use reqwest::Client;
 use serde::{Deserialize, Serialize};
 
-use crate::{types::statblock_types::StatBlock, utils::supabase_util::init_supabase};
+use crate::{
+    database::action_db::{delete_actions_matching_statblock_id, insert_action},
+    types::{auth_types::SupabaseConfig, statblock_types::StatBlock},
+    utils::supabase_util::init_supabase,
+};
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct SaveStatBlockResponse {
@@ -10,98 +15,131 @@ pub struct SaveStatBlockResponse {
     pub was_updated: bool,
 }
 
+async fn save_statblock_actions_helper(
+    stat_block: &StatBlock,
+    config: &SupabaseConfig,
+    client: &Client,
+    access_token: &str,
+) -> Result<String, String> {
+    delete_actions_matching_statblock_id(&stat_block, &config, &client, &access_token, "Action")
+        .await?;
+    delete_actions_matching_statblock_id(
+        &stat_block,
+        &config,
+        &client,
+        &access_token,
+        "BonusAction",
+    )
+    .await?;
+    delete_actions_matching_statblock_id(&stat_block, &config, &client, &access_token, "Reaction")
+        .await?;
+    delete_actions_matching_statblock_id(
+        &stat_block,
+        &config,
+        &client,
+        &access_token,
+        "LegendaryAction",
+    )
+    .await?;
+
+    let actions = stat_block.actions_to_db()?;
+    for action in actions.get("Action").unwrap() {
+        insert_action(*action, config, client, access_token, "Action").await?;
+    }
+    for bonus_action in actions.get("BonusAction").unwrap() {
+        insert_action(*bonus_action, config, client, access_token, "BonusAction").await?;
+    }
+    for reaction in actions.get("Reaction").unwrap() {
+        insert_action(*reaction, config, client, access_token, "Reaction").await?;
+    }
+    for legendary_action in actions.get("LegendaryAction").unwrap() {
+        insert_action(
+            *legendary_action,
+            config,
+            client,
+            access_token,
+            "LegendaryAction",
+        )
+        .await?;
+    }
+
+    Ok("Action inserts successful".to_string())
+}
+
 #[tauri::command]
 pub async fn save_statblock(
-    stat_block: StatBlock,
+    mut stat_block: StatBlock,
     access_token: String,
 ) -> Result<SaveStatBlockResponse, String> {
-    let config = init_supabase().await?;
+    let config = init_supabase().await.map_err(|e| e.to_string())?;
     let client = reqwest::Client::new();
     let insert_obj = stat_block.to_db();
 
-    if let Some(id) = stat_block.id {
-        // Update existing StatBlock
-        let url = format!("{}/rest/v1/StatBlock?id=eq.{}", config.url, id);
-
-        let response = client
-            .patch(&url)
-            .header("apikey", &config.anon_key)
-            .header("Authorization", format!("Bearer {}", &access_token))
-            .header("Content-Type", "application/json")
-            .header("Prefer", "return=representation")
-            .body(serde_json::to_string(&vec![insert_obj]).map_err(|e| e.to_string())?)
-            .send()
-            .await
-            .map_err(|e| e.to_string())?;
-
-        if response.status().is_success() {
-            let response_text = response.text().await.map_err(|e| e.to_string())?;
-            let returned_records: Vec<serde_json::Value> = serde_json::from_str(&response_text)
-                .map_err(|e| format!("Failed to parse response: {}", e))?;
-
-            if let Some(record) = returned_records.first() {
-                let returned_id = record
-                    .get("id")
-                    .and_then(|v| v.as_i64())
-                    .ok_or("No ID returned from update")?;
-
-                Ok(SaveStatBlockResponse {
-                    id: returned_id,
-                    name: stat_block.name.clone(),
-                    message: "StatBlock updated successfully".to_string(),
-                    was_updated: true,
-                })
-            } else {
-                Err("No data returned from update".to_string())
-            }
-        } else {
-            Err(format!(
-                "Supabase update error {}: {}",
-                response.status(),
-                response.text().await.unwrap_or_default()
-            ))
-        }
+    let (method, url) = if let Some(id) = stat_block.id {
+        (
+            reqwest::Method::PATCH,
+            format!("{}/rest/v1/StatBlock?id=eq.{}", config.url, id),
+        )
     } else {
-        // INSERT new record
-        let url = format!("{}/rest/v1/StatBlock", config.url);
+        (
+            reqwest::Method::POST,
+            format!("{}/rest/v1/StatBlock", config.url),
+        )
+    };
 
-        let response = client
-            .post(&url)
-            .header("apikey", &config.anon_key)
-            .header("Authorization", format!("Bearer {}", &access_token))
-            .header("Content-Type", "application/json")
-            .header("Prefer", "return=representation")
-            .body(serde_json::to_string(&vec![insert_obj]).map_err(|e| e.to_string())?)
-            .send()
-            .await
-            .map_err(|e| e.to_string())?;
+    let response = client
+        .request(method.clone(), &url)
+        .header("apikey", &config.anon_key)
+        .header("Authorization", format!("Bearer {}", &access_token))
+        .header("Content-Type", "application/json")
+        .header("Prefer", "return=representation")
+        .body(serde_json::to_string(&vec![insert_obj]).map_err(|e| e.to_string())?)
+        .send()
+        .await
+        .map_err(|e| format!("Request failed: {}", e))?;
 
-        if response.status().is_success() {
-            let response_text = response.text().await.map_err(|e| e.to_string())?;
-            let returned_records: Vec<serde_json::Value> = serde_json::from_str(&response_text)
-                .map_err(|e| format!("Failed to parse response: {}", e))?;
+    let status = response.status();
+    let text = response.text().await.map_err(|e| e.to_string())?;
 
-            if let Some(record) = returned_records.first() {
-                let new_id = record
-                    .get("id")
-                    .and_then(|v| v.as_i64())
-                    .ok_or("No ID returned from insert")?;
-
-                Ok(SaveStatBlockResponse {
-                    id: new_id,
-                    name: stat_block.name.clone(),
-                    message: "StatBlock created successfully".to_string(),
-                    was_updated: false,
-                })
+    if !status.is_success() {
+        return Err(format!(
+            "Supabase {} error {}: {}",
+            if method == reqwest::Method::PATCH {
+                "update"
             } else {
-                Err("No data returned from insert".to_string())
-            }
-        } else {
-            Err(format!(
-                "Supabase insert error {}: {}",
-                response.status(),
-                response.text().await.unwrap_or_default()
-            ))
-        }
+                "insert"
+            },
+            status,
+            text
+        ));
     }
+
+    let returned_records: Vec<serde_json::Value> =
+        serde_json::from_str(&text).map_err(|e| format!("Failed to parse response: {}", e))?;
+
+    if let Some(record) = returned_records.first() {
+        let id = record
+            .get("id")
+            .and_then(|v| v.as_i64())
+            .ok_or("No ID returned from Supabase")?;
+
+        //? StatBlock must exist now
+
+        stat_block.id = Some(id);
+
+        save_statblock_actions_helper(&stat_block, &config, &client, &access_token).await?;
+
+        return Ok(SaveStatBlockResponse {
+            id,
+            name: stat_block.name.clone(),
+            message: if method == reqwest::Method::PATCH {
+                "StatBlock updated successfully".to_string()
+            } else {
+                "StatBlock created successfully".to_string()
+            },
+            was_updated: method == reqwest::Method::PATCH,
+        });
+    }
+
+    Err("No data returned from Supabase".to_string())
 }
