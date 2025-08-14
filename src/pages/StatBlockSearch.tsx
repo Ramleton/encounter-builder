@@ -58,6 +58,7 @@ function StatBlockHeader({ search, setSearch }: StatBlockHeaderProps) {
 
 interface FetchStatBlockResponse {
 	statblocks: StatBlock[];
+	status: number;
 	message: string; 
 }
 
@@ -75,16 +76,27 @@ function StatBlockSearch() {
 			const response = await invoke<FetchStatBlockResponse>("fetch_statblocks", { accessToken });
 
 			setStatBlocks(response.statblocks);
+			setLoading(false);
 		};
 
 		fetchStatBlocks();
-		setLoading(false);
 	}, [])
 
 	return (
 		<>
 			<StatBlockHeader search={search} setSearch={setSearch} />
-			{ loading && <CircularProgress color="secondary" /> }
+			{ loading && (
+					<Box sx={{
+						display: 'flex',
+						flexDirection: 'column',
+						alignItems: 'center',
+						justifyContent: 'center',
+						height: '100%'
+					}}>
+						<CircularProgress color="secondary" />
+					</Box>
+				)
+			}
 			{ !loading && (
 				<Box sx={{
 					display: 'grid',

@@ -21,6 +21,7 @@ pub struct SaveStatBlockResponse {
 #[derive(Serialize, Deserialize, Debug)]
 pub struct RetrieveStatBlockResponse {
     pub statblocks: Vec<StatBlock>,
+    pub status: u16,
     pub message: String,
 }
 
@@ -169,7 +170,9 @@ pub async fn fetch_statblocks(access_token: String) -> Result<RetrieveStatBlockR
         .await
         .map_err(|e| format!("StatBlock fetch failed: {}", e))?;
 
-    if !response.status().is_success() {
+    let status = response.status();
+
+    if !status.is_success() {
         let error_text = response.text().await.unwrap_or_default();
         return Err(format!("StatBlock fetch failed: {}", error_text));
     }
@@ -186,6 +189,7 @@ pub async fn fetch_statblocks(access_token: String) -> Result<RetrieveStatBlockR
 
     Ok(RetrieveStatBlockResponse {
         statblocks,
+        status: status.as_u16(),
         message: "Successfully retrieved statblocks".to_string(),
     })
 }
