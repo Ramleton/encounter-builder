@@ -10,6 +10,7 @@ use crate::types::{
     proficiency_types::{
         ProficiencyLevel, SaveProficiency, SaveProficiencyDB, SkillProficiency, SkillProficiencyDB,
     },
+    spell_types::{SpellcastingAbility, Spells, SpellsDB, SpellsFromJoin},
     trait_types::{Trait, TraitDB},
 };
 
@@ -82,23 +83,6 @@ pub struct Stats {
     intelligence: u8,
     wisdom: u8,
     charisma: u8,
-}
-
-#[derive(Debug, Copy, Clone, PartialEq, Eq, Serialize, Deserialize)]
-#[typeshare]
-pub enum SpellcastingAbility {
-    Intelligence,
-    Wisdom,
-    Charisma,
-}
-
-#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
-#[typeshare]
-pub struct Spells {
-    pub ability: SpellcastingAbility,
-    pub save_dc: u8,
-    pub attack_bonus: u8,
-    pub spells: std::collections::HashMap<String, String>,
 }
 
 #[derive(Serialize, Deserialize, Debug)]
@@ -220,6 +204,8 @@ pub struct StatBlockFromDB {
     spellcasting_ability: Option<Score>,
     save_dc: Option<u8>,
     spell_attack_bonus: Option<u8>,
+    #[serde(rename = "Spells")]
+    spells: Option<Vec<SpellsFromJoin>>,
 }
 
 impl StatBlock {
@@ -332,7 +318,38 @@ impl StatBlock {
             } else {
                 Vec::new()
             },
-            spells: None,
+            spells: if let Some(spellcasting_ability) = &db.spellcasting_ability {
+                let ability = match spellcasting_ability {
+                    Score::Wisdom => SpellcastingAbility::Wisdom,
+                    Score::Charisma => SpellcastingAbility::Charisma,
+                    _ => SpellcastingAbility::Intelligence,
+                };
+
+                Some(Spells {
+                    ability,
+                    save_dc: if let Some(save_dc) = db.save_dc {
+                        save_dc
+                    } else {
+                        0
+                    },
+                    attack_bonus: if let Some(attack_bonus) = db.spell_attack_bonus {
+                        attack_bonus
+                    } else {
+                        0
+                    },
+                    spells: if let Some(spells) = &db.spells {
+                        let mut map = HashMap::new();
+                        for spell in spells {
+                            map.insert(spell.name.clone(), spell.spell_list.clone());
+                        }
+                        map
+                    } else {
+                        HashMap::new()
+                    },
+                })
+            } else {
+                None
+            },
             actions: if let Some(actions) = &db.actions {
                 actions.to_vec()
             } else {
@@ -357,6 +374,23 @@ impl StatBlock {
             last_modified: db.last_modified.clone(),
             user_id: db.user_id.clone(),
         }
+    }
+
+    pub fn spells_to_db(&self) -> Result<Vec<SpellsDB>, String> {
+        if let Some(statblock_id) = self.id {
+            if let Some(statblock_spells) = &self.spells {
+                return Ok(statblock_spells
+                    .spells
+                    .iter()
+                    .map(|spell_entries| SpellsDB {
+                        statblock_id,
+                        name: spell_entries.0.to_string(),
+                        spell_list: spell_entries.1.to_string(),
+                    })
+                    .collect());
+            }
+        }
+        Err("No StatBlock ID".to_string())
     }
 
     pub fn condition_immunities_to_db(&self) -> Result<Vec<ConditionImmunityDB>, String> {

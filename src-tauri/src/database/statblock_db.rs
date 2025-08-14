@@ -8,6 +8,7 @@ use crate::{
         proficiency_type_db::{
             save_statblock_save_proficiency_helper, save_statblock_skill_proficiency_helper,
         },
+        spell_db::save_statblock_spells_helper,
         trait_db::save_statblock_traits_helper,
     },
     types::{
@@ -118,6 +119,7 @@ pub async fn save_statblock(
             .await?;
         save_statblock_skill_proficiency_helper(&stat_block, &config, &client, &access_token)
             .await?;
+        save_statblock_spells_helper(&stat_block, &config, &client, &access_token).await?;
 
         return Ok(SaveStatBlockResponse {
             id,
@@ -152,7 +154,8 @@ pub async fn fetch_statblocks_with_joins(
         ConditionImmunity(condition_type),\
         Trait(name, description),\
         SaveProficiency(score, level),\
-        SkillProficiency(ability, level)
+        SkillProficiency(ability, level),\
+        Spells(name, spell_list)
     ";
 
     let get_url = format!("{}/rest/v1/StatBlock?{}", config.url, query);
@@ -177,8 +180,6 @@ pub async fn fetch_statblocks_with_joins(
         .json()
         .await
         .map_err(|e| format!("Failed to parse StatBlock response: {}", e))?;
-
-    println!("{:?}", statblock_join);
 
     let statblocks: Vec<StatBlock> = statblock_join
         .into_iter()

@@ -102,7 +102,8 @@ function StatBlockSearch() {
 					display: 'grid',
 					gridTemplateColumns: 'repeat(4, 1fr)',
 					width: '100%',
-					margin: '1rem 0'
+					margin: '1rem 0',
+					gap: '1rem'
 				}}>
 					{statBlocks
 						.filter(statBlock => statBlock.name.includes(search))

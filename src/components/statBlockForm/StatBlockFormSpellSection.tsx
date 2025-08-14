@@ -19,18 +19,22 @@ function StatBlockFormSpellSection() {
 
 	const handleSpellcastingAbilityChange = (ability: SpellcastingAbility) => {
 		setLocalSpells(prev => {
+			const proficiencyBonus = getProficiencyBonus(statBlock);
+			const abilityModifier = getModifier(statBlock.stats[ability.toString().toLowerCase() as keyof Stats]);
+
 			if (!prev) {
-				const proficiencyBonus = getProficiencyBonus(statBlock)
 				return {
 					ability,
-					save_dc: 8 + getModifier(statBlock.stats[ability.toString() as keyof Stats]) + proficiencyBonus,
-					attack_bonus: getModifier(statBlock.stats[ability.toString() as keyof Stats]) + proficiencyBonus,
+					save_dc: abilityModifier + proficiencyBonus,
+					attack_bonus: abilityModifier + proficiencyBonus,
 					spells: {}
 				};
 			}
 			return {
 				...prev,
-				ability
+				ability,
+				save_dc: 8 + abilityModifier + proficiencyBonus,
+				attack_bonus: abilityModifier + proficiencyBonus
 			}
 		});
 	};
@@ -43,8 +47,8 @@ function StatBlockFormSpellSection() {
 				const proficiencyBonus = getProficiencyBonus(statBlock);
 				return {
 					ability: SpellcastingAbility.Intelligence,
-					save_dc: 8 + getModifier(statBlock.stats["Intelligence" as keyof Stats]) + proficiencyBonus,
-					attack_bonus: getModifier(statBlock.stats["Intelligence" as keyof Stats]) + proficiencyBonus,
+					save_dc: 8 + getModifier(statBlock.stats["intelligence" as keyof Stats]) + proficiencyBonus,
+					attack_bonus: getModifier(statBlock.stats["intelligence" as keyof Stats]) + proficiencyBonus,
 					spells: { [newSpellLevel]: newSpellList }
 				};
 			}
@@ -89,8 +93,8 @@ function StatBlockFormSpellSection() {
 		const proficiencyBonus = getProficiencyBonus(statBlock);
 		setLocalSpells({
 			ability: SpellcastingAbility.Intelligence,
-			save_dc: 8 + getModifier(statBlock.stats["Intelligence" as keyof Stats]) + proficiencyBonus,
-			attack_bonus: getModifier(statBlock.stats["Intelligence" as keyof Stats]) + proficiencyBonus,
+			save_dc: 8 + getModifier(statBlock.stats["intelligence" as keyof Stats]) + proficiencyBonus,
+			attack_bonus: getModifier(statBlock.stats["intelligence" as keyof Stats]) + proficiencyBonus,
 			spells: {}
 		});
 	};
