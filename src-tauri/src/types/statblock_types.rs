@@ -266,11 +266,11 @@ pub struct StatBlockFromDB {
     spell_attack_bonus: Option<u8>,
 }
 
-#[derive(Serialize, Deserialize, Debug, Copy, Clone)]
-pub struct ActionDB<'a> {
+#[derive(Serialize, Deserialize, Debug)]
+pub struct ActionDB {
     pub statblock_id: i64,
-    pub name: &'a str,
-    pub description: &'a str,
+    pub name: String,
+    pub description: String,
 }
 
 impl StatBlock {
@@ -350,54 +350,54 @@ impl StatBlock {
         }
     }
 
-    pub fn actions_to_db<'a>(&'a self) -> Result<HashMap<&'a str, Vec<ActionDB<'a>>>, String> {
+    pub fn actions_to_db(&self) -> Result<HashMap<String, Vec<ActionDB>>, String> {
         if let Some(statblock_id) = self.id {
-            let mut map: HashMap<&str, Vec<ActionDB<'_>>> = HashMap::new();
+            let mut map: HashMap<String, Vec<ActionDB>> = HashMap::new();
 
             map.insert(
-                "Action",
+                "Action".to_string(),
                 self.actions
                     .iter()
                     .map(|action| ActionDB {
                         statblock_id,
-                        name: &action.name,
-                        description: &action.description,
+                        name: action.name.clone(),
+                        description: action.description.clone(),
                     })
                     .collect(),
             );
 
             map.insert(
-                "BonusAction",
+                "BonusAction".to_string(),
                 self.bonus_actions
                     .iter()
                     .map(|bonus_action| ActionDB {
                         statblock_id,
-                        name: &bonus_action.name,
-                        description: &bonus_action.description,
+                        name: bonus_action.name.clone(),
+                        description: bonus_action.description.clone(),
                     })
                     .collect(),
             );
 
             map.insert(
-                "Reaction",
+                "Reaction".to_string(),
                 self.reactions
                     .iter()
                     .map(|reaction| ActionDB {
                         statblock_id,
-                        name: &reaction.name,
-                        description: &reaction.description,
+                        name: reaction.name.clone(),
+                        description: reaction.description.clone(),
                     })
                     .collect(),
             );
 
             map.insert(
-                "LegendaryAction",
+                "LegendaryAction".to_string(),
                 self.legendary_actions
                     .iter()
                     .map(|legendary_actions| ActionDB {
                         statblock_id,
-                        name: &legendary_actions.name,
-                        description: &legendary_actions.description,
+                        name: legendary_actions.name.clone(),
+                        description: legendary_actions.description.clone(),
                     })
                     .collect(),
             );

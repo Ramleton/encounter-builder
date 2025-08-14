@@ -53,17 +53,17 @@ async fn save_statblock_actions_helper(
 
     let actions = stat_block.actions_to_db()?;
     for action in actions.get("Action").unwrap() {
-        insert_action(*action, config, client, access_token, "Action").await?;
+        insert_action(action, config, client, access_token, "Action").await?;
     }
     for bonus_action in actions.get("BonusAction").unwrap() {
-        insert_action(*bonus_action, config, client, access_token, "BonusAction").await?;
+        insert_action(bonus_action, config, client, access_token, "BonusAction").await?;
     }
     for reaction in actions.get("Reaction").unwrap() {
-        insert_action(*reaction, config, client, access_token, "Reaction").await?;
+        insert_action(reaction, config, client, access_token, "Reaction").await?;
     }
     for legendary_action in actions.get("LegendaryAction").unwrap() {
         insert_action(
-            *legendary_action,
+            legendary_action,
             config,
             client,
             access_token,

@@ -6,7 +6,7 @@ use crate::types::{
 };
 
 pub async fn insert_action(
-    action: ActionDB<'_>,
+    action: &ActionDB,
     config: &SupabaseConfig,
     client: &Client,
     access_token: &str,
