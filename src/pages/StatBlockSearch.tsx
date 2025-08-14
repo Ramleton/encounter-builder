@@ -114,6 +114,7 @@ function StatBlockSearch() {
 								state: { statBlock: statBlock }
 							})}
 							handleDelete={() => {}}
+							informative
 						/>)
 					}
 				</Box>

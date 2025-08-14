@@ -1,6 +1,7 @@
 import { Save } from "@mui/icons-material";
 import { Box, Button, FormControl, InputLabel, MenuItem, Select, TextField } from "@mui/material";
 import { invoke } from "@tauri-apps/api/core";
+import { useState } from "react";
 import { useAuth } from "../../context/AuthContext";
 import { useCreateStatBlock } from "../../context/CreateStatBlockContext";
 import { Alignment, CR_VALUES, Size } from "../../types/statBlock";
@@ -16,6 +17,7 @@ type SaveStatBlockResponse = {
 function UpperStatBlockForm() {
 	const { statBlock, setStatBlock, errors, setErrors } = useCreateStatBlock();
 	const { user, getAccessToken } = useAuth();
+	const [saving, setSaving] = useState<boolean>();
 
 	const input_validation = (): boolean => {
 		const newErrors: Record<string, string> = {};
@@ -35,6 +37,7 @@ function UpperStatBlockForm() {
 	const handleSave = async () => {
 		if (input_validation()) return;
 		if (!user) return;
+		setSaving(true);
 
 		let updatedStatBlock = {
 			...statBlock,
@@ -52,6 +55,7 @@ function UpperStatBlockForm() {
 			updatedStatBlock.id = res.id;
 			setStatBlock(updatedStatBlock);
 		}
+		setSaving(false);
 	};
 
 	return (
@@ -108,6 +112,7 @@ function UpperStatBlockForm() {
 					variant="contained"
 					endIcon={<Save />}
 					onClick={handleSave}
+					loading={saving}
 				>
 					Save
 				</Button>
