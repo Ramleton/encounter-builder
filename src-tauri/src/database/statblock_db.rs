@@ -1,12 +1,12 @@
-use reqwest::Client;
 use serde::{Deserialize, Serialize};
 
 use crate::{
-    database::action_db::{delete_actions_matching_statblock_id, insert_action},
-    types::{
-        auth_types::SupabaseConfig,
-        statblock_types::{StatBlock, StatBlockFromDB},
+    database::{
+        action_db::save_statblock_actions_helper,
+        condition_type_db::save_statblock_condition_immunities_helper,
+        damage_type_db::save_statblock_damage_types_helper,
     },
+    types::statblock_types::{ActionDB, DamageTypeDB, StatBlock, StatBlockFromDB},
     utils::supabase_util::init_supabase,
 };
 
@@ -25,55 +25,19 @@ pub struct RetrieveStatBlockResponse {
     pub message: String,
 }
 
-async fn save_statblock_actions_helper(
-    stat_block: &StatBlock,
-    config: &SupabaseConfig,
-    client: &Client,
-    access_token: &str,
-) -> Result<String, String> {
-    delete_actions_matching_statblock_id(&stat_block, &config, &client, &access_token, "Action")
-        .await?;
-    delete_actions_matching_statblock_id(
-        &stat_block,
-        &config,
-        &client,
-        &access_token,
-        "BonusAction",
-    )
-    .await?;
-    delete_actions_matching_statblock_id(&stat_block, &config, &client, &access_token, "Reaction")
-        .await?;
-    delete_actions_matching_statblock_id(
-        &stat_block,
-        &config,
-        &client,
-        &access_token,
-        "LegendaryAction",
-    )
-    .await?;
+#[derive(Serialize, Deserialize, Debug)]
+pub struct RetrieveStatBlockActionsResponse {
+    pub actions: Vec<ActionDB>,
+    pub bonus_actions: Vec<ActionDB>,
+    pub reactions: Vec<ActionDB>,
+    pub legendary_actions: Vec<ActionDB>,
+}
 
-    let actions = stat_block.actions_to_db()?;
-    for action in actions.get("Action").unwrap() {
-        insert_action(action, config, client, access_token, "Action").await?;
-    }
-    for bonus_action in actions.get("BonusAction").unwrap() {
-        insert_action(bonus_action, config, client, access_token, "BonusAction").await?;
-    }
-    for reaction in actions.get("Reaction").unwrap() {
-        insert_action(reaction, config, client, access_token, "Reaction").await?;
-    }
-    for legendary_action in actions.get("LegendaryAction").unwrap() {
-        insert_action(
-            legendary_action,
-            config,
-            client,
-            access_token,
-            "LegendaryAction",
-        )
-        .await?;
-    }
-
-    Ok("Action inserts successful".to_string())
+#[derive(Serialize, Deserialize, Debug)]
+pub struct RetrieveStatBlockDamageTypesResponse {
+    pub resistances: Vec<DamageTypeDB>,
+    pub immunities: Vec<DamageTypeDB>,
+    pub vulnerabilities: Vec<DamageTypeDB>,
 }
 
 #[tauri::command]
@@ -138,6 +102,9 @@ pub async fn save_statblock(
         stat_block.id = Some(id);
 
         save_statblock_actions_helper(&stat_block, &config, &client, &access_token).await?;
+        save_statblock_damage_types_helper(&stat_block, &config, &client, &access_token).await?;
+        save_statblock_condition_immunities_helper(&stat_block, &config, &client, &access_token)
+            .await?;
 
         return Ok(SaveStatBlockResponse {
             id,
@@ -155,11 +122,24 @@ pub async fn save_statblock(
 }
 
 #[tauri::command]
-pub async fn fetch_statblocks(access_token: String) -> Result<RetrieveStatBlockResponse, String> {
+pub async fn fetch_statblocks_with_joins(
+    access_token: String,
+) -> Result<RetrieveStatBlockResponse, String> {
     let config = init_supabase().await.map_err(|e| e.to_string())?;
     let client = reqwest::Client::new();
 
-    let get_url = format!("{}/rest/v1/StatBlock", config.url);
+    let query = "select=*,\
+        Action(name, description),\
+        BonusAction(name, description),\
+        Reaction(name, description),\
+        LegendaryAction(name, description),\
+        DamageResistance(damage_type),\
+        DamageImmunity(damage_type),\
+        DamageVulnerability(damage_type),\
+        ConditionImmunity(condition_type)
+    ";
+
+    let get_url = format!("{}/rest/v1/StatBlock?{}", config.url, query);
 
     let response = client
         .get(&get_url)
@@ -177,19 +157,21 @@ pub async fn fetch_statblocks(access_token: String) -> Result<RetrieveStatBlockR
         return Err(format!("StatBlock fetch failed: {}", error_text));
     }
 
-    let data: Vec<StatBlockFromDB> = response
+    let statblock_join: Vec<StatBlockFromDB> = response
         .json()
         .await
         .map_err(|e| format!("Failed to parse StatBlock response: {}", e))?;
 
-    let statblocks = data
-        .iter()
-        .map(|db_sb| StatBlock::statblock_from_db(db_sb))
+    println!("{:?}", statblock_join);
+
+    let statblocks: Vec<StatBlock> = statblock_join
+        .into_iter()
+        .map(|sb_with_relations| StatBlock::statblock_from_db(&sb_with_relations))
         .collect();
 
     Ok(RetrieveStatBlockResponse {
         statblocks,
         status: status.as_u16(),
-        message: "Successfully retrieved statblocks".to_string(),
+        message: "Successfully retrieved statblocks with relations".to_string(),
     })
 }

@@ -2,7 +2,7 @@ mod database;
 mod types;
 mod utils;
 
-use database::statblock_db::{fetch_statblocks, save_statblock};
+use database::statblock_db::save_statblock;
 use tauri::{Emitter, Manager};
 #[cfg(desktop)]
 use tauri_plugin_deep_link::DeepLinkExt;
@@ -12,6 +12,8 @@ use utils::auth_utils::{
     get_current_user, get_stored_value, handle_discord_oauth_callback, login_with_discord,
     login_with_email, logout_user, register_with_email, remove_stored_value, store_value,
 };
+
+use crate::database::statblock_db::fetch_statblocks_with_joins;
 
 #[tauri::command]
 async fn open_url(url: &str) -> Result<(), String> {
@@ -81,7 +83,7 @@ pub fn run() {
             register_with_email,
             login_with_email,
             save_statblock,
-            fetch_statblocks
+            fetch_statblocks_with_joins
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

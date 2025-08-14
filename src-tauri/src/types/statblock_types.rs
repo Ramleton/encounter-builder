@@ -3,6 +3,8 @@ use std::collections::HashMap;
 use serde::{Deserialize, Serialize};
 use typeshare::typeshare;
 
+use crate::database::statblock_db;
+
 #[derive(Serialize, Deserialize, Debug, Copy, Clone)]
 #[typeshare]
 #[serde(rename_all = "PascalCase")]
@@ -29,7 +31,7 @@ pub enum Size {
     Gargantuan,
 }
 
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug, Copy, Clone)]
 #[typeshare]
 pub enum ConditionType {
     Blinded,
@@ -49,7 +51,7 @@ pub enum ConditionType {
     Unconscious,
 }
 
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug, Copy, Clone)]
 #[typeshare]
 pub enum DamageType {
     Acid,
@@ -125,7 +127,7 @@ pub struct SaveProficiency {
     pub level: ProficiencyLevel,
 }
 
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug, Clone)]
 #[typeshare]
 pub struct Action {
     name: String,
@@ -238,7 +240,7 @@ pub struct StatBlockToDB {
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct StatBlockFromDB {
-    id: i64,
+    pub id: i64,
     name: String,
     size: Size,
     creature_type: String,
@@ -257,9 +259,25 @@ pub struct StatBlockFromDB {
     intelligence: u8,
     wisdom: u8,
     charisma: u8,
+    #[serde(rename = "DamageVulnerability")]
+    damage_vulnerabilities: Option<Vec<DamageTypeFromJoin>>,
+    #[serde(rename = "DamageResistance")]
+    damage_resistances: Option<Vec<DamageTypeFromJoin>>,
+    #[serde(rename = "DamageImmunity")]
+    damage_immunities: Option<Vec<DamageTypeFromJoin>>,
+    #[serde(rename = "ConditionImmunity")]
+    condition_immunities: Option<Vec<ConditionTypeFromJoin>>,
     cr: String,
     last_modified: String,
+    #[serde(rename = "Action")]
+    actions: Option<Vec<Action>>,
+    #[serde(rename = "LegendaryAction")]
+    legendary_actions: Option<Vec<Action>>,
     legendary_description: Option<String>,
+    #[serde(rename = "BonusAction")]
+    bonus_actions: Option<Vec<Action>>,
+    #[serde(rename = "Reaction")]
+    reactions: Option<Vec<Action>>,
     user_id: String,
     spellcasting_ability: Option<Score>,
     save_dc: Option<u8>,
@@ -271,6 +289,28 @@ pub struct ActionDB {
     pub statblock_id: i64,
     pub name: String,
     pub description: String,
+}
+
+#[derive(Serialize, Deserialize, Debug)]
+pub struct DamageTypeDB {
+    pub statblock_id: i64,
+    pub damage_type: DamageType,
+}
+
+#[derive(Serialize, Deserialize, Debug, Clone)]
+pub struct DamageTypeFromJoin {
+    pub damage_type: DamageType,
+}
+
+#[derive(Serialize, Deserialize, Debug, Clone)]
+pub struct ConditionImmunityDB {
+    pub statblock_id: i64,
+    pub condition_type: ConditionType,
+}
+
+#[derive(Serialize, Deserialize, Debug, Clone)]
+pub struct ConditionTypeFromJoin {
+    pub condition_type: ConditionType,
 }
 
 impl StatBlock {
@@ -312,7 +352,7 @@ impl StatBlock {
         StatBlock {
             id: Some(db.id),
             name: db.name.clone(),
-            size: db.size,
+            size: db.size.clone(),
             type_: db.creature_type.clone(),
             subtype: db.subtype.clone(),
             alignment: db.alignment,
@@ -333,21 +373,125 @@ impl StatBlock {
             skill_saves: Vec::new(),
             senses: db.senses.clone(),
             languages: db.languages.clone(),
-            damage_vulnerabilities: Vec::new(),
-            damage_resistances: Vec::new(),
-            damage_immunities: Vec::new(),
-            condition_immunities: Vec::new(),
+            damage_vulnerabilities: if let Some(vulnerabilities) = &db.damage_vulnerabilities {
+                vulnerabilities
+                    .to_vec()
+                    .iter()
+                    .map(|vulnerability| vulnerability.damage_type)
+                    .collect()
+            } else {
+                Vec::new()
+            },
+            damage_resistances: if let Some(resistances) = &db.damage_resistances {
+                resistances
+                    .to_vec()
+                    .iter()
+                    .map(|resistance| resistance.damage_type)
+                    .collect()
+            } else {
+                Vec::new()
+            },
+            damage_immunities: if let Some(immunities) = &db.damage_immunities {
+                immunities
+                    .to_vec()
+                    .iter()
+                    .map(|immunity| immunity.damage_type)
+                    .collect()
+            } else {
+                Vec::new()
+            },
+            condition_immunities: if let Some(immunities) = &db.condition_immunities {
+                immunities
+                    .to_vec()
+                    .iter()
+                    .map(|immunity| immunity.condition_type)
+                    .collect()
+            } else {
+                Vec::new()
+            },
             cr: db.cr.clone(),
             traits: Vec::new(),
             spells: None,
-            actions: Vec::new(),
-            legendary_actions: Vec::new(),
+            actions: if let Some(actions) = &db.actions {
+                actions.to_vec()
+            } else {
+                Vec::new()
+            },
+            legendary_actions: if let Some(legendary_actions) = &db.legendary_actions {
+                legendary_actions.to_vec()
+            } else {
+                Vec::new()
+            },
             legendary_description: db.legendary_description.clone(),
-            bonus_actions: Vec::new(),
-            reactions: Vec::new(),
+            bonus_actions: if let Some(bonus_actions) = &db.bonus_actions {
+                bonus_actions.to_vec()
+            } else {
+                Vec::new()
+            },
+            reactions: if let Some(reactions) = &db.reactions {
+                reactions.to_vec()
+            } else {
+                Vec::new()
+            },
             last_modified: db.last_modified.clone(),
             user_id: db.user_id.clone(),
         }
+    }
+
+    pub fn condition_immunities_to_db(&self) -> Result<Vec<ConditionImmunityDB>, String> {
+        if let Some(statblock_id) = self.id {
+            return Ok(self
+                .condition_immunities
+                .iter()
+                .map(|condition_type| ConditionImmunityDB {
+                    statblock_id,
+                    condition_type: condition_type.clone(),
+                })
+                .collect());
+        }
+        Err("No StatBlock ID".to_string())
+    }
+
+    pub fn damage_types_to_db(&self) -> Result<HashMap<String, Vec<DamageTypeDB>>, String> {
+        if let Some(statblock_id) = self.id {
+            let mut map: HashMap<String, Vec<DamageTypeDB>> = HashMap::new();
+
+            map.insert(
+                "DamageResistance".to_string(),
+                self.damage_resistances
+                    .iter()
+                    .map(|resistance| DamageTypeDB {
+                        statblock_id,
+                        damage_type: resistance.clone(),
+                    })
+                    .collect(),
+            );
+
+            map.insert(
+                "DamageImmunity".to_string(),
+                self.damage_immunities
+                    .iter()
+                    .map(|immunity| DamageTypeDB {
+                        statblock_id,
+                        damage_type: immunity.clone(),
+                    })
+                    .collect(),
+            );
+
+            map.insert(
+                "DamageVulnerability".to_string(),
+                self.damage_vulnerabilities
+                    .iter()
+                    .map(|vulnerability| DamageTypeDB {
+                        statblock_id,
+                        damage_type: vulnerability.clone(),
+                    })
+                    .collect(),
+            );
+
+            return Ok(map);
+        }
+        Err("No StatBlock ID".to_string())
     }
 
     pub fn actions_to_db(&self) -> Result<HashMap<String, Vec<ActionDB>>, String> {

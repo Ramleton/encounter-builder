@@ -1,43 +1,42 @@
+//? POST
+
 use reqwest::Client;
 
 use crate::types::{
     auth_types::SupabaseConfig,
-    statblock_types::{ActionDB, StatBlock, StatBlockFromDB},
+    statblock_types::{DamageTypeDB, StatBlock, StatBlockFromDB},
 };
 
 //? Helper Util
 
-pub async fn save_statblock_actions_helper(
+pub async fn save_statblock_damage_types_helper(
     stat_block: &StatBlock,
     config: &SupabaseConfig,
     client: &Client,
     access_token: &str,
 ) -> Result<String, String> {
-    let table_names = vec!["Action", "BonusAction", "Reaction", "LegendaryAction"];
-    let actions = stat_block.actions_to_db()?;
+    let table_names = vec!["DamageResistance", "DamageImmunity", "DamageVulnerability"];
+    let damage_types = stat_block.damage_types_to_db()?;
 
     for table_name in &table_names {
-        delete_actions_matching_statblock_id(
-            &stat_block,
-            &config,
-            &client,
-            &access_token,
-            &table_name,
+        delete_damage_types_matching_statblock_id(
+            stat_block,
+            config,
+            client,
+            access_token,
+            table_name,
         )
         .await?;
 
-        for action in actions.get(&table_name.to_string()).unwrap() {
-            insert_action(action, config, client, access_token, &table_name).await?;
+        for damage_type in damage_types.get(&table_name.to_string()).unwrap() {
+            insert_damage_types(damage_type, config, client, access_token, table_name).await?;
         }
     }
-
-    Ok("Action inserts successful".to_string())
+    Ok("Damage Type inserts successful".to_string())
 }
 
-//? POST
-
-pub async fn insert_action(
-    action: &ActionDB,
+pub async fn insert_damage_types(
+    damage_type: &DamageTypeDB,
     config: &SupabaseConfig,
     client: &Client,
     access_token: &str,
@@ -50,7 +49,7 @@ pub async fn insert_action(
         .post(&insert_url)
         .header("apikey", &config.anon_key)
         .header("Authorization", format!("Bearer {}", access_token))
-        .body(serde_json::to_string(&vec![action]).map_err(|e| e.to_string())?)
+        .body(serde_json::to_string(&vec![damage_type]).map_err(|e| e.to_string())?)
         .send()
         .await
         .map_err(|e| format!("{} insert failed: {}", table_name, e))?;
@@ -68,14 +67,14 @@ pub async fn insert_action(
 
 //? GET
 
-pub async fn retrieve_actions_matching_statblock_id(
+pub async fn retrieve_damage_types_matching_statblock_id(
     stat_block: &StatBlockFromDB,
     config: &SupabaseConfig,
     client: &Client,
     access_token: &str,
     table_name: &str,
-) -> Result<Vec<ActionDB>, String> {
-    // Retrieve actions for statblock
+) -> Result<Vec<DamageTypeDB>, String> {
+    // Retrieve damage types for statblock
     let get_url = format!(
         "{}/rest/v1/{}?statblock_id=eq.{}",
         config.url, table_name, stat_block.id
@@ -98,24 +97,24 @@ pub async fn retrieve_actions_matching_statblock_id(
         ));
     }
 
-    let actions: Vec<ActionDB> = get_response
+    let damage_types: Vec<DamageTypeDB> = get_response
         .json()
         .await
-        .map_err(|e| format!("Failed to parse Action response: {}", e))?;
+        .map_err(|e| format!("Failed to parse DamageType response: {}", e))?;
 
-    Ok(actions)
+    Ok(damage_types)
 }
 
 //? DELETE
 
-pub async fn delete_actions_matching_statblock_id(
+pub async fn delete_damage_types_matching_statblock_id(
     stat_block: &StatBlock,
     config: &SupabaseConfig,
     client: &Client,
     access_token: &str,
     table_name: &str,
 ) -> Result<String, String> {
-    // Delete pre-existing actions for statblock
+    // Delete pre-existing damage types for statblock
     let delete_url = format!(
         "{}/rest/v1/{}?statblock_id=eq.{}",
         config.url,
