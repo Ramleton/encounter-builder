@@ -4,7 +4,11 @@ use crate::{
     database::{
         action_db::save_statblock_actions_helper,
         condition_type_db::save_statblock_condition_immunities_helper,
-        damage_type_db::save_statblock_damage_types_helper, trait_db::save_statblock_traits_helper,
+        damage_type_db::save_statblock_damage_types_helper,
+        proficiency_type_db::{
+            save_statblock_save_proficiency_helper, save_statblock_skill_proficiency_helper,
+        },
+        trait_db::save_statblock_traits_helper,
     },
     types::{
         action_types::ActionDB,
@@ -110,6 +114,10 @@ pub async fn save_statblock(
         save_statblock_damage_types_helper(&stat_block, &config, &client, &access_token).await?;
         save_statblock_condition_immunities_helper(&stat_block, &config, &client, &access_token)
             .await?;
+        save_statblock_save_proficiency_helper(&stat_block, &config, &client, &access_token)
+            .await?;
+        save_statblock_skill_proficiency_helper(&stat_block, &config, &client, &access_token)
+            .await?;
 
         return Ok(SaveStatBlockResponse {
             id,
@@ -142,7 +150,9 @@ pub async fn fetch_statblocks_with_joins(
         DamageImmunity(damage_type),\
         DamageVulnerability(damage_type),\
         ConditionImmunity(condition_type),\
-        Trait(name, description)
+        Trait(name, description),\
+        SaveProficiency(score, level),\
+        SkillProficiency(ability, level)
     ";
 
     let get_url = format!("{}/rest/v1/StatBlock?{}", config.url, query);

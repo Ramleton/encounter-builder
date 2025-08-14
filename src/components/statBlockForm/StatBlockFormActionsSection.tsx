@@ -95,6 +95,7 @@ function StatBlockFormActionSection({
 				<TextField
 					multiline
 					variant="outlined"
+					value={statBlock.legendary_description}
 					label={`${label} Description`}
 					onChange={(e) => updateField("legendary_description", e.target.value, setStatBlock)}
 				/>

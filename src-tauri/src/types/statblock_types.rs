@@ -3,14 +3,14 @@ use std::collections::HashMap;
 use serde::{Deserialize, Serialize};
 use typeshare::typeshare;
 
-use crate::{
-    database::statblock_db,
-    types::{
-        action_types::{Action, ActionDB},
-        condition_types::{ConditionImmunityDB, ConditionType, ConditionTypeFromJoin},
-        damage_types::{DamageType, DamageTypeDB, DamageTypeFromJoin},
-        trait_types::{Trait, TraitDB},
+use crate::types::{
+    action_types::{Action, ActionDB},
+    condition_types::{ConditionImmunityDB, ConditionType, ConditionTypeFromJoin},
+    damage_types::{DamageType, DamageTypeDB, DamageTypeFromJoin},
+    proficiency_types::{
+        ProficiencyLevel, SaveProficiency, SaveProficiencyDB, SkillProficiency, SkillProficiencyDB,
     },
+    trait_types::{Trait, TraitDB},
 };
 
 #[derive(Serialize, Deserialize, Debug, Copy, Clone)]
@@ -39,7 +39,7 @@ pub enum Size {
     Gargantuan,
 }
 
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug, Copy, Clone)]
 #[typeshare]
 pub enum Score {
     Strength,
@@ -71,31 +71,6 @@ pub enum Ability {
     SleightOfHand,
     Stealth,
     Survival,
-}
-
-#[derive(Serialize, Deserialize, Debug, Copy, Clone)]
-#[typeshare]
-pub enum ProficiencyLevel {
-    #[serde(rename = "none")]
-    None,
-    #[serde(rename = "proficient")]
-    Proficient,
-    #[serde(rename = "expertise")]
-    Expertise,
-}
-
-#[derive(Serialize, Deserialize, Debug, Copy, Clone)]
-#[typeshare]
-pub struct SkillProficiency {
-    pub ability: Ability,
-    pub level: ProficiencyLevel,
-}
-
-#[derive(Serialize, Deserialize, Debug)]
-#[typeshare]
-pub struct SaveProficiency {
-    pub score: Score,
-    pub level: ProficiencyLevel,
 }
 
 #[derive(Serialize, Deserialize, Debug)]
@@ -137,7 +112,7 @@ pub struct StatBlock {
     pub subtype: Option<String>,
     pub alignment: Alignment,
     pub ac: u8,
-    pub hp: u8,
+    pub hp: u16,
     pub initiative: ProficiencyLevel,
     pub hit_dice: String,
     pub speed: String,
@@ -174,7 +149,7 @@ pub struct StatBlockToDB {
     subtype: Option<String>,
     alignment: Alignment,
     ac: u8,
-    hp: u8,
+    hp: u16,
     initiative: ProficiencyLevel,
     hit_dice: String,
     speed: String,
@@ -204,7 +179,7 @@ pub struct StatBlockFromDB {
     subtype: Option<String>,
     alignment: Alignment,
     ac: u8,
-    hp: u8,
+    hp: u16,
     initiative: ProficiencyLevel,
     hit_dice: String,
     speed: String,
@@ -216,6 +191,10 @@ pub struct StatBlockFromDB {
     intelligence: u8,
     wisdom: u8,
     charisma: u8,
+    #[serde(rename = "SaveProficiency")]
+    pub saves: Option<Vec<SaveProficiency>>,
+    #[serde(rename = "SkillProficiency")]
+    pub skill_saves: Option<Vec<SkillProficiency>>,
     #[serde(rename = "DamageVulnerability")]
     damage_vulnerabilities: Option<Vec<DamageTypeFromJoin>>,
     #[serde(rename = "DamageResistance")]
@@ -299,8 +278,16 @@ impl StatBlock {
                 wisdom: db.wisdom,
                 charisma: db.charisma,
             },
-            saves: Vec::new(),
-            skill_saves: Vec::new(),
+            saves: if let Some(saves) = &db.saves {
+                saves.to_vec()
+            } else {
+                Vec::new()
+            },
+            skill_saves: if let Some(skills) = &db.skill_saves {
+                skills.to_vec()
+            } else {
+                Vec::new()
+            },
             senses: db.senses.clone(),
             languages: db.languages.clone(),
             damage_vulnerabilities: if let Some(vulnerabilities) = &db.damage_vulnerabilities {
@@ -380,6 +367,36 @@ impl StatBlock {
                 .map(|condition_type| ConditionImmunityDB {
                     statblock_id,
                     condition_type: condition_type.clone(),
+                })
+                .collect());
+        }
+        Err("No StatBlock ID".to_string())
+    }
+
+    pub fn save_proficiencies_to_db(&self) -> Result<Vec<SaveProficiencyDB>, String> {
+        if let Some(statblock_id) = self.id {
+            return Ok(self
+                .saves
+                .iter()
+                .map(|save| SaveProficiencyDB {
+                    statblock_id,
+                    score: save.score.clone(),
+                    level: save.level.clone(),
+                })
+                .collect());
+        }
+        Err("No StatBlock ID".to_string())
+    }
+
+    pub fn skill_proficiencies_to_db(&self) -> Result<Vec<SkillProficiencyDB>, String> {
+        if let Some(statblock_id) = self.id {
+            return Ok(self
+                .skill_saves
+                .iter()
+                .map(|skill| SkillProficiencyDB {
+                    statblock_id,
+                    ability: skill.ability.clone(),
+                    level: skill.level.clone(),
                 })
                 .collect());
         }

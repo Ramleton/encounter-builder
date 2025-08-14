@@ -98,7 +98,10 @@ function StatBlockFormStatSection() {
 												}}
 											/>
 										}
-									/>} label="Save" />
+										checked={statBlock.saves.filter((save) => save.score === score)[0]?.level === "proficient"}
+									/>}
+									label="Save"
+									/>
 								</FormControl>
 								<Typography>{
 									modifierToString(statBlock.saves.find(save => save.score === score)?.level === "proficient"
