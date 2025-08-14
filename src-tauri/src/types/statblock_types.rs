@@ -3,7 +3,15 @@ use std::collections::HashMap;
 use serde::{Deserialize, Serialize};
 use typeshare::typeshare;
 
-use crate::database::statblock_db;
+use crate::{
+    database::statblock_db,
+    types::{
+        action_types::{Action, ActionDB},
+        condition_types::{ConditionImmunityDB, ConditionType, ConditionTypeFromJoin},
+        damage_types::{DamageType, DamageTypeDB, DamageTypeFromJoin},
+        trait_types::{Trait, TraitDB},
+    },
+};
 
 #[derive(Serialize, Deserialize, Debug, Copy, Clone)]
 #[typeshare]
@@ -29,43 +37,6 @@ pub enum Size {
     Large,
     Huge,
     Gargantuan,
-}
-
-#[derive(Serialize, Deserialize, Debug, Copy, Clone)]
-#[typeshare]
-pub enum ConditionType {
-    Blinded,
-    Charmed,
-    Deafened,
-    Exhaustion,
-    Frightened,
-    Grappled,
-    Incapacitated,
-    Invisible,
-    Paralyzed,
-    Petrified,
-    Poisoned,
-    Prone,
-    Restrained,
-    Stunned,
-    Unconscious,
-}
-
-#[derive(Serialize, Deserialize, Debug, Copy, Clone)]
-#[typeshare]
-pub enum DamageType {
-    Acid,
-    Bludgeoning,
-    Cold,
-    Fire,
-    Force,
-    Lightning,
-    Necrotic,
-    Piercing,
-    Poison,
-    Psychic,
-    Radiant,
-    Slashing,
 }
 
 #[derive(Serialize, Deserialize, Debug)]
@@ -125,20 +96,6 @@ pub struct SkillProficiency {
 pub struct SaveProficiency {
     pub score: Score,
     pub level: ProficiencyLevel,
-}
-
-#[derive(Serialize, Deserialize, Debug, Clone)]
-#[typeshare]
-pub struct Action {
-    name: String,
-    description: String,
-}
-
-#[derive(Serialize, Deserialize, Debug)]
-#[typeshare]
-pub struct Trait {
-    name: String,
-    description: String,
 }
 
 #[derive(Serialize, Deserialize, Debug)]
@@ -269,6 +226,8 @@ pub struct StatBlockFromDB {
     condition_immunities: Option<Vec<ConditionTypeFromJoin>>,
     cr: String,
     last_modified: String,
+    #[serde(rename = "Trait")]
+    traits: Option<Vec<Trait>>,
     #[serde(rename = "Action")]
     actions: Option<Vec<Action>>,
     #[serde(rename = "LegendaryAction")]
@@ -282,35 +241,6 @@ pub struct StatBlockFromDB {
     spellcasting_ability: Option<Score>,
     save_dc: Option<u8>,
     spell_attack_bonus: Option<u8>,
-}
-
-#[derive(Serialize, Deserialize, Debug)]
-pub struct ActionDB {
-    pub statblock_id: i64,
-    pub name: String,
-    pub description: String,
-}
-
-#[derive(Serialize, Deserialize, Debug)]
-pub struct DamageTypeDB {
-    pub statblock_id: i64,
-    pub damage_type: DamageType,
-}
-
-#[derive(Serialize, Deserialize, Debug, Clone)]
-pub struct DamageTypeFromJoin {
-    pub damage_type: DamageType,
-}
-
-#[derive(Serialize, Deserialize, Debug, Clone)]
-pub struct ConditionImmunityDB {
-    pub statblock_id: i64,
-    pub condition_type: ConditionType,
-}
-
-#[derive(Serialize, Deserialize, Debug, Clone)]
-pub struct ConditionTypeFromJoin {
-    pub condition_type: ConditionType,
 }
 
 impl StatBlock {
@@ -410,7 +340,11 @@ impl StatBlock {
                 Vec::new()
             },
             cr: db.cr.clone(),
-            traits: Vec::new(),
+            traits: if let Some(traits) = &db.traits {
+                traits.to_vec()
+            } else {
+                Vec::new()
+            },
             spells: None,
             actions: if let Some(actions) = &db.actions {
                 actions.to_vec()
@@ -490,6 +424,21 @@ impl StatBlock {
             );
 
             return Ok(map);
+        }
+        Err("No StatBlock ID".to_string())
+    }
+
+    pub fn traits_to_db(&self) -> Result<Vec<TraitDB>, String> {
+        if let Some(statblock_id) = self.id {
+            return Ok(self
+                .traits
+                .iter()
+                .map(|statblock_trait| TraitDB {
+                    statblock_id,
+                    name: statblock_trait.name.clone(),
+                    description: statblock_trait.description.clone(),
+                })
+                .collect());
         }
         Err("No StatBlock ID".to_string())
     }

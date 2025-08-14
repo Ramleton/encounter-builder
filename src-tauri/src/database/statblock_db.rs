@@ -4,9 +4,13 @@ use crate::{
     database::{
         action_db::save_statblock_actions_helper,
         condition_type_db::save_statblock_condition_immunities_helper,
-        damage_type_db::save_statblock_damage_types_helper,
+        damage_type_db::save_statblock_damage_types_helper, trait_db::save_statblock_traits_helper,
     },
-    types::statblock_types::{ActionDB, DamageTypeDB, StatBlock, StatBlockFromDB},
+    types::{
+        action_types::ActionDB,
+        damage_types::DamageTypeDB,
+        statblock_types::{StatBlock, StatBlockFromDB},
+    },
     utils::supabase_util::init_supabase,
 };
 
@@ -102,6 +106,7 @@ pub async fn save_statblock(
         stat_block.id = Some(id);
 
         save_statblock_actions_helper(&stat_block, &config, &client, &access_token).await?;
+        save_statblock_traits_helper(&stat_block, &config, &client, &access_token).await?;
         save_statblock_damage_types_helper(&stat_block, &config, &client, &access_token).await?;
         save_statblock_condition_immunities_helper(&stat_block, &config, &client, &access_token)
             .await?;
@@ -136,7 +141,8 @@ pub async fn fetch_statblocks_with_joins(
         DamageResistance(damage_type),\
         DamageImmunity(damage_type),\
         DamageVulnerability(damage_type),\
-        ConditionImmunity(condition_type)
+        ConditionImmunity(condition_type),\
+        Trait(name, description)
     ";
 
     let get_url = format!("{}/rest/v1/StatBlock?{}", config.url, query);

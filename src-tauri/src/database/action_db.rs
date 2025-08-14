@@ -1,8 +1,9 @@
 use reqwest::Client;
 
 use crate::types::{
+    action_types::ActionDB,
     auth_types::SupabaseConfig,
-    statblock_types::{ActionDB, StatBlock, StatBlockFromDB},
+    statblock_types::{StatBlock, StatBlockFromDB},
 };
 
 //? Helper Util

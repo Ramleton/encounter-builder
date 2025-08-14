@@ -4,7 +4,8 @@ use reqwest::Client;
 
 use crate::types::{
     auth_types::SupabaseConfig,
-    statblock_types::{DamageTypeDB, StatBlock, StatBlockFromDB},
+    damage_types::DamageTypeDB,
+    statblock_types::{StatBlock, StatBlockFromDB},
 };
 
 //? Helper Util
