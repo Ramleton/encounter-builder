@@ -143,8 +143,14 @@ pub async fn save_statblock(
 #[tauri::command]
 pub async fn fetch_statblocks_with_joins(
     access_token: String,
-) -> Result<RetrieveStatBlockResponse, String> {
-    let config = init_supabase().await.map_err(|e| e.to_string())?;
+) -> Result<RetrieveStatBlockResponse, RetrieveStatBlockResponse> {
+    let config = init_supabase()
+        .await
+        .map_err(|e| RetrieveStatBlockResponse {
+            statblocks: Vec::new(),
+            status: 500,
+            message: e.to_string(),
+        })?;
     let client = reqwest::Client::new();
 
     let query = "select=*,\
@@ -171,19 +177,32 @@ pub async fn fetch_statblocks_with_joins(
         .header("Content-Type", "application/json")
         .send()
         .await
-        .map_err(|e| format!("StatBlock fetch failed: {}", e))?;
+        .map_err(|e| RetrieveStatBlockResponse {
+            statblocks: Vec::new(),
+            status: 500,
+            message: e.to_string(),
+        })?;
 
     let status = response.status();
 
     if !status.is_success() {
         let error_text = response.text().await.unwrap_or_default();
-        return Err(format!("StatBlock fetch failed: {}", error_text));
+        return Err(RetrieveStatBlockResponse {
+            statblocks: Vec::new(),
+            status: status.as_u16(),
+            message: format!("StatBlock fetch failed: {}", error_text),
+        });
     }
 
-    let statblock_join: Vec<StatBlockFromDB> = response
-        .json()
-        .await
-        .map_err(|e| format!("Failed to parse StatBlock response: {}", e))?;
+    let statblock_join: Vec<StatBlockFromDB> =
+        response
+            .json()
+            .await
+            .map_err(|e| RetrieveStatBlockResponse {
+                statblocks: Vec::new(),
+                status: 500,
+                message: format!("Failed to parse StatBlock response: {}", e.to_string()),
+            })?;
 
     let statblocks: Vec<StatBlock> = statblock_join
         .into_iter()

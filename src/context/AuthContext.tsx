@@ -1,6 +1,6 @@
 import { invoke } from "@tauri-apps/api/core";
 import { listen } from "@tauri-apps/api/event";
-import { createContext, FC, ReactNode, useContext, useEffect, useState } from "react";
+import { createContext, FC, ReactNode, useContext, useEffect, useRef, useState } from "react";
 import { AuthResponse, LoginRequest, RegisterRequest, RegisterResult, User } from "../types/auth";
 
 interface AuthContextType {
@@ -30,16 +30,16 @@ export const AuthProvider: FC<AuthProviderProps> = ({ children }) => {
 		resolve: (user: User) => void;
 		reject: (error: Error) => void;
 	} | null>(null);
-	const [tokenRefreshTimer, setTokenRefreshTimer] = useState<number | null>(null);
+	const tokenRefreshTimer = useRef<number | null>(null);
 
 	// Clear timer on unmount
 	useEffect(() => {
 		return () => {
-			if (tokenRefreshTimer) {
-				clearTimeout(tokenRefreshTimer);
+			if (tokenRefreshTimer.current) {
+				clearTimeout(tokenRefreshTimer.current);
 			}
 		};
-	}, [tokenRefreshTimer]);
+	}, []);
 
 	// Load stored authentication data on mount
 	useEffect(() => {
@@ -47,20 +47,24 @@ export const AuthProvider: FC<AuthProviderProps> = ({ children }) => {
 		setupOAuthListener();
 	}, []);
 
-		const scheduleTokenRefresh = (expiresIn: number) => {
+		const scheduleTokenRefresh = (expiresIn?: number) => {
 		// Clear existing timer
-		if (tokenRefreshTimer) {
-			clearTimeout(tokenRefreshTimer);
+		if (tokenRefreshTimer.current) {
+			clearTimeout(tokenRefreshTimer.current);
+			tokenRefreshTimer.current = null;
 		}
 
-		const refreshTime = Math.max(0, (expiresIn - 300) * 1000);
+		const defaultExpiresIn = 3600;
+		const actualExpiresIn = expiresIn || defaultExpiresIn;
 
-		const timer = setTimeout(async () => {
+		const refreshTime = Math.max(60000, (actualExpiresIn - 300) * 1000);
+
+		console.log(`Scheduling token refresh in ${refreshTime / 1000} seconds`);
+
+		tokenRefreshTimer.current = setTimeout(async() => {
 			await refreshTokens();
 		}, refreshTime);
-
-		setTokenRefreshTimer(timer);
-	}
+	};
 
 	const refreshTokens = async (): Promise<void> => {
 		try {
@@ -69,7 +73,9 @@ export const AuthProvider: FC<AuthProviderProps> = ({ children }) => {
 			const refreshToken = await invoke<string>("get_stored_value", { key: "refresh_token" });
 
 			if (!refreshToken) {
-				throw new Error("No refresh token available");
+				console.warn("No refresh token available");
+				await logout();
+				return;
 			}
 
 			const response: AuthResponse = await invoke('refresh_access_token', {
@@ -87,7 +93,10 @@ export const AuthProvider: FC<AuthProviderProps> = ({ children }) => {
 					await invoke('store_value', { key: 'refresh_token', value: response.refresh_token});
 				}
 
-				scheduleTokenRefresh(3000);
+				const expiresAt = Date.now() + (response.expires_in || 3600) * 1000;
+				await invoke('store_value', { key: 'token_expires_at', value: expiresAt.toString()});
+
+				scheduleTokenRefresh(response.expires_in);
 
 				console.log('Access token refreshed successfully');
 			}
@@ -104,12 +113,40 @@ export const AuthProvider: FC<AuthProviderProps> = ({ children }) => {
 			const userStr = await invoke<string>('get_stored_value', { key: 'user' });
 			
 			if (accessToken && userStr) {
+				// Check if token is expired
+				try {
+					const expiresAtStr = await invoke<string>('get_stored_value', { key: 'token_expires_at' });
+					const expiresAt = parseInt(expiresAtStr);
+					const now = Date.now();
+
+					if (expiresAt && now >= expiresAt - 60000) {
+						console.log('Stored token is expired or about to expire, refreshing...');
+						await refreshTokens();
+						return;
+					}
+				} catch (err) {
+					console.log('No expiration time stored, assuming token is valid');
+				}
 				
 				// Verify the token is still valid by getting current user
 				try {
 					const currentUser = await getCurrentUser(accessToken);
 					if (currentUser) {
 						setUser(currentUser);
+
+						// Schedule refresh for stored token
+						try {
+							const expiresAtStr = await invoke<string>('get_stored_value', { key: 'token_expires_at' });
+							const expiresAt = parseInt(expiresAtStr);
+							const now = Date.now();
+							const secondsUntilExpiry = Math.floor((expiresAt - now) / 1000);
+							if (secondsUntilExpiry > 0) {
+								scheduleTokenRefresh(secondsUntilExpiry);
+							}
+						} catch (err) {
+							// Default refresh schedule if no expiration stored
+							scheduleTokenRefresh();
+						}
 					} else {
 						// Token invalid, clear storage
 						await clearStoredAuth();
@@ -158,6 +195,9 @@ export const AuthProvider: FC<AuthProviderProps> = ({ children }) => {
 				
 				if (currentUser) {
 					setUser(currentUser);
+
+					// Schedule token refresh (default to 1 hour for OAuth tokens)
+					scheduleTokenRefresh();
 					
 					// Resolve the OAuth promise if it exists
 					if (oauthPromise) {
@@ -215,8 +255,14 @@ export const AuthProvider: FC<AuthProviderProps> = ({ children }) => {
 			await invoke('remove_stored_value', { key: 'access_token' });
 			await invoke('remove_stored_value', { key: 'refresh_token' });
 			await invoke('remove_stored_value', { key: 'user' });
+			await invoke('remove_stored_value', { key: 'token_expires_at' });
 		} catch (error) {
 			console.error('Failed to clear stored auth:', error);
+		}
+
+		if (tokenRefreshTimer.current) {
+			clearTimeout(tokenRefreshTimer.current);
+			tokenRefreshTimer.current = null;
 		}
 	};
 
@@ -224,6 +270,9 @@ export const AuthProvider: FC<AuthProviderProps> = ({ children }) => {
 		try {
 			if (response.access_token) {
 				await invoke('store_value', { key: 'access_token', value: response.access_token });
+
+				const expiresAt = Date.now() + (response.expires_in || 3600) * 1000;
+				await invoke('store_value', { key: 'token_expires_at', value: expiresAt.toString() });
 			}
 			if (response.refresh_token) {
 				await invoke('store_value', { key: 'refresh_token', value: response.refresh_token });
@@ -239,6 +288,8 @@ export const AuthProvider: FC<AuthProviderProps> = ({ children }) => {
 				};
 
 				setUser(user);
+
+				scheduleTokenRefresh(response.expires_in);
 			}
 		} catch (error) {
 			console.error('Failed to save auth tokens:', error);

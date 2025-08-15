@@ -72,11 +72,15 @@ function StatBlockSearch() {
 
 	useEffect(() => {
 		const fetchStatBlocks = async () => {
-			const accessToken = await getAccessToken();
-			const response = await invoke<FetchStatBlockResponse>("fetch_statblocks_with_joins", { accessToken });
-
-			setStatBlocks(response.statblocks);
-			setLoading(false);
+			try {
+				const accessToken = await getAccessToken();
+				const response = await invoke<FetchStatBlockResponse>("fetch_statblocks_with_joins", { accessToken });
+	
+				setStatBlocks(response.statblocks);
+				setLoading(false);
+			} catch(e: any) {
+				console.error(e);
+			}
 		};
 
 		fetchStatBlocks();

@@ -3,7 +3,7 @@ use std::{collections::HashMap, fs};
 use tauri::Manager;
 
 use crate::{
-    types::auth_types::{AuthResponse, LoginRequest, RegisterRequest},
+    types::auth_types::{AuthResponse, LoginRequest, RegisterRequest, SupabaseAuthResponse},
     utils::supabase_util::init_supabase,
 };
 
@@ -42,10 +42,12 @@ pub async fn register_with_email(
         return Err(format!("Registration failed: {}", error_text));
     }
 
-    let auth_response: AuthResponse = response
+    let supabase_response: SupabaseAuthResponse = response
         .json()
         .await
         .map_err(|e| format!("Failed to parse response: {}", e))?;
+
+    let auth_response = convert_supabase_response(supabase_response);
 
     println!("Received response: {:?}", auth_response);
     Ok(auth_response)
@@ -78,10 +80,12 @@ pub async fn login_with_email(login_request: LoginRequest) -> Result<AuthRespons
         return Err(format!("Login failed: {}", error_text));
     }
 
-    let auth_response: AuthResponse = response
+    let supabase_response: SupabaseAuthResponse = response
         .json()
         .await
         .map_err(|e| format!("Failed to parse response: {}", e))?;
+
+    let auth_response = convert_supabase_response(supabase_response);
 
     Ok(auth_response)
 }
@@ -125,10 +129,12 @@ pub async fn handle_discord_oauth_callback(
         .await
         .map_err(|e| format!("Request failed: {}", e))?;
 
-    let auth_response: AuthResponse = response
+    let supabase_response: SupabaseAuthResponse = response
         .json()
         .await
         .map_err(|e| format!("Failed to parse response: {}", e))?;
+
+    let auth_response = convert_supabase_response(supabase_response);
 
     Ok(auth_response)
 }
@@ -252,10 +258,55 @@ pub async fn refresh_access_token(refresh_token: String) -> Result<AuthResponse,
         return Err(format!("Token refresh failed: {}", error_text));
     }
 
-    let auth_response: AuthResponse = response
+    let supabase_response: SupabaseAuthResponse = response
         .json()
         .await
         .map_err(|e| format!("Failed to parse response: {}", e))?;
 
+    let auth_response = convert_supabase_response(supabase_response);
+
     Ok(auth_response)
+}
+
+fn convert_supabase_response(supabase_response: SupabaseAuthResponse) -> AuthResponse {
+    let user = if let Some(user_data) = supabase_response.user {
+        Some(crate::types::auth_types::User {
+            uuid: user_data
+                .get("id")
+                .and_then(|v| v.as_str())
+                .unwrap_or_default()
+                .to_string(),
+            email: user_data
+                .get("email")
+                .and_then(|v| v.as_str())
+                .unwrap_or_default()
+                .to_string(),
+            username: user_data
+                .get("user_metadata")
+                .and_then(|m| m.get("full name"))
+                .and_then(|v| v.as_str())
+                .unwrap_or_default()
+                .to_string(),
+            avatar_url: user_data
+                .get("user_metadata")
+                .and_then(|m| m.get("avatar_url"))
+                .and_then(|v| v.as_str())
+                .unwrap_or_default()
+                .to_string(),
+        })
+    } else {
+        None
+    };
+
+    AuthResponse {
+        access_token: supabase_response.access_token,
+        refresh_token: supabase_response.refresh_token,
+        expires_in: supabase_response.expires_in,
+        expires_at: supabase_response.expires_at,
+        token_type: supabase_response.token_type,
+        user,
+        error: supabase_response
+            .error
+            .or(supabase_response.error_description),
+    }
 }
