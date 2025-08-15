@@ -22,7 +22,7 @@ use crate::{
 #[derive(Serialize, Deserialize, Debug)]
 pub struct SaveStatBlockResponse {
     pub id: i64,
-    pub name: String,
+    pub status: u16,
     pub message: String,
     pub was_updated: bool,
 }
@@ -125,7 +125,7 @@ pub async fn save_statblock(
 
         return Ok(SaveStatBlockResponse {
             id,
-            name: stat_block.name.clone(),
+            status: status.as_u16(),
             message: if method == reqwest::Method::PATCH {
                 "StatBlock updated successfully".to_string()
             } else {

@@ -9,7 +9,7 @@ import { updateField, updateIntegerField } from "../../utils/statBlockUtils";
 
 type SaveStatBlockResponse = {
 	id: number;
-    name: string;
+	status: number;
     message: string;
     was_updated: boolean;
 }

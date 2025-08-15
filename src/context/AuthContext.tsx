@@ -87,7 +87,7 @@ export const AuthProvider: FC<AuthProviderProps> = ({ children }) => {
 					await invoke('store_value', { key: 'refresh_token', value: response.refresh_token});
 				}
 
-				scheduleTokenRefresh(3600);
+				scheduleTokenRefresh(3000);
 
 				console.log('Access token refreshed successfully');
 			}

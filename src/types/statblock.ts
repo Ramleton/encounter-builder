@@ -14,6 +14,7 @@ export enum Size {
 }
 
 export enum Alignment {
+	Unaligned = "Unaligned",
 	LawfulGood = "LawfulGood",
 	NeutralGood = "NeutralGood",
 	ChaoticGood = "ChaoticGood",

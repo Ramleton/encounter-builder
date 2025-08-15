@@ -18,6 +18,7 @@ use crate::types::{
 #[typeshare]
 #[serde(rename_all = "PascalCase")]
 pub enum Alignment {
+    Unaligned,
     LawfulGood,
     NeutralGood,
     ChaoticGood,

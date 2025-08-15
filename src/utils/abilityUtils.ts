@@ -15,7 +15,7 @@ export function getProficiencyBonus(statBlock: StatBlock) {
 	if (isNaN(Number.parseInt(statBlock.cr))) {
 		return 2;
 	}
-	return Math.floor((Number.parseInt(statBlock.cr) - 1) / 4) + 2;
+	return Math.max(Math.floor((Number.parseInt(statBlock.cr) - 1) / 4) + 2, 2);
 }
 
 export function abilityToScore(label: Ability): Score {
