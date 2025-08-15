@@ -30,12 +30,72 @@ export const AuthProvider: FC<AuthProviderProps> = ({ children }) => {
 		resolve: (user: User) => void;
 		reject: (error: Error) => void;
 	} | null>(null);
+	const [tokenRefreshTimer, setTokenRefreshTimer] = useState<number | null>(null);
+
+	// Clear timer on unmount
+	useEffect(() => {
+		return () => {
+			if (tokenRefreshTimer) {
+				clearTimeout(tokenRefreshTimer);
+			}
+		};
+	}, [tokenRefreshTimer]);
 
 	// Load stored authentication data on mount
 	useEffect(() => {
 		loadStoredAuth();
 		setupOAuthListener();
 	}, []);
+
+		const scheduleTokenRefresh = (expiresIn: number) => {
+		// Clear existing timer
+		if (tokenRefreshTimer) {
+			clearTimeout(tokenRefreshTimer);
+		}
+
+		const refreshTime = Math.max(0, (expiresIn - 300) * 1000);
+
+		const timer = setTimeout(async () => {
+			await refreshTokens();
+		}, refreshTime);
+
+		setTokenRefreshTimer(timer);
+	}
+
+	const refreshTokens = async (): Promise<void> => {
+		try {
+			console.log("Refreshing access token...");
+
+			const refreshToken = await invoke<string>("get_stored_value", { key: "refresh_token" });
+
+			if (!refreshToken) {
+				throw new Error("No refresh token available");
+			}
+
+			const response: AuthResponse = await invoke('refresh_access_token', {
+				refreshToken
+			});
+
+			if (response.error) {
+				throw new Error(response.error);
+			}
+
+			if (response.access_token) {
+				await invoke('store_value', { key: 'access_token', value: response.access_token});
+
+				if (response.refresh_token) {
+					await invoke('store_value', { key: 'refresh_token', value: response.refresh_token});
+				}
+
+				scheduleTokenRefresh(3600);
+
+				console.log('Access token refreshed successfully');
+			}
+		} catch (error) {
+			console.error("Token refresh failed:", error);
+			await logout();
+		}
+	}
 
 	const loadStoredAuth = async () => {
 		try {

@@ -28,6 +28,7 @@ function StatBlockViewSpellcastingSection() {
 			</Typography>
 			{statBlock.spells && Object.entries(statBlock.spells.spells).map(value => 
 				<Typography
+					key={value[0]}
 					variant="body2"
 					sx={{
 						color: theme.palette.primary.contrastText,

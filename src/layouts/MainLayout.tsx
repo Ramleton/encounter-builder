@@ -169,56 +169,103 @@ function MainLayout({ children }: MainLayoutProps) {
 			<Box>
 				<Divider />
 				<List>
-				{['StatBlocks', 'Encounters'].map((text, index) => (
-					<ListItem key={text} disablePadding sx={{ display: 'block' }}>
-					<ListItemButton
-						onClick={() => navigate("/statblock_search")}
-						sx={[
-						{
-							minHeight: 48,
-							px: 2.5,
-						},
-						open
-							? {
-								justifyContent: 'initial',
-							}
-							: {
-								justifyContent: 'center',
-							},
-						]}
-					>
-						<ListItemIcon
-						sx={[
+					<ListItem disablePadding sx={{ display: 'block' }}>
+						<ListItemButton
+							onClick={() => {
+								if (!isAuthenticated) return navigate("/auth");
+								navigate("/statblock_search");
+							}}
+							sx={[
 							{
-							minWidth: 0,
-							justifyContent: 'center',
+								minHeight: 48,
+								px: 2.5,
 							},
 							open
-							? {
-								mr: 3,
-								}
-							: {
-								mr: 'auto',
-								},
-						]}
+								? { justifyContent: 'initial' }
+								: { justifyContent: 'center' },
+							]}
 						>
-						{index % 2 === 0 ? <ListAlt sx={{ width: 32, height: 32 }} /> : <Ballot sx={{ width: 32, height: 32 }} />}
-						</ListItemIcon>
-						<ListItemText
-						primary={text}
-						sx={[
-							open
-							? {
-								opacity: 1,
-								}
-							: {
-								opacity: 0,
+							<ListItemIcon
+							sx={[
+								{
+								minWidth: 0,
+								justifyContent: 'center',
 								},
-						]}
-						/>
-					</ListItemButton>
+								open
+								? {
+									mr: 3,
+									}
+								: {
+									mr: 'auto',
+									},
+							]}
+							>
+								<ListAlt sx={{ width: 32, height: 32 }} />
+							</ListItemIcon>
+							<ListItemText
+								primary="StatBlocks"
+								sx={[
+									open
+									? {
+										opacity: 1,
+										}
+									: {
+										opacity: 0,
+										},
+								]}
+							/>
+						</ListItemButton>
 					</ListItem>
-				))}
+					<ListItem disablePadding sx={{ display: 'block' }}>
+						<ListItemButton
+							onClick={() => {
+								if (!isAuthenticated) return navigate("/auth");
+							}}
+							sx={[
+							{
+								minHeight: 48,
+								px: 2.5,
+							},
+							open
+								? {
+									justifyContent: 'initial',
+								}
+								: {
+									justifyContent: 'center',
+								},
+							]}
+						>
+							<ListItemIcon
+							sx={[
+								{
+								minWidth: 0,
+								justifyContent: 'center',
+								},
+								open
+								? {
+									mr: 3,
+									}
+								: {
+									mr: 'auto',
+									},
+							]}
+							>
+								<Ballot sx={{ width: 32, height: 32 }} />
+							</ListItemIcon>
+							<ListItemText
+							primary="Encounters"
+							sx={[
+								open
+								? {
+									opacity: 1,
+								}
+								: {
+									opacity: 0,
+								},
+							]}
+							/>
+						</ListItemButton>
+					</ListItem>
 				</List>
 				<Divider />
 			</Box>

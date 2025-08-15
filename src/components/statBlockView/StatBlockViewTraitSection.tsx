@@ -37,7 +37,7 @@ function StatBlockViewTraitSection() {
 		}}>
 			<Typography variant="h5">Traits</Typography>
 			<Divider sx={{ borderBottomWidth: 2, mb: 1 }} />
-			{statBlock.traits.map(trait => <TraitSection trait={trait} />)}
+			{statBlock.traits.map(trait => <TraitSection key={trait.name} trait={trait} />)}
 		</Box>
 	)
 }

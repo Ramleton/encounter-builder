@@ -49,6 +49,8 @@ pub struct RetrieveStatBlockDamageTypesResponse {
     pub vulnerabilities: Vec<DamageTypeDB>,
 }
 
+//? UPSERT
+
 #[tauri::command]
 pub async fn save_statblock(
     mut stat_block: StatBlock,
@@ -136,6 +138,8 @@ pub async fn save_statblock(
     Err("No data returned from Supabase".to_string())
 }
 
+//? GET
+
 #[tauri::command]
 pub async fn fetch_statblocks_with_joins(
     access_token: String,
@@ -191,4 +195,38 @@ pub async fn fetch_statblocks_with_joins(
         status: status.as_u16(),
         message: "Successfully retrieved statblocks with relations".to_string(),
     })
+}
+
+//? DELETE
+
+#[tauri::command]
+pub async fn delete_statblock(
+    statblock: StatBlock,
+    access_token: String,
+) -> Result<String, String> {
+    let config = init_supabase().await.map_err(|e| e.to_string())?;
+    let client = reqwest::Client::new();
+
+    if let Some(statblock_id) = statblock.id {
+        let delete_url = format!("{}/rest/v1/StatBlock?id=eq.{}", config.url, statblock_id);
+
+        let response = client
+            .delete(&delete_url)
+            .header("apikey", &config.anon_key)
+            .header("Authorization", format!("Bearer {}", access_token))
+            .header("Content-Type", "application/json")
+            .send()
+            .await
+            .map_err(|e| format!("StatBlock Delete failed: {}", e))?;
+
+        let status = response.status();
+
+        if !status.is_success() {
+            let error_text = response.text().await.unwrap_or_default();
+            return Err(format!("StatBlock Delete failed: {}", error_text));
+        }
+
+        return Ok("StatBlock Delete succeeded".to_string());
+    }
+    Err("StatBlock Delete failed: No StatBlock ID".to_string())
 }

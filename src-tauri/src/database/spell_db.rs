@@ -10,14 +10,13 @@ pub async fn save_statblock_spells_helper(
     client: &Client,
     access_token: &str,
 ) -> Result<String, String> {
-    let spells = stat_block.spells_to_db().unwrap();
+    if let Ok(spells) = stat_block.spells_to_db() {
+        delete_spells_matching_statblock_id(stat_block, config, client, access_token).await?;
 
-    delete_spells_matching_statblock_id(stat_block, config, client, access_token).await?;
-
-    for spell in spells {
-        insert_spells(&spell, config, client, access_token).await?;
+        for spell in spells {
+            insert_spells(&spell, config, client, access_token).await?;
+        }
     }
-
     Ok("Spell inserts successful".to_string())
 }
 

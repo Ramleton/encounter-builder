@@ -2,7 +2,7 @@ mod database;
 mod types;
 mod utils;
 
-use database::statblock_db::save_statblock;
+use database::statblock_db::{delete_statblock, save_statblock};
 use tauri::{Emitter, Manager};
 #[cfg(desktop)]
 use tauri_plugin_deep_link::DeepLinkExt;
@@ -14,6 +14,7 @@ use utils::auth_utils::{
 };
 
 use crate::database::statblock_db::fetch_statblocks_with_joins;
+use crate::utils::auth_utils::refresh_access_token;
 
 #[tauri::command]
 async fn open_url(url: &str) -> Result<(), String> {
@@ -82,7 +83,9 @@ pub fn run() {
             open_url,
             register_with_email,
             login_with_email,
+            refresh_access_token,
             save_statblock,
+            delete_statblock,
             fetch_statblocks_with_joins
         ])
         .run(tauri::generate_context!())

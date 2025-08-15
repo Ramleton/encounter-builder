@@ -222,3 +222,40 @@ pub async fn remove_stored_value(app: tauri::AppHandle, key: String) -> Result<(
 
     Ok(())
 }
+
+#[tauri::command]
+pub async fn refresh_access_token(refresh_token: String) -> Result<AuthResponse, String> {
+    let config = init_supabase().await?;
+    let client = reqwest::Client::new();
+
+    let body = json!({
+        "refresh_token": refresh_token
+    });
+
+    let response = client
+        .post(&format!(
+            "{}/auth/v1/token?grant_type=refresh_token",
+            config.url
+        ))
+        .header("apikey", &config.anon_key)
+        .header("Content-Type", "application/json")
+        .json(&body)
+        .send()
+        .await
+        .map_err(|e| format!("Request failed: {}", e))?;
+
+    if !response.status().is_success() {
+        let error_text = response
+            .text()
+            .await
+            .unwrap_or_else(|_| "Token refresh failed".to_string());
+        return Err(format!("Token refresh failed: {}", error_text));
+    }
+
+    let auth_response: AuthResponse = response
+        .json()
+        .await
+        .map_err(|e| format!("Failed to parse response: {}", e))?;
+
+    Ok(auth_response)
+}

@@ -60,7 +60,7 @@ function StatBlockViewLowerSection() {
 			{statBlock.skill_saves.length !== 0 &&
 				<Typography variant="body1" sx={{ display: 'flex', flexDirection: 'row', whiteSpace: 'pre', alignItems: "baseline" }}>
 					Skills{" "}
-					<Typography variant="body2" sx={{ color: theme.palette.primary.contrastText, whiteSpace: "collapse" }}>{
+					<Typography component="span" variant="body2" sx={{ color: theme.palette.primary.contrastText, whiteSpace: "collapse" }}>{
 					upgradedSkillSaves
 						.map((skill, i) => `${skill.ability.replace(/([a-z])([A-Z])/g, `$1 $2`)} ${calcSkillSave(skill)}${i !== upgradedSkillSaves.length - 1 ? ', ' : ''}`)
 					}

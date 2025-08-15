@@ -80,7 +80,16 @@ function StatBlockSearch() {
 		};
 
 		fetchStatBlocks();
-	}, [])
+	}, []);
+
+	const handleDelete = async (statBlock: StatBlock) => {
+		const accessToken = await getAccessToken();
+
+		const res = await invoke<string>("delete_statblock", { statblock: statBlock, accessToken: accessToken });
+
+		setStatBlocks(prev => prev.filter(sb => sb.id !== statBlock.id));
+		console.log(res);
+	}
 
 	return (
 		<>
@@ -109,11 +118,11 @@ function StatBlockSearch() {
 						.filter(statBlock => statBlock.name.includes(search))
 						.map(statBlock => <StatBlockCard
 							key={statBlock.id}
-							statblock={statBlock}
+							statBlock={statBlock}
 							handleEdit={() => navigate("/create_statblock", {
 								state: { statBlock: statBlock }
 							})}
-							handleDelete={() => {}}
+							handleDelete={handleDelete}
 							informative
 						/>)
 					}
