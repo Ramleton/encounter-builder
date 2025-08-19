@@ -44,7 +44,7 @@ function StatBlockHeader({ search, setSearch }: StatBlockHeaderProps) {
 			<Button
 				variant="contained"
 				startIcon={<Add />}
-				onClick={() => navigate("/create_statblock")}
+				onClick={() => navigate("/statblocks/create")}
 				sx={{
 					marginBottom: '1rem',
 					marginTop: '1rem'
@@ -123,7 +123,7 @@ function StatBlockSearch() {
 						.map(statBlock => <StatBlockCard
 							key={statBlock.id}
 							statBlock={statBlock}
-							handleEdit={() => navigate("/create_statblock", {
+							handleEdit={() => navigate("/statblocks/create", {
 								state: { statBlock: statBlock }
 							})}
 							handleDelete={handleDelete}
