@@ -220,6 +220,7 @@ function MainLayout({ children }: MainLayoutProps) {
 						<ListItemButton
 							onClick={() => {
 								if (!isAuthenticated) return navigate("/auth");
+								navigate("/encounters/search");
 							}}
 							sx={[
 							{
