@@ -5,7 +5,7 @@ import { CreateEncounterProvider } from "../context/CreateEncounterContext";
 
 function CreateEncounter() {
 	const location = useLocation();
-	const { encounter = null } = location.state || {};
+	const { encounter = null, playableStatBlocks, encounterPlayers } = location.state || {};
 
 	return (
 		<Box sx={{
@@ -15,7 +15,11 @@ function CreateEncounter() {
 			minHeight: '100%',
 			gap: '4rem'
 		}}>
-			<CreateEncounterProvider initialEncounter={encounter}>
+			<CreateEncounterProvider
+				initialEncounter={encounter}
+				initialPlayableStatBlocks={playableStatBlocks}
+				initialEncounterPlayers={encounterPlayers}
+			>
 				<EncounterForm />
 			</CreateEncounterProvider>
 		</Box>

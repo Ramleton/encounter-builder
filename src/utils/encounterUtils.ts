@@ -1,5 +1,4 @@
-import { Encounter } from "../types/encounter";
-import { Level, Player } from "../types/player";
+import { Encounter, EncounterPlayer, Level } from "../types/encounter";
 import { CR, StatBlock } from "../types/statBlock";
 
 export const generateEmptyEncounter = (): Encounter => {
@@ -87,7 +86,7 @@ enum EncounterDifficulty {
 	DEADLY = "Deadly"
 }
 
-export const calcEncounterDifficulty = (creatures: StatBlock[], players: Player[]): EncounterDifficulty => {
+export const calcEncounterDifficulty = (creatures: StatBlock[], players: EncounterPlayer[]): EncounterDifficulty => {
 	const encounterBudget = players
 		.reduce((acc, player) => {
 			const budget = budgetByLevel[player.level];
