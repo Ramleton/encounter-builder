@@ -42,7 +42,7 @@ function EncounterSearchHeader({ search, setSearch }: EncounterSearchHeaderProps
 			<Button
 				variant="contained"
 				startIcon={<Add />}
-				onClick={() => navigate("/statblocks/create")}
+				onClick={() => navigate("/encounters/create")}
 				sx={{
 					marginBottom: '1rem',
 					marginTop: '1rem'

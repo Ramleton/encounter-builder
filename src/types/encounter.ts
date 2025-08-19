@@ -1,9 +1,6 @@
-import { Player } from "./player";
-import { StatBlock } from "./statBlock";
-
 export type Encounter = {
+	id?: number;
 	name: string;
-	creatures: StatBlock[];
-	players: Player[];
+	user_id: string;
 	last_modified: string;
 }

@@ -1,10 +1,7 @@
-import { Box, Button, Divider, List, ListItem, Stack, Typography } from "@mui/material";
+import { Box, Button, Divider, List, Stack, Typography } from "@mui/material";
 import { useNavigate } from "react-router-dom";
-import EncounterCard from "../components/EncounterCard";
-import { useEncounters } from "../context/EncounterContext";
 
 function Home() {
-	const { encounters } = useEncounters();
 	const navigate = useNavigate();
 
 	return (
@@ -57,7 +54,7 @@ function Home() {
 				}}>
 					<Typography variant="h6" textAlign="center">Recent Encounters</Typography>
 					<List>
-						{encounters
+						{/* {encounters
 							.sort((a, b) => {
 								const dateA = new Date(a.last_modified);
 								const dateB = new Date(b.last_modified);
@@ -65,7 +62,7 @@ function Home() {
 							})
 							.map(encounter => (
 							<ListItem key={encounter.name}><EncounterCard encounter={encounter} /></ListItem>
-						))}
+						))} */}
 					</List>
 				</Box>
 				<Box sx={{

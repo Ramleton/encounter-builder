@@ -1,9 +1,9 @@
 import { ThemeProvider } from "@mui/material/styles";
 import { Route, HashRouter as Router, Routes } from "react-router-dom";
 import { AuthProvider } from "./context/AuthContext";
-import { EncounterProvider } from "./context/EncounterContext";
 import MainLayout from "./layouts/MainLayout";
 import AuthForm from "./pages/AuthForm";
+import CreateEncounter from "./pages/CreateEncounter";
 import CreateStatBlock from "./pages/CreateStatBlock";
 import EncounterSearch from "./pages/EncounterSearch";
 import Home from "./pages/Home";
@@ -14,7 +14,6 @@ function App() {
     return (
       <ThemeProvider theme={darkTheme}>
         <AuthProvider>
-          <EncounterProvider>
             <Router>
               <MainLayout>
                 <Routes>
@@ -23,10 +22,10 @@ function App() {
                   <Route path="/statblocks/search" Component={StatBlockSearch} />
                   <Route path="/encounters/search" Component={EncounterSearch} />
                   <Route path="/statblocks/create" Component={CreateStatBlock} />
+                  <Route path="/encounters/create" Component={CreateEncounter} />
                 </Routes>
               </MainLayout>
             </Router>
-          </EncounterProvider>
         </AuthProvider>
       </ThemeProvider>
     );

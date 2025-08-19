@@ -1,5 +1,14 @@
+import { Encounter } from "../types/encounter";
 import { Level, Player } from "../types/player";
 import { CR, StatBlock } from "../types/statBlock";
+
+export const generateEmptyEncounter = (): Encounter => {
+	return {
+		name: "",
+		user_id: "",
+		last_modified: ""
+	}
+}
 
 const xpByCR: Record<CR, number> = {
 	"0": 10,
