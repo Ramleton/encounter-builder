@@ -197,3 +197,9 @@ export const ACTION_KEY_LABELS: Record<StatBlockActionKey, string> = {
     bonus_actions: "Bonus Action",
     reactions: "Reaction"
 };
+
+export interface FetchStatBlockResponse {
+	statblocks: StatBlock[];
+	status: number;
+	message: string; 
+}

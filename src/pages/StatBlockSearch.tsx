@@ -56,12 +56,6 @@ function StatBlockHeader({ search, setSearch }: StatBlockHeaderProps) {
 	)
 }
 
-interface FetchStatBlockResponse {
-	statblocks: StatBlock[];
-	status: number;
-	message: string; 
-}
-
 function StatBlockSearch() {
 	const [search, setSearch] = useState<string>("");
 	const [statBlocks, setStatBlocks] = useState<StatBlock[]>([]);

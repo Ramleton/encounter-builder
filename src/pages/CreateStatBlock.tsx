@@ -13,8 +13,6 @@ function CreateStatBlock() {
 		<Box sx={{
 			display: 'flex',
 			flexDirection: 'row',
-			width: '100%',
-			minHeight: '100%',
 			gap: '4rem'
 		}}>
 			<CreateStatBlockProvider initialStatBlock={statBlock}>

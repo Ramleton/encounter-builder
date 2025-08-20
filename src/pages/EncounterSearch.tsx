@@ -1,18 +1,17 @@
 import { Add, Search } from "@mui/icons-material";
-import { Box, Button, CircularProgress, TextField, Typography } from "@mui/material";
+import { Backdrop, Box, Button, CircularProgress, TextField, Typography } from "@mui/material";
 import { Dispatch, SetStateAction, useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
 import EncounterCard from "../components/EncounterCard";
 import { Encounter } from "../types/encounter";
+import CreateEncounter from "./CreateEncounter";
 
 interface EncounterSearchHeaderProps {
 	search: string;
 	setSearch: Dispatch<SetStateAction<string>>;
+	setOpen: Dispatch<SetStateAction<boolean>>;
 }
 
-function EncounterSearchHeader({ search, setSearch }: EncounterSearchHeaderProps) {
-	const navigate = useNavigate();
-
+function EncounterSearchHeader({ search, setSearch, setOpen }: EncounterSearchHeaderProps) {
 	return (
 		<Box sx={{
 			display: 'flex',
@@ -42,7 +41,7 @@ function EncounterSearchHeader({ search, setSearch }: EncounterSearchHeaderProps
 			<Button
 				variant="contained"
 				startIcon={<Add />}
-				onClick={() => navigate("/encounters/create")}
+				onClick={() => setOpen(true)}
 				sx={{
 					marginBottom: '1rem',
 					marginTop: '1rem'
@@ -58,6 +57,7 @@ function EncounterSearch() {
 	const [search, setSearch] = useState<string>("");
 	const [encounters, setEncounters] = useState<Encounter[]>([]);
 	const [loading, setLoading] = useState<boolean>(true);
+	const [open, setOpen] = useState<boolean>(false);
 
 	useEffect(() => {
 		setLoading(false);	
@@ -65,7 +65,14 @@ function EncounterSearch() {
 
 	return (
 		<>
-			<EncounterSearchHeader search={search} setSearch={setSearch} />
+			<EncounterSearchHeader search={search} setSearch={setSearch} setOpen={setOpen} />
+			<Backdrop open={open} sx={{
+				display: 'flex',
+				alignItems: 'center',
+				justifyContent: 'center'
+			}}>
+				<CreateEncounter setOpen={setOpen} />
+			</Backdrop>
 			{ loading && 
 				(
 					<Box sx={{
