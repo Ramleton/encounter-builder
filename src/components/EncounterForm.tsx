@@ -1,9 +1,12 @@
-import { Add, ArrowBack, Save } from "@mui/icons-material";
-import { Box, Button, Divider, TextField, Typography, useTheme } from "@mui/material";
-import { Dispatch, SetStateAction, useEffect, useState } from "react";
+import { Add, ArrowBack, Delete, Favorite, Save } from "@mui/icons-material";
+import { Box, Button, Divider, List, ListItem, TextField, Typography, useTheme } from "@mui/material";
+import { invoke } from "@tauri-apps/api/core";
+import { Dispatch, ReactNode, SetStateAction, useEffect, useState } from "react";
+import { useAuth } from "../context/AuthContext";
 import { useEncounter } from "../context/CreateEncounterContext";
 import { PlayableStatBlock } from "../types/encounter";
-import { StatBlock } from "../types/statBlock";
+import { FetchStatBlockResponse, StatBlock } from "../types/statBlock";
+import { calcEncounterXP } from "../utils/encounterUtils";
 import EncounterFormCreatureSelection from "./EncounterFormCreatureSelection";
 
 interface EncounterFormProps {
@@ -24,6 +27,7 @@ function EncounterForm({ setOpen }: EncounterFormProps) {
 	const [openCreatureSelection, setOpenCreatureSelection] = useState<boolean>(false);
 	const [playerCreation, setPlayerCreation] = useState<number>(0);
 	const theme = useTheme();
+	const { getAccessToken } = useAuth();
 
 	const handleSaveEncounter = () => {
 		setOpen(false);
@@ -40,10 +44,69 @@ function EncounterForm({ setOpen }: EncounterFormProps) {
 
 		setPlayableStatBlocks(prev => [...prev, newPlayableStatBlock]);
 	}
-
+	
 	useEffect(() => {
-		// TODO: Fetch StatBlocks matching PlayableStatBlocks
-	}, [playableStatBlocks]);
+		const fetchStatBlocks = async () => {
+			try {
+				const accessToken = await getAccessToken();
+				const response = await invoke<FetchStatBlockResponse>("fetch_statblocks_with_joins", { accessToken });
+	
+				setStatBlocks(response.statblocks);
+			} catch(e: any) {
+				console.error(e);
+			}
+		};
+
+		fetchStatBlocks();
+	}, []);
+
+	const getMatchingStatBlocks = () => playableStatBlocks.map(playableSB => ({
+		playableStatBlock: playableSB,
+		statBlock: statBlocks.filter(statBlock => statBlock.id === playableSB.statblock_id)[0]
+	}));
+
+	const listEncounterCreatures = (): ReactNode => {
+		const matchingStatBlocks = getMatchingStatBlocks();
+		return (
+			<List sx={{
+				maxHeight: '150px',
+				overflowY: 'auto',
+				border: `1px solid ${theme.palette.secondary.main}`,
+				borderTopLeftRadius: '0.75rem',
+				borderBottomLeftRadius: '0.75rem',
+				mt: '1rem'
+			}}>	
+				{matchingStatBlocks.map((matchingStatBlock, i) => (
+					<ListItem
+						key={i} 
+						sx={{
+							display: 'flex',
+							flexDirection: 'row',
+							padding: '0.25rem 1rem',
+						}}
+					>
+						<Typography variant="body1" textAlign="center" sx={{ flex: 1 }}>
+							{matchingStatBlock.statBlock.name}
+						</Typography>
+						<Box sx={{ display: 'flex', flexDirection: 'row', flex: 1, gap: '0.5rem' }}>
+							<Favorite sx={{ color: 'red' }} />
+							<Typography variant="body1" textAlign="center">
+								{matchingStatBlock.playableStatBlock.current_hp}/{matchingStatBlock.statBlock.hp} HP
+							</Typography>
+						</Box>
+						<Typography variant="body1" textAlign="center" sx={{ flex: 1 }}>
+							{matchingStatBlock.statBlock.cr} CR
+						</Typography>
+						<Button
+							variant="contained"
+							endIcon={<Delete />}
+							onClick={() => setPlayableStatBlocks(prev => prev.filter((_, idx) => idx !== i))}
+						>Remove</Button>
+					</ListItem>
+				))}
+			</List>
+		)
+	}
 
 	return (
 		<Box sx={{
@@ -105,16 +168,10 @@ function EncounterForm({ setOpen }: EncounterFormProps) {
 				<EncounterFormCreatureSelection
 					open={openCreatureSelection}
 					setOpen={setOpenCreatureSelection}
+					statBlocks={statBlocks}
 					handleAddCreature={handleAddPlayableStatBlock}
 				/>
-				{!!playableStatBlocks.length && playableStatBlocks.map(statBlock => 
-					<Box sx={{
-						display: 'flex',
-						flexDirection: 'row'
-					}}>
-						<Typography />
-					</Box>
-				)}
+				{!!playableStatBlocks.length && listEncounterCreatures()}
 				<Divider sx={{ margin: '1rem 0' }} />
 				<Box sx={{
 					display: 'flex',
@@ -130,13 +187,25 @@ function EncounterForm({ setOpen }: EncounterFormProps) {
 			</Box>
 			<Box sx={{
 				display: 'flex',
+				flexDirection: 'row'
+			}}>
+				<Typography variant="body1">
+					Total XP: {calcEncounterXP(getMatchingStatBlocks().map(pair => pair.statBlock))}
+				</Typography>
+			</Box>
+			<Box sx={{
+				display: 'flex',
 				flexDirection: 'row',
 				alignItems: 'center',
 				justifyContent: 'center',
 				gap: '1rem'
 			}}>
-				<Button variant="outlined" endIcon={<ArrowBack />} onClick={() => setOpen(false)}>Cancel</Button>
-				<Button variant="outlined" endIcon={<Save />} onClick={handleSaveEncounter}>Create</Button>
+				<Button variant="outlined" endIcon={<ArrowBack />} onClick={() => {
+					setOpen(false);
+					setPlayableStatBlocks([]);
+					setEncounterPlayers([]);
+				}}>Cancel</Button>
+				<Button variant="outlined" endIcon={<Save />} onClick={handleSaveEncounter}>Save</Button>
 			</Box>
 		</Box>
 	)

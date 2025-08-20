@@ -1,37 +1,18 @@
 import { ArrowBack, Search } from "@mui/icons-material";
 import { Box, Button, CircularProgress, Collapse, List, ListItem, TextField, Typography, useTheme } from "@mui/material";
-import { invoke } from "@tauri-apps/api/core";
-import { Dispatch, SetStateAction, useEffect, useState } from "react";
-import { useAuth } from "../context/AuthContext";
-import { FetchStatBlockResponse, StatBlock } from "../types/statBlock";
+import { Dispatch, SetStateAction, useState } from "react";
+import { StatBlock } from "../types/statBlock";
 
 interface EncounterFormCreatureSelectionProps {
 	open: boolean;
 	setOpen: Dispatch<SetStateAction<boolean>>;
+	statBlocks: StatBlock[];
 	handleAddCreature: (statBlock: StatBlock) => void;
 }
 
-function EncounterFormCreatureSelection({ open, setOpen, handleAddCreature }: EncounterFormCreatureSelectionProps) {
+function EncounterFormCreatureSelection({ open, setOpen, statBlocks, handleAddCreature }: EncounterFormCreatureSelectionProps) {
 	const [search, setSearch] = useState<string>("");
-	const [statBlocks, setStatBlocks] = useState<StatBlock[]>([]);
-	const { getAccessToken } = useAuth();
 	const theme = useTheme();
-
-	useEffect(() => {
-		const fetchStatBlocks = async () => {
-			try {
-				const accessToken = await getAccessToken();
-				const response = await invoke<FetchStatBlockResponse>("fetch_statblocks_with_joins", { accessToken });
-	
-				setStatBlocks(response.statblocks);
-				console.log(response.statblocks);
-			} catch(e: any) {
-				console.error(e);
-			}
-		};
-
-		fetchStatBlocks();
-	}, []);
 
 	return (
 		<Collapse

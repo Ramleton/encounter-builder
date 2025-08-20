@@ -5,7 +5,7 @@ import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import StatBlockCard from "../components/StatblockCard";
 import { useAuth } from "../context/AuthContext";
-import { StatBlock } from "../types/statBlock";
+import { FetchStatBlockResponse, StatBlock } from "../types/statBlock";
 
 interface StatBlockHeaderProps {
 	search: string;
