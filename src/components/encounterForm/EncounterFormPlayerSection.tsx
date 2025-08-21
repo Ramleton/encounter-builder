@@ -73,6 +73,7 @@ function EncounterFormPlayerSection({
 				<Button
 					variant="contained"
 					endIcon={<Add />}
+					disabled={openPlayerCreation}
 					onClick={() => {
 						setOpenCreatureSelection(false);
 						setOpenPlayerCreation(true);

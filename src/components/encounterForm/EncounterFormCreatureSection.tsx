@@ -3,7 +3,7 @@ import { Box, Button, List, ListItem, Typography, useTheme } from "@mui/material
 import { Dispatch, ReactNode, SetStateAction } from "react";
 import { PlayableStatBlock } from "../../types/encounter";
 import { StatBlock } from "../../types/statBlock";
-import EncounterFormCreatureSelection from "./EncounterFormCreatureForm";
+import EncounterFormCreatureSelection from "./EncounterFormCreatureSelection";
 
 interface EncounterFormCreatureSectionProps {
 	playableStatBlocks: PlayableStatBlock[];

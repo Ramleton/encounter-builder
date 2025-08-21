@@ -1,5 +1,5 @@
 import { ArrowBack, Save } from "@mui/icons-material";
-import { Box, Button, Divider, TextField, Typography, useTheme } from "@mui/material";
+import { Box, Button, Collapse, Divider, TextField, Typography, useTheme } from "@mui/material";
 import { invoke } from "@tauri-apps/api/core";
 import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { useAuth } from "../context/AuthContext";
@@ -162,21 +162,24 @@ function EncounterForm({ setOpen }: EncounterFormProps) {
 				/>
 			</Box>
 			<Divider />
-			<Box sx={{
-				display: 'flex',
-				flexDirection: 'column',
-				gap: '1rem',
-				alignItems: 'center',
-				justifyContent: 'center'
-			}}>
-				<Typography variant="body1">
-					Total XP: {calcEncounterXP(getMatchingStatBlocks().map(pair => pair.statBlock))}
-				</Typography>
-				<Typography variant="body1">
-					Encounter Difficulty: {calcEncounterDifficulty(getMatchingStatBlocks().map(pair => pair.statBlock), encounterPlayers)}
-				</Typography>
-			</Box>
-			<Divider />
+			<Collapse in={!!playableStatBlocks.length && !!encounterPlayers.length}>
+				<Box sx={{
+					display: 'flex',
+					flexDirection: 'column',
+					gap: '1rem',
+					alignItems: 'center',
+					justifyContent: 'center',
+					mb: '1rem'
+				}}>
+						<Typography variant="body1">
+							Total XP: {calcEncounterXP(getMatchingStatBlocks().map(pair => pair.statBlock))}
+						</Typography>
+						<Typography variant="body1">
+							Encounter Difficulty: {calcEncounterDifficulty(getMatchingStatBlocks().map(pair => pair.statBlock), encounterPlayers)}
+						</Typography>
+				</Box>
+				<Divider />
+			</Collapse>
 			<Box sx={{
 				display: 'flex',
 				flexDirection: 'row',
