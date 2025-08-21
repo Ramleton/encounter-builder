@@ -26,6 +26,8 @@ pub struct PlayableStatBlock {
     pub temporary_hp: u16,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub initiative: Option<u16>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub name: Option<String>,
     pub statblock_id: i64,
     pub encounter_id: i64,
 }

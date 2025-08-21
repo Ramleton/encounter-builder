@@ -1,22 +1,24 @@
 import { Add, ArrowBack } from "@mui/icons-material";
 import { Box, Button, Collapse, TextField } from "@mui/material";
 import { Dispatch, SetStateAction, useState } from "react";
+import { useEncounter } from "../../context/CreateEncounterContext";
 import { EncounterPlayer, Level } from "../../types/encounter";
 
 interface EncounterFormPlayerFormProps {
 	open: boolean;
 	setOpen: Dispatch<SetStateAction<boolean>>;
-	currentPlayers: EncounterPlayer[];
 	handleAddPlayer: (player: EncounterPlayer) => void;
 }
 
-function EncounterFormPlayerForm({ open, setOpen, currentPlayers, handleAddPlayer }: EncounterFormPlayerFormProps) {
+function EncounterFormPlayerForm({ open, setOpen, handleAddPlayer }: EncounterFormPlayerFormProps) {
 	const [playerName, setPlayerName] = useState<string>("");
 	const [playerLevel, setPlayerLevel] = useState<Level | null>(null);
 	const [playerHP, setPlayerHP] = useState<number | null>(null);
 	const [playerCurrHP, setPlayerCurrHP] = useState<number | null>(null);
 	const [playerTempHP, setPlayerTempHP] = useState<number | null>(null);
 	const [errors, setErrors] = useState<Record<string, string>>({});
+
+	const { encounterPlayers } = useEncounter();
 
 	const updateIntegerField = (value: string, updateField: Dispatch<SetStateAction<number | null>>) => {
 		if (value === "") updateField(null);
@@ -31,7 +33,7 @@ function EncounterFormPlayerForm({ open, setOpen, currentPlayers, handleAddPlaye
 		const currentErrors: Record<string, string> = {};
 		
 		if (playerName === "") currentErrors["name"] = "Player Name is required";
-		if (currentPlayers.filter(player => player.name === playerName).length) currentErrors["name"] = "Duplicate player name in encounter";
+		if (encounterPlayers.filter(player => player.name === playerName).length) currentErrors["name"] = "Duplicate player name in encounter";
 		if (!playerLevel) currentErrors["level"] = "Player Level is required";
 		if (playerHP === null) currentErrors["hp"] = "Player HP is required";
 		if (playerHP !== null && playerHP <= 0) currentErrors["hp"] = "Player HP must be positive";

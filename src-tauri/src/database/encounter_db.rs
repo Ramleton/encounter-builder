@@ -23,6 +23,8 @@ pub struct SaveEncounterPlayersResponse {
     pub message: String,
 }
 
+//? GET
+
 //? UPSERT
 
 #[tauri::command]

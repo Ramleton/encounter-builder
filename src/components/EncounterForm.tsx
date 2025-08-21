@@ -5,7 +5,7 @@ import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { useAuth } from "../context/AuthContext";
 import { useEncounter } from "../context/CreateEncounterContext";
 import { FetchStatBlockResponse, StatBlock } from "../types/statBlock";
-import { calcEncounterDifficulty, calcEncounterXP } from "../utils/encounterUtils";
+import { calcEncounterDifficulty, calcEncounterXP, generateEmptyEncounter } from "../utils/encounterUtils";
 import EncounterFormCreatureSection from "./encounterForm/EncounterFormCreatureSection";
 import EncounterFormPlayerSection from "./encounterForm/EncounterFormPlayerSection";
 
@@ -94,6 +94,11 @@ function EncounterForm({ setOpen }: EncounterFormProps) {
 		console.log(statblockResponse);
 		console.log(playerResponse);
 
+		// Reset state
+		setPlayableStatBlocks([]);
+		setEncounterPlayers([]);
+		setEncounter(generateEmptyEncounter());
+
 		setOpen(false);
 	}
 
@@ -144,8 +149,6 @@ function EncounterForm({ setOpen }: EncounterFormProps) {
 					Encounter Participants
 				</Typography>
 				<EncounterFormCreatureSection
-					playableStatBlocks={playableStatBlocks}
-					setPlayableStatBlocks={setPlayableStatBlocks}
 					openCreatureSelection={openCreatureSelection}
 					setOpenCreatureSelection={setOpenCreatureSelection}
 					setOpenPlayerCreation={setOpenPlayerCreation}
@@ -154,8 +157,6 @@ function EncounterForm({ setOpen }: EncounterFormProps) {
 				/>
 				<Divider sx={{ margin: '1rem 0' }} />
 				<EncounterFormPlayerSection
-					encounterPlayers={encounterPlayers}
-					setEncounterPlayers={setEncounterPlayers}
 					openPlayerCreation={openPlayerCreation}
 					setOpenPlayerCreation={setOpenPlayerCreation}
 					setOpenCreatureSelection={setOpenCreatureSelection}
@@ -191,6 +192,7 @@ function EncounterForm({ setOpen }: EncounterFormProps) {
 					setOpen(false);
 					setPlayableStatBlocks([]);
 					setEncounterPlayers([]);
+					setEncounter(generateEmptyEncounter());
 				}}>Cancel</Button>
 				<Button variant="outlined" endIcon={<Save />} onClick={handleSaveEncounter}>Save</Button>
 			</Box>

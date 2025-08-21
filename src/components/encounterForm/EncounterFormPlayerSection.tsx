@@ -1,25 +1,27 @@
 import { Add, Delete } from "@mui/icons-material";
 import { Box, Button, List, ListItem, Typography, useTheme } from "@mui/material";
 import { Dispatch, SetStateAction } from "react";
+import { useEncounter } from "../../context/CreateEncounterContext";
 import { EncounterPlayer } from "../../types/encounter";
 import EncounterFormPlayerForm from "./EncounterFormPlayerForm";
 
 interface EncounterFormPlayerSectionProps {
-	encounterPlayers: EncounterPlayer[];
-	setEncounterPlayers: Dispatch<SetStateAction<EncounterPlayer[]>>;
 	openPlayerCreation: boolean;
 	setOpenPlayerCreation: Dispatch<SetStateAction<boolean>>;
 	setOpenCreatureSelection: Dispatch<SetStateAction<boolean>>;
 }
 
 function EncounterFormPlayerSection({
-	encounterPlayers,
-	setEncounterPlayers,
 	openPlayerCreation,
 	setOpenPlayerCreation,
 	setOpenCreatureSelection
 }: EncounterFormPlayerSectionProps) {
 	const theme = useTheme();
+
+	const {
+		encounterPlayers,
+		setEncounterPlayers,
+	} = useEncounter();
 
 	const handleNewPlayer = (newPlayer: EncounterPlayer) => {
 		setEncounterPlayers(prev => [...prev, newPlayer]);
@@ -85,7 +87,6 @@ function EncounterFormPlayerSection({
 			<EncounterFormPlayerForm
 				open={openPlayerCreation}
 				setOpen={setOpenPlayerCreation}
-				currentPlayers={encounterPlayers}
 				handleAddPlayer={handleNewPlayer}
 			/>
 			{!!encounterPlayers.length && listEncounterPlayers()}

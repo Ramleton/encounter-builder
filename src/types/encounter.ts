@@ -24,6 +24,7 @@ export type PlayableStatBlock = {
 	current_hp: number;
 	temporary_hp: number;
 	initiative?: number;
+	name?: string;
 	statblock_id: number;
 	encounter_id?: number;
 }

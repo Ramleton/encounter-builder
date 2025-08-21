@@ -1,13 +1,12 @@
 import { Add, Delete, Favorite } from "@mui/icons-material";
-import { Box, Button, List, ListItem, Typography, useTheme } from "@mui/material";
+import { Box, Button, List, ListItem, TextField, Typography, useTheme } from "@mui/material";
 import { Dispatch, ReactNode, SetStateAction } from "react";
+import { useEncounter } from "../../context/CreateEncounterContext";
 import { PlayableStatBlock } from "../../types/encounter";
 import { StatBlock } from "../../types/statBlock";
 import EncounterFormCreatureSelection from "./EncounterFormCreatureSelection";
 
 interface EncounterFormCreatureSectionProps {
-	playableStatBlocks: PlayableStatBlock[];
-	setPlayableStatBlocks: Dispatch<SetStateAction<PlayableStatBlock[]>>;
 	openCreatureSelection: boolean;
 	setOpenCreatureSelection: Dispatch<SetStateAction<boolean>>;
 	setOpenPlayerCreation: Dispatch<SetStateAction<boolean>>;
@@ -16,14 +15,17 @@ interface EncounterFormCreatureSectionProps {
 };
 
 function EncounterFormCreatureSection({
-	playableStatBlocks,
-	setPlayableStatBlocks,
 	openCreatureSelection,
 	setOpenCreatureSelection,
 	setOpenPlayerCreation,
 	statBlocks,
 	getMatchingStatBlocks
 }: EncounterFormCreatureSectionProps) {
+	const {
+		playableStatBlocks,
+		setPlayableStatBlocks
+	} = useEncounter();
+
 	const theme = useTheme();
 
 	const handleAddPlayableStatBlock = (statBlock: StatBlock) => {
@@ -56,9 +58,15 @@ function EncounterFormCreatureSection({
 							padding: '0.25rem 1rem',
 						}}
 					>
-						<Typography variant="body1" textAlign="center" sx={{ flex: 1 }}>
-							{matchingStatBlock.statBlock.name}
-						</Typography>
+						<TextField
+							required
+							id="statblock_name"
+							label="Creature Name"
+							type="text"
+							value={matchingStatBlock.playableStatBlock.name || matchingStatBlock.statBlock.name}
+							onChange={(e) => matchingStatBlock.playableStatBlock.name = e.target.value || undefined}
+							variant="standard"
+						/>
 						<Box sx={{ display: 'flex', flexDirection: 'row', flex: 1, gap: '0.5rem' }}>
 							<Favorite sx={{ color: 'red' }} />
 							<Typography variant="body1" textAlign="center">
