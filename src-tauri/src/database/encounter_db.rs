@@ -23,7 +23,63 @@ pub struct SaveEncounterPlayersResponse {
     pub message: String,
 }
 
+#[derive(Serialize, Deserialize, Debug)]
+pub struct FetchEncountersResponse {
+    pub encounters: Vec<Encounter>,
+    pub status: u16,
+    pub message: String,
+}
+
 //? GET
+
+#[tauri::command]
+pub async fn fetch_encounters(
+    access_token: String,
+) -> Result<FetchEncountersResponse, FetchEncountersResponse> {
+    let config = init_supabase().await.map_err(|e| FetchEncountersResponse {
+        encounters: Vec::new(),
+        status: 500,
+        message: format!("Encounter fetch failed: {}", e),
+    })?;
+    let client = reqwest::Client::new();
+    let url = format!("{}/rest/v1/Encounter", config.url);
+
+    let response = client
+        .get(&url)
+        .header("apikey", &config.anon_key)
+        .header("Authorization", format!("Bearer {}", &access_token))
+        .header("Content-Type", "application/json")
+        .send()
+        .await
+        .map_err(|e| FetchEncountersResponse {
+            encounters: Vec::new(),
+            status: 500,
+            message: format!("Encounter fetch failed: {}", e),
+        })?;
+
+    let status = response.status();
+
+    if !status.is_success() {
+        let error_text = response.text().await.unwrap_or_default();
+        return Err(FetchEncountersResponse {
+            encounters: Vec::new(),
+            status: status.as_u16(),
+            message: format!("Encounter fetch failed: {}", error_text),
+        });
+    }
+
+    let encounters = response.json().await.map_err(|e| FetchEncountersResponse {
+        encounters: Vec::new(),
+        status: 500,
+        message: format!("Failed to parse Encounter response: {}", e.to_string()),
+    })?;
+
+    Ok(FetchEncountersResponse {
+        encounters,
+        status: status.as_u16(),
+        message: format!("Successfully fetched Encounters"),
+    })
+}
 
 //? UPSERT
 

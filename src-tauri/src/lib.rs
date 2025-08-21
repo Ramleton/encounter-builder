@@ -14,7 +14,7 @@ use utils::auth_utils::{
 };
 
 use crate::database::encounter_db::{
-    save_encounter, save_encounter_players, save_playable_statblocks,
+    fetch_encounters, save_encounter, save_encounter_players, save_playable_statblocks,
 };
 use crate::database::statblock_db::fetch_statblocks_with_joins;
 use crate::utils::auth_utils::refresh_access_token;
@@ -73,6 +73,7 @@ pub fn run() {
         })
         .invoke_handler(tauri::generate_handler![
             save_encounter,
+            fetch_encounters,
             save_encounter_players,
             save_playable_statblocks,
             load_encounters,

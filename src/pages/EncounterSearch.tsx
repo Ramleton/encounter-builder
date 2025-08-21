@@ -1,7 +1,9 @@
 import { Add, Search } from "@mui/icons-material";
 import { Backdrop, Box, Button, CircularProgress, TextField, Typography } from "@mui/material";
+import { invoke } from "@tauri-apps/api/core";
 import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import EncounterCard from "../components/EncounterCard";
+import { useAuth } from "../context/AuthContext";
 import { Encounter } from "../types/encounter";
 import CreateEncounter from "./CreateEncounter";
 
@@ -9,6 +11,12 @@ interface EncounterSearchHeaderProps {
 	search: string;
 	setSearch: Dispatch<SetStateAction<string>>;
 	setOpen: Dispatch<SetStateAction<boolean>>;
+}
+
+interface FetchEncountersResponse {
+	encounters: Encounter[];
+	status: number;
+	message: string;
 }
 
 function EncounterSearchHeader({ search, setSearch, setOpen }: EncounterSearchHeaderProps) {
@@ -59,9 +67,21 @@ function EncounterSearch() {
 	const [loading, setLoading] = useState<boolean>(true);
 	const [open, setOpen] = useState<boolean>(false);
 
+	const { getAccessToken } = useAuth();
+
 	useEffect(() => {
-		setLoading(false);	
-	});
+		const fetchEncounters = async () => {
+			const accessToken = await getAccessToken();
+
+			const response = await invoke<FetchEncountersResponse>("fetch_encounters", { accessToken });
+
+			if (response.status !== 200) console.log(response.message);
+
+			setEncounters(response.encounters);
+			setLoading(false);
+		};
+		fetchEncounters();
+	}, [encounters]);
 
 	return (
 		<>
