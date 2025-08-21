@@ -1,7 +1,7 @@
 import { ArrowBack, Search } from "@mui/icons-material";
 import { Box, Button, CircularProgress, Collapse, List, ListItem, TextField, Typography, useTheme } from "@mui/material";
 import { Dispatch, SetStateAction, useState } from "react";
-import { StatBlock } from "../types/statBlock";
+import { StatBlock } from "../../types/statBlock";
 
 interface EncounterFormCreatureSelectionProps {
 	open: boolean;

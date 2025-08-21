@@ -4,10 +4,11 @@ import { invoke } from "@tauri-apps/api/core";
 import { Dispatch, ReactNode, SetStateAction, useEffect, useState } from "react";
 import { useAuth } from "../context/AuthContext";
 import { useEncounter } from "../context/CreateEncounterContext";
-import { PlayableStatBlock } from "../types/encounter";
+import { EncounterPlayer, PlayableStatBlock } from "../types/encounter";
 import { FetchStatBlockResponse, StatBlock } from "../types/statBlock";
-import { calcEncounterXP } from "../utils/encounterUtils";
-import EncounterFormCreatureSelection from "./EncounterFormCreatureSelection";
+import { calcEncounterDifficulty, calcEncounterXP } from "../utils/encounterUtils";
+import EncounterFormCreatureSelection from "./encounterForm/EncounterFormCreatureSelection";
+import EncounterFormPlayerSection from "./encounterForm/EncounterFormPlayerSection";
 
 interface EncounterFormProps {
 	setOpen: Dispatch<SetStateAction<boolean>>;
@@ -25,7 +26,7 @@ function EncounterForm({ setOpen }: EncounterFormProps) {
 	} = useEncounter();
 	const [statBlocks, setStatBlocks] = useState<StatBlock[]>([]);
 	const [openCreatureSelection, setOpenCreatureSelection] = useState<boolean>(false);
-	const [playerCreation, setPlayerCreation] = useState<number>(0);
+	const [openPlayerCreation, setOpenPlayerCreation] = useState<boolean>(false);
 	const theme = useTheme();
 	const { getAccessToken } = useAuth();
 
@@ -43,6 +44,10 @@ function EncounterForm({ setOpen }: EncounterFormProps) {
 		};
 
 		setPlayableStatBlocks(prev => [...prev, newPlayableStatBlock]);
+	}
+
+	const handleNewPlayer = (newPlayer: EncounterPlayer) => {
+		setEncounterPlayers(prev => [...prev, newPlayer]);
 	}
 	
 	useEffect(() => {
@@ -72,8 +77,6 @@ function EncounterForm({ setOpen }: EncounterFormProps) {
 				maxHeight: '150px',
 				overflowY: 'auto',
 				border: `1px solid ${theme.palette.secondary.main}`,
-				borderTopLeftRadius: '0.75rem',
-				borderBottomLeftRadius: '0.75rem',
 				mt: '1rem'
 			}}>	
 				{matchingStatBlocks.map((matchingStatBlock, i) => (
@@ -106,6 +109,37 @@ function EncounterForm({ setOpen }: EncounterFormProps) {
 				))}
 			</List>
 		)
+	};
+
+	const listEncounterPlayers = () => {
+		return <List sx={{
+			padding: '0 1rem',
+			border: `1px solid ${theme.palette.secondary.main}`,
+			maxHeight: '150px',
+			overflowY: 'auto',
+			mt: '1rem'
+		}}>
+			{encounterPlayers.map(player => 
+				<ListItem key={player.name} sx={{ display: 'flex', flexDirection: 'row', pb: '0.5rem' }}>
+					<Typography variant="body1" textAlign="center" sx={{ flex: 1 }}>{player.name}</Typography>
+					<Typography variant="body1" textAlign="center" sx={{ flex: 1 }}>
+						{
+							player.temporary_hp
+							? `${player.current_hp}/${player.hp} + ${player.temporary_hp}`
+							: `${player.current_hp}/${player.hp}`
+						} HP
+					</Typography>
+					<Typography variant="body1" textAlign="center" sx={{ flex: 1 }}>Level {player.level}</Typography>
+					<Button
+						variant="outlined"
+						endIcon={<Delete />}
+						onClick={() => setEncounterPlayers(prev => prev.filter(encounterPlayer => encounterPlayer.name !== player.name))}
+					>
+						Remove
+					</Button>
+				</ListItem>
+			)}
+		</List>
 	}
 
 	return (
@@ -182,15 +216,34 @@ function EncounterForm({ setOpen }: EncounterFormProps) {
 					padding: '0 1rem'
 				}}>
 					<Typography variant="h6">Players</Typography>
-					<Button variant="contained" endIcon={<Add />}>Add</Button>
+					<Button
+						variant="contained"
+						endIcon={<Add />}
+						onClick={() => setOpenPlayerCreation(true)}
+					>
+						Add
+					</Button>
 				</Box>
+				<EncounterFormPlayerSection
+					open={openPlayerCreation}
+					setOpen={setOpenPlayerCreation}
+					currentPlayers={encounterPlayers}
+					handleAddPlayer={handleNewPlayer}
+				/>
+				{!!encounterPlayers.length && listEncounterPlayers()}
 			</Box>
 			<Box sx={{
 				display: 'flex',
-				flexDirection: 'row'
+				flexDirection: 'column',
+				gap: '1rem',
+				alignItems: 'center',
+				justifyContent: 'center'
 			}}>
 				<Typography variant="body1">
 					Total XP: {calcEncounterXP(getMatchingStatBlocks().map(pair => pair.statBlock))}
+				</Typography>
+				<Typography variant="body1">
+					Encounter Difficulty: {calcEncounterDifficulty(getMatchingStatBlocks().map(pair => pair.statBlock), encounterPlayers)}
 				</Typography>
 			</Box>
 			<Box sx={{
