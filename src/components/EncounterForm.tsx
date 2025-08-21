@@ -1,9 +1,10 @@
 import { ArrowBack, Save } from "@mui/icons-material";
-import { Box, Button, Collapse, Divider, TextField, Typography, useTheme } from "@mui/material";
+import { Box, Button, CircularProgress, Collapse, Divider, TextField, Typography, useTheme } from "@mui/material";
 import { invoke } from "@tauri-apps/api/core";
-import { Dispatch, SetStateAction, useEffect, useState } from "react";
+import { Dispatch, SetStateAction, useCallback, useEffect, useMemo, useState } from "react";
 import { useAuth } from "../context/AuthContext";
 import { useEncounter } from "../context/CreateEncounterContext";
+import { PlayableStatBlock } from "../types/encounter";
 import { FetchStatBlockResponse, StatBlock } from "../types/statBlock";
 import { calcEncounterDifficulty, calcEncounterXP, generateEmptyEncounter } from "../utils/encounterUtils";
 import EncounterFormCreatureSection from "./encounterForm/EncounterFormCreatureSection";
@@ -42,6 +43,7 @@ function EncounterForm({ setOpen }: EncounterFormProps) {
 	const [openCreatureSelection, setOpenCreatureSelection] = useState<boolean>(false);
 	const [openPlayerCreation, setOpenPlayerCreation] = useState<boolean>(false);
 	const [statBlocks, setStatBlocks] = useState<StatBlock[]>([]);
+	const [loading, setLoading] = useState<boolean>(true);
 	const theme = useTheme();
 
 	const { user, getAccessToken } = useAuth();
@@ -53,6 +55,7 @@ function EncounterForm({ setOpen }: EncounterFormProps) {
 				const response = await invoke<FetchStatBlockResponse>("fetch_statblocks_with_joins", { accessToken });
 	
 				setStatBlocks(response.statblocks);
+				setLoading(false);
 			} catch(e: any) {
 				console.error(e);
 			}
@@ -102,10 +105,50 @@ function EncounterForm({ setOpen }: EncounterFormProps) {
 		setOpen(false);
 	}
 
-	const getMatchingStatBlocks = () => playableStatBlocks.map(playableSB => ({
-			playableStatBlock: playableSB,
-			statBlock: statBlocks.filter(statBlock => statBlock.id === playableSB.statblock_id)[0]
-	}));
+	const getMatchingStatBlocks = useCallback(() => {
+		if (!playableStatBlocks?.length || !statBlocks?.length) {
+			return [];
+		}
+
+		return playableStatBlocks.map(playableStatBlock => {
+			const matchingStatBlock = statBlocks.find(
+				statBlock => statBlock.id === playableStatBlock.statblock_id
+			);
+
+			if (matchingStatBlock) {
+				return {
+					playableStatBlock,
+					statBlock: matchingStatBlock
+				};
+			}
+
+			console.warn(`StatBlock not found for statblock_id: ${playableStatBlock.statblock_id}`);
+			return null;
+		})
+		.filter(Boolean) as { playableStatBlock: PlayableStatBlock, statBlock: StatBlock }[];
+	}, [playableStatBlocks, statBlocks]);
+
+	const calculateEncounterXP = useMemo(() => {
+		const matchingStatBlocks = getMatchingStatBlocks();
+		const statBlocksOnly = matchingStatBlocks
+			.map(match => match.statBlock)
+			.filter(statBlock => statBlock);
+		
+			return calcEncounterXP(statBlocksOnly);
+	}, [playableStatBlocks, statBlocks]);
+
+	if (loading) return (
+		<Box sx={{
+			display: 'flex',
+			flexDirection: 'row',
+			height: '700px',
+			width: '700px',
+			alignItems: 'center',
+			justifyContent: 'center'
+		}}>
+			<CircularProgress size="5rem" />
+		</Box>
+	)
 
 	return (
 		<Box sx={{
@@ -119,6 +162,7 @@ function EncounterForm({ setOpen }: EncounterFormProps) {
 			gap: '1rem',
 			mb: '1rem',
 			maxHeight: '700px',
+			maxWidth: '700px',
 			overflowY: 'auto'
 		}}>
 			<TextField
@@ -173,7 +217,7 @@ function EncounterForm({ setOpen }: EncounterFormProps) {
 					mb: '1rem'
 				}}>
 						<Typography variant="body1">
-							Total XP: {calcEncounterXP(getMatchingStatBlocks().map(pair => pair.statBlock))}
+							Total XP: {calculateEncounterXP}
 						</Typography>
 						<Typography variant="body1">
 							Encounter Difficulty: {calcEncounterDifficulty(getMatchingStatBlocks().map(pair => pair.statBlock), encounterPlayers)}

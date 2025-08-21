@@ -1,4 +1,4 @@
-import { createContext, Dispatch, FC, ReactNode, SetStateAction, useContext, useState } from "react";
+import { createContext, Dispatch, FC, ReactNode, SetStateAction, useContext, useEffect, useState } from "react";
 import { Encounter, EncounterPlayer, PlayableStatBlock } from "../types/encounter";
 import { generateEmptyEncounter } from "../utils/encounterUtils";
 
@@ -32,6 +32,18 @@ export const CreateEncounterProvider: FC<CreateEncounterContextProps> = ({
 	const [playableStatBlocks, setPlayableStatBlocks] = useState<PlayableStatBlock[]>(initialPlayableStatBlocks);
 	const [encounterPlayers, setEncounterPlayers] = useState<EncounterPlayer[]>(initialEncounterPlayers);
 	const [errors, setErrors] = useState<Record<string, string>>({});
+
+	useEffect(() => {
+		setEncounter(initialEncounter || generateEmptyEncounter());
+	}, [initialEncounter]);
+
+	useEffect(() => {
+		setPlayableStatBlocks(initialPlayableStatBlocks);
+	}, [initialPlayableStatBlocks]);
+
+	useEffect(() => {
+		setEncounterPlayers(initialEncounterPlayers);
+	}, [initialEncounterPlayers]);
 
 	return (
 		<CreateEncounterContext.Provider value={{

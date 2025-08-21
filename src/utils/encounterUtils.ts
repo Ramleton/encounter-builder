@@ -76,7 +76,9 @@ const budgetByLevel: Record<Level, Difficulty> = {
 }
 
 export const calcEncounterXP = (creatures: StatBlock[]): number => {
-	return creatures.reduce((sum, creature) => sum + xpByCR[creature.cr], 0);
+	return creatures
+		.filter(creature => creature !== undefined) // Filter out undefined creatures
+		.reduce((sum, creature) => sum + xpByCR[creature.cr], 0);
 }
 
 enum EncounterDifficulty {

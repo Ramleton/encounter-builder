@@ -21,6 +21,10 @@ function CreateEncounter({
 	const playableStatBlocks = editPlayableStatBlocks || [];
 	const encounterPlayers = editEncounterPlayers || [];
 
+	const providerKey = editEncounter
+		? `edit-${editEncounter.id}-${Date.now()}`
+		: `create-${Date.now()}`;
+
 	return (
 		<Box sx={{
 			display: 'flex',
@@ -29,6 +33,7 @@ function CreateEncounter({
 			gap: '4rem'
 		}}>
 			<CreateEncounterProvider
+				key={providerKey}
 				initialEncounter={encounter}
 				initialPlayableStatBlocks={playableStatBlocks}
 				initialEncounterPlayers={encounterPlayers}

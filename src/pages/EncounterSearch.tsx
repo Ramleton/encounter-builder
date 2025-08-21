@@ -99,7 +99,6 @@ function EncounterSearch() {
 				justifyContent: 'center'
 			}}>
 				<CreateEncounter
-					key={editEncounter?.encounter.id ?? "new"}
 					setOpen={setOpen}
 					editEncounter={editEncounter?.encounter}
 					editEncounterPlayers={editEncounter?.encounterPlayers}
