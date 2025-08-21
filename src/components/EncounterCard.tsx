@@ -25,9 +25,10 @@ interface EncounterCardProps {
 	encounter: Encounter;
 	handleEdit: (playableStatBlocks: PlayableStatBlock[], encounterPlayers: EncounterPlayer[]) => void;
 	informative?: boolean;
+	refreshTrigger: number
 }
 
-export default function EncounterCard({ encounter, informative = false, handleEdit }: EncounterCardProps) {
+export default function EncounterCard({ encounter, informative = false, handleEdit, refreshTrigger }: EncounterCardProps) {
 	const [loading, setLoading] = useState<boolean>(true);
 	const [playableStatBlocks, setPlayableStatBlocks] = useState<PlayableStatBlock[]>([]);
 	const [encounterPlayers, setEncounterPlayers] = useState<EncounterPlayer[]>([]);
@@ -71,7 +72,7 @@ export default function EncounterCard({ encounter, informative = false, handleEd
 		}
 
 		fetchPlayableStatBlocks();
-	}, []);
+	}, [refreshTrigger]);
 
 	return (
 		<Card variant="outlined" sx={{ width: "100%" }}>

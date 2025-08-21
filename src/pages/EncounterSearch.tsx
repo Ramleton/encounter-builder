@@ -72,23 +72,30 @@ function EncounterSearch() {
 	const [encounters, setEncounters] = useState<Encounter[]>([]);
 	const [editEncounter, setEditEncounter] = useState<EditEncounter>();
 	const [loading, setLoading] = useState<boolean>(true);
+	const [refreshTrigger, setRefreshTrigger] = useState<number>(0);
 	const [open, setOpen] = useState<boolean>(false);
 
 	const { getAccessToken } = useAuth();
 
+	const fetchEncounters = async () => {
+		const accessToken = await getAccessToken();
+
+		const response = await invoke<FetchEncountersResponse>("fetch_encounters", { accessToken });
+
+		if (response.status !== 200) console.log(response.message);
+
+		setEncounters(response.encounters);
+		setLoading(false);
+	};
+
 	useEffect(() => {
-		const fetchEncounters = async () => {
-			const accessToken = await getAccessToken();
-
-			const response = await invoke<FetchEncountersResponse>("fetch_encounters", { accessToken });
-
-			if (response.status !== 200) console.log(response.message);
-
-			setEncounters(response.encounters);
-			setLoading(false);
-		};
 		fetchEncounters();
 	}, []);
+
+	const handleEncounterSaved = async () => {
+		await fetchEncounters();
+		setRefreshTrigger(prev => prev + 1);
+	}
 
 	return (
 		<>
@@ -103,6 +110,7 @@ function EncounterSearch() {
 					editEncounter={editEncounter?.encounter}
 					editEncounterPlayers={editEncounter?.encounterPlayers}
 					editPlayableStatBlocks={editEncounter?.playableStatBlocks}
+					onSave={() => handleEncounterSaved()}
 				/>
 			</Backdrop>
 			{ loading && 
@@ -140,6 +148,7 @@ function EncounterSearch() {
 								});
 								setOpen(true);
 							}}
+							refreshTrigger={refreshTrigger}
 						/>)
 					}
 				</Box>

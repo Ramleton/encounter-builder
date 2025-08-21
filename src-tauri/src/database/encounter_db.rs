@@ -50,16 +50,14 @@ pub struct FetchEncounterPlayersForEncounterResponse {
 pub async fn fetch_encounter_players_for_encounter(
     encounter_id: i64,
     access_token: String,
-) -> Result<FetchEncounterPlayersForEncounterResponse, FetchEncounterPlayersForEncounterResponse>
-{
-    let config =
-        init_supabase()
-            .await
-            .map_err(|e| FetchEncounterPlayersForEncounterResponse {
-                encounter_players: Vec::new(),
-                status: 500,
-                message: format!("EncounterPlayer fetch failed: {}", e),
-            })?;
+) -> Result<FetchEncounterPlayersForEncounterResponse, FetchEncounterPlayersForEncounterResponse> {
+    let config = init_supabase()
+        .await
+        .map_err(|e| FetchEncounterPlayersForEncounterResponse {
+            encounter_players: Vec::new(),
+            status: 500,
+            message: format!("EncounterPlayer fetch failed: {}", e),
+        })?;
     let client = reqwest::Client::new();
     let url = format!(
         "{}/rest/v1/EncounterPlayer?encounter_id=eq.{}",
@@ -232,23 +230,36 @@ pub async fn save_encounter_players(
 ) -> Result<SaveEncounterPlayersResponse, String> {
     let config = init_supabase().await.map_err(|e| e.to_string())?;
     let client = reqwest::Client::new();
+
+    if let Some(first_player) = encounter_players.first() {
+        let delete_url = format!(
+            "{}/rest/v1/EncounterPlayer?encounter_id=eq.{}",
+            config.url, first_player.encounter_id
+        );
+
+        let delete_response = client
+            .delete(&delete_url)
+            .header("apikey", &config.anon_key)
+            .header("Authorization", format!("Bearer {}", &access_token))
+            .send()
+            .await
+            .map_err(|e| format!("Request failed: {}", e))?;
+
+        if !delete_response.status().is_success() {
+            let error_text = delete_response.text().await.unwrap_or_default();
+            return Err(format!(
+                "Failed to delete existing encounter players: {}",
+                error_text
+            ));
+        }
+    }
+
     for player in encounter_players {
         let insert_obj = player.clone();
-
-        let (method, url) = if let Some(id) = player.id {
-            (
-                reqwest::Method::PATCH,
-                format!("{}/rest/v1/EncounterPlayer?id=eq.{}", config.url, id),
-            )
-        } else {
-            (
-                reqwest::Method::POST,
-                format!("{}/rest/v1/EncounterPlayer", config.url),
-            )
-        };
+        let insert_url = format!("{}/rest/v1/EncounterPlayer", config.url);
 
         let response = client
-            .request(method.clone(), &url)
+            .post(&insert_url)
             .header("apikey", &config.anon_key)
             .header("Authorization", format!("Bearer {}", &access_token))
             .header("Content-Type", "application/json")
@@ -261,16 +272,7 @@ pub async fn save_encounter_players(
         let text = response.text().await.map_err(|e| e.to_string())?;
 
         if !status.is_success() {
-            return Err(format!(
-                "Supabase {} error {}: {}",
-                if method == reqwest::Method::PATCH {
-                    "update"
-                } else {
-                    "insert"
-                },
-                status,
-                text
-            ));
+            return Err(format!("Supabase insert error {}: {}", status, text));
         }
     }
     return Ok(SaveEncounterPlayersResponse {
@@ -285,23 +287,36 @@ pub async fn save_playable_statblocks(
 ) -> Result<SavePlayableStatBlocksResponse, String> {
     let config = init_supabase().await.map_err(|e| e.to_string())?;
     let client = reqwest::Client::new();
+
+    if let Some(first_statblock) = playable_stat_blocks.first() {
+        let delete_url = format!(
+            "{}/rest/v1/PlayableStatBlock?encounter_id=eq.{}",
+            config.url, first_statblock.encounter_id
+        );
+
+        let delete_response = client
+            .delete(&delete_url)
+            .header("apikey", &config.anon_key)
+            .header("Authorization", format!("Bearer {}", &access_token))
+            .send()
+            .await
+            .map_err(|e| format!("Request failed: {}", e))?;
+
+        if !delete_response.status().is_success() {
+            let error_text = delete_response.text().await.unwrap_or_default();
+            return Err(format!(
+                "Failed to delete existing playable statblocks: {}",
+                error_text
+            ));
+        }
+    }
+
     for statblock in playable_stat_blocks {
         let insert_obj = statblock.clone();
-
-        let (method, url) = if let Some(id) = statblock.id {
-            (
-                reqwest::Method::PATCH,
-                format!("{}/rest/v1/PlayableStatBlock?id=eq.{}", config.url, id),
-            )
-        } else {
-            (
-                reqwest::Method::POST,
-                format!("{}/rest/v1/PlayableStatBlock", config.url),
-            )
-        };
+        let insert_url = format!("{}/rest/v1/PlayableStatBlock", config.url);
 
         let response = client
-            .request(method.clone(), &url)
+            .post(&insert_url)
             .header("apikey", &config.anon_key)
             .header("Authorization", format!("Bearer {}", &access_token))
             .header("Content-Type", "application/json")
@@ -314,16 +329,7 @@ pub async fn save_playable_statblocks(
         let text = response.text().await.map_err(|e| e.to_string())?;
 
         if !status.is_success() {
-            return Err(format!(
-                "Supabase {} error {}: {}",
-                if method == reqwest::Method::PATCH {
-                    "update"
-                } else {
-                    "insert"
-                },
-                status,
-                text
-            ));
+            return Err(format!("Supabase insert error {}: {}", status, text));
         }
     }
     return Ok(SavePlayableStatBlocksResponse {
@@ -406,3 +412,5 @@ pub async fn save_encounter(
 
     Err("No data returned from Supabase".to_string())
 }
+
+//? Delete

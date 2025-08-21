@@ -9,13 +9,15 @@ interface CreateEncounterProps {
 	editEncounter?: Encounter;
 	editPlayableStatBlocks?: PlayableStatBlock[];
 	editEncounterPlayers?: EncounterPlayer[];
+	onSave: () => void;
 }
 
 function CreateEncounter({
 	setOpen,
 	editEncounter,
 	editPlayableStatBlocks,
-	editEncounterPlayers
+	editEncounterPlayers,
+	onSave,
 }: CreateEncounterProps) {
 	const encounter = editEncounter;
 	const playableStatBlocks = editPlayableStatBlocks || [];
@@ -38,7 +40,7 @@ function CreateEncounter({
 				initialPlayableStatBlocks={playableStatBlocks}
 				initialEncounterPlayers={encounterPlayers}
 			>
-				<EncounterForm setOpen={setOpen} />
+				<EncounterForm setOpen={setOpen} onSave={onSave} />
 			</CreateEncounterProvider>
 		</Box>
 	)
