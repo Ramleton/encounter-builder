@@ -40,18 +40,6 @@ pub fn load_statblocks() -> Result<Vec<StatBlock>, String> {
 }
 
 #[tauri::command]
-pub fn save_encounter(encounter: Encounter) -> Result<String, String> {
-    // Determine path to save encounter
-    let path = PathBuf::from(format!("../encounters/{}.json", encounter.name));
-    fs::create_dir_all(path.parent().unwrap()).map_err(|e| e.to_string())?;
-
-    let json = serde_json::to_string_pretty(&encounter).map_err(|e| e.to_string())?;
-    fs::write(&path, json).map_err(|e| e.to_string())?;
-
-    Ok(format!("Encounter saved at {:?}", path))
-}
-
-#[tauri::command]
 pub fn delete_encounter(encounter: Encounter) -> Result<String, String> {
     let path = PathBuf::from(format!("../encounters/{}.json", encounter.name));
 

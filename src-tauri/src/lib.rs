@@ -6,13 +6,16 @@ use database::statblock_db::{delete_statblock, save_statblock};
 use tauri::{Emitter, Manager};
 #[cfg(desktop)]
 use tauri_plugin_deep_link::DeepLinkExt;
-use utils::fs_utils::{delete_encounter, load_encounters, load_statblocks, save_encounter};
+use utils::fs_utils::{delete_encounter, load_encounters, load_statblocks};
 
 use utils::auth_utils::{
     get_current_user, get_stored_value, handle_discord_oauth_callback, login_with_discord,
     login_with_email, logout_user, register_with_email, remove_stored_value, store_value,
 };
 
+use crate::database::encounter_db::{
+    save_encounter, save_encounter_players, save_playable_statblocks,
+};
 use crate::database::statblock_db::fetch_statblocks_with_joins;
 use crate::utils::auth_utils::refresh_access_token;
 
@@ -70,6 +73,8 @@ pub fn run() {
         })
         .invoke_handler(tauri::generate_handler![
             save_encounter,
+            save_encounter_players,
+            save_playable_statblocks,
             load_encounters,
             delete_encounter,
             load_statblocks,
@@ -86,7 +91,7 @@ pub fn run() {
             refresh_access_token,
             save_statblock,
             delete_statblock,
-            fetch_statblocks_with_joins
+            fetch_statblocks_with_joins,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

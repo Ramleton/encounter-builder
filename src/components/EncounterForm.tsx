@@ -14,6 +14,21 @@ interface EncounterFormProps {
 	setOpen: Dispatch<SetStateAction<boolean>>;
 }
 
+interface SaveEncounterResponse {
+	id: number,
+    status: number,
+    message: string,
+    was_updated: boolean,
+}
+
+interface SavePlayableStatBlocksResponse {
+	message: string;
+}
+
+interface SaveEncounterPlayersResponse {
+	message: string;
+}
+
 function EncounterForm({ setOpen }: EncounterFormProps) {
 	const {
 		encounter,
@@ -22,15 +37,48 @@ function EncounterForm({ setOpen }: EncounterFormProps) {
 		setPlayableStatBlocks,
 		encounterPlayers,
 		setEncounterPlayers,
-		errors
+		errors,
+		setErrors
 	} = useEncounter();
 	const [statBlocks, setStatBlocks] = useState<StatBlock[]>([]);
 	const [openCreatureSelection, setOpenCreatureSelection] = useState<boolean>(false);
 	const [openPlayerCreation, setOpenPlayerCreation] = useState<boolean>(false);
 	const theme = useTheme();
-	const { getAccessToken } = useAuth();
+	const { user, getAccessToken } = useAuth();
 
-	const handleSaveEncounter = () => {
+	const handleSaveEncounter = async () => {
+		if (!user) return;
+		const newErrors: Record<string, string> = {};
+		if (encounter.name === "") newErrors["name"] = "Encounter name is required";
+		if (!playableStatBlocks.length) newErrors["playableStatBlocks"] = "Encounters require at least one creature statblock";
+		if (!encounterPlayers.length) newErrors["encounterPlayers"] = "Encounters require at least one player character";
+
+		setErrors(newErrors);
+
+		if (Object.keys(newErrors).length) return;
+
+		// Save Encounter
+
+		const accessToken = await getAccessToken();
+
+		encounter.last_modified = new Date().toISOString();
+		encounter.user_id = user.uuid;
+
+		const encounterResponse = await invoke<SaveEncounterResponse>("save_encounter", { encounter, accessToken });
+
+		console.log(encounterResponse);
+
+		if (encounterResponse.status === 500) return;
+
+		playableStatBlocks.forEach(statBlock => statBlock.encounter_id = encounterResponse.id);
+		encounterPlayers.forEach(player => player.encounter_id = encounterResponse.id);
+
+		const statblockResponse = await invoke<SavePlayableStatBlocksResponse>("save_playable_statblocks", { playableStatBlocks, accessToken });
+		const playerResponse = await invoke<SaveEncounterPlayersResponse>("save_encounter_players", { encounterPlayers, accessToken });
+
+		console.log(statblockResponse);
+		console.log(playerResponse);
+
 		setOpen(false);
 	}
 
@@ -101,6 +149,9 @@ function EncounterForm({ setOpen }: EncounterFormProps) {
 							{matchingStatBlock.statBlock.cr} CR
 						</Typography>
 						<Button
+							sx={{
+								backgroundColor: 'red'
+							}}
 							variant="contained"
 							endIcon={<Delete />}
 							onClick={() => setPlayableStatBlocks(prev => prev.filter((_, idx) => idx !== i))}
@@ -131,7 +182,10 @@ function EncounterForm({ setOpen }: EncounterFormProps) {
 					</Typography>
 					<Typography variant="body1" textAlign="center" sx={{ flex: 1 }}>Level {player.level}</Typography>
 					<Button
-						variant="outlined"
+						sx={{
+							backgroundColor: 'red'
+						}}
+						variant="contained"
 						endIcon={<Delete />}
 						onClick={() => setEncounterPlayers(prev => prev.filter(encounterPlayer => encounterPlayer.name !== player.name))}
 					>
@@ -152,7 +206,9 @@ function EncounterForm({ setOpen }: EncounterFormProps) {
 			borderRadius: '1rem',
 			padding: '1rem 2rem',
 			gap: '1rem',
-			mb: '1rem'
+			mb: '1rem',
+			maxHeight: '700px',
+			overflowY: 'auto'
 		}}>
 			<TextField
 				required
@@ -194,7 +250,10 @@ function EncounterForm({ setOpen }: EncounterFormProps) {
 						variant="contained"
 						endIcon={<Add />}
 						disabled={openCreatureSelection}
-						onClick={() => setOpenCreatureSelection(true)}
+						onClick={() => {
+							setOpenCreatureSelection(true);
+							setOpenPlayerCreation(false);
+						}}
 					>
 						Add
 					</Button>
@@ -219,7 +278,10 @@ function EncounterForm({ setOpen }: EncounterFormProps) {
 					<Button
 						variant="contained"
 						endIcon={<Add />}
-						onClick={() => setOpenPlayerCreation(true)}
+						onClick={() => {
+							setOpenCreatureSelection(false);
+							setOpenPlayerCreation(true);
+						}}
 					>
 						Add
 					</Button>
@@ -232,6 +294,7 @@ function EncounterForm({ setOpen }: EncounterFormProps) {
 				/>
 				{!!encounterPlayers.length && listEncounterPlayers()}
 			</Box>
+			<Divider />
 			<Box sx={{
 				display: 'flex',
 				flexDirection: 'column',
@@ -246,6 +309,7 @@ function EncounterForm({ setOpen }: EncounterFormProps) {
 					Encounter Difficulty: {calcEncounterDifficulty(getMatchingStatBlocks().map(pair => pair.statBlock), encounterPlayers)}
 				</Typography>
 			</Box>
+			<Divider />
 			<Box sx={{
 				display: 'flex',
 				flexDirection: 'row',

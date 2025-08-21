@@ -59,8 +59,6 @@ function EncounterFormPlayerSection({ open, setOpen, currentPlayers, handleAddPl
 		setPlayerCurrHP(null);
 		setPlayerTempHP(null);
 
-		console.log("Adding new player", newEncounterPlayer);
-
 		handleAddPlayer(newEncounterPlayer);
 		setOpen(false);
 	}
