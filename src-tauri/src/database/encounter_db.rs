@@ -30,7 +30,149 @@ pub struct FetchEncountersResponse {
     pub message: String,
 }
 
+#[derive(Serialize, Deserialize, Debug)]
+pub struct FetchPlayableStatBlocksForEncounterResponse {
+    pub playable_stat_blocks: Vec<PlayableStatBlock>,
+    pub status: u16,
+    pub message: String,
+}
+
+#[derive(Serialize, Deserialize, Debug)]
+pub struct FetchEncounterPlayersForEncounterResponse {
+    pub encounter_players: Vec<EncounterPlayer>,
+    pub status: u16,
+    pub message: String,
+}
+
 //? GET
+
+#[tauri::command]
+pub async fn fetch_encounter_players_for_encounter(
+    encounter_id: i64,
+    access_token: String,
+) -> Result<FetchEncounterPlayersForEncounterResponse, FetchEncounterPlayersForEncounterResponse>
+{
+    let config =
+        init_supabase()
+            .await
+            .map_err(|e| FetchEncounterPlayersForEncounterResponse {
+                encounter_players: Vec::new(),
+                status: 500,
+                message: format!("EncounterPlayer fetch failed: {}", e),
+            })?;
+    let client = reqwest::Client::new();
+    let url = format!(
+        "{}/rest/v1/EncounterPlayer?encounter_id=eq.{}",
+        config.url, encounter_id
+    );
+
+    let response = client
+        .get(&url)
+        .header("apikey", &config.anon_key)
+        .header("Authorization", format!("Bearer {}", &access_token))
+        .header("Content-Type", "application/json")
+        .send()
+        .await
+        .map_err(|e| FetchEncounterPlayersForEncounterResponse {
+            encounter_players: Vec::new(),
+            status: 500,
+            message: format!("EncounterPlayer fetch failed: {}", e),
+        })?;
+
+    let status = response.status();
+
+    if !status.is_success() {
+        let error_text = response.text().await.unwrap_or_default();
+        return Err(FetchEncounterPlayersForEncounterResponse {
+            encounter_players: Vec::new(),
+            status: status.as_u16(),
+            message: format!("EncounterPlayer fetch failed: {}", error_text),
+        });
+    }
+
+    let encounter_players =
+        response
+            .json()
+            .await
+            .map_err(|e| FetchEncounterPlayersForEncounterResponse {
+                encounter_players: Vec::new(),
+                status: 500,
+                message: format!(
+                    "Failed to parse EncounterPlayer response: {}",
+                    e.to_string()
+                ),
+            })?;
+
+    Ok(FetchEncounterPlayersForEncounterResponse {
+        encounter_players,
+        status: status.as_u16(),
+        message: format!("Successfully fetched EncounterPlayers"),
+    })
+}
+
+#[tauri::command]
+pub async fn fetch_playable_statblocks_for_encounter(
+    encounter_id: i64,
+    access_token: String,
+) -> Result<FetchPlayableStatBlocksForEncounterResponse, FetchPlayableStatBlocksForEncounterResponse>
+{
+    let config =
+        init_supabase()
+            .await
+            .map_err(|e| FetchPlayableStatBlocksForEncounterResponse {
+                playable_stat_blocks: Vec::new(),
+                status: 500,
+                message: format!("PlayableStatBlock fetch failed: {}", e),
+            })?;
+    let client = reqwest::Client::new();
+    let url = format!(
+        "{}/rest/v1/PlayableStatBlock?encounter_id=eq.{}",
+        config.url, encounter_id
+    );
+
+    let response = client
+        .get(&url)
+        .header("apikey", &config.anon_key)
+        .header("Authorization", format!("Bearer {}", &access_token))
+        .header("Content-Type", "application/json")
+        .send()
+        .await
+        .map_err(|e| FetchPlayableStatBlocksForEncounterResponse {
+            playable_stat_blocks: Vec::new(),
+            status: 500,
+            message: format!("PlayableStatBlock fetch failed: {}", e),
+        })?;
+
+    let status = response.status();
+
+    if !status.is_success() {
+        let error_text = response.text().await.unwrap_or_default();
+        return Err(FetchPlayableStatBlocksForEncounterResponse {
+            playable_stat_blocks: Vec::new(),
+            status: status.as_u16(),
+            message: format!("PlayableStatBlock fetch failed: {}", error_text),
+        });
+    }
+
+    let playable_stat_blocks =
+        response
+            .json()
+            .await
+            .map_err(|e| FetchPlayableStatBlocksForEncounterResponse {
+                playable_stat_blocks: Vec::new(),
+                status: 500,
+                message: format!(
+                    "Failed to parse PlayableStatBlock response: {}",
+                    e.to_string()
+                ),
+            })?;
+
+    Ok(FetchPlayableStatBlocksForEncounterResponse {
+        playable_stat_blocks,
+        status: status.as_u16(),
+        message: format!("Successfully fetched PlayableStatBlocks"),
+    })
+}
 
 #[tauri::command]
 pub async fn fetch_encounters(

@@ -14,7 +14,9 @@ use utils::auth_utils::{
 };
 
 use crate::database::encounter_db::{
-    fetch_encounters, save_encounter, save_encounter_players, save_playable_statblocks,
+    fetch_encounter_players_for_encounter, fetch_encounters,
+    fetch_playable_statblocks_for_encounter, save_encounter, save_encounter_players,
+    save_playable_statblocks,
 };
 use crate::database::statblock_db::fetch_statblocks_with_joins;
 use crate::utils::auth_utils::refresh_access_token;
@@ -75,7 +77,9 @@ pub fn run() {
             save_encounter,
             fetch_encounters,
             save_encounter_players,
+            fetch_encounter_players_for_encounter,
             save_playable_statblocks,
+            fetch_playable_statblocks_for_encounter,
             load_encounters,
             delete_encounter,
             load_statblocks,

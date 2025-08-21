@@ -4,7 +4,7 @@ import { invoke } from "@tauri-apps/api/core";
 import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import EncounterCard from "../components/EncounterCard";
 import { useAuth } from "../context/AuthContext";
-import { Encounter } from "../types/encounter";
+import { Encounter, EncounterPlayer, PlayableStatBlock } from "../types/encounter";
 import CreateEncounter from "./CreateEncounter";
 
 interface EncounterSearchHeaderProps {
@@ -17,6 +17,12 @@ interface FetchEncountersResponse {
 	encounters: Encounter[];
 	status: number;
 	message: string;
+}
+
+interface EditEncounter {
+	encounter: Encounter;
+	playableStatBlocks: PlayableStatBlock[];
+	encounterPlayers: EncounterPlayer[];
 }
 
 function EncounterSearchHeader({ search, setSearch, setOpen }: EncounterSearchHeaderProps) {
@@ -64,6 +70,7 @@ function EncounterSearchHeader({ search, setSearch, setOpen }: EncounterSearchHe
 function EncounterSearch() {
 	const [search, setSearch] = useState<string>("");
 	const [encounters, setEncounters] = useState<Encounter[]>([]);
+	const [editEncounter, setEditEncounter] = useState<EditEncounter>();
 	const [loading, setLoading] = useState<boolean>(true);
 	const [open, setOpen] = useState<boolean>(false);
 
@@ -81,7 +88,7 @@ function EncounterSearch() {
 			setLoading(false);
 		};
 		fetchEncounters();
-	}, [encounters]);
+	}, []);
 
 	return (
 		<>
@@ -91,7 +98,13 @@ function EncounterSearch() {
 				alignItems: 'center',
 				justifyContent: 'center'
 			}}>
-				<CreateEncounter setOpen={setOpen} />
+				<CreateEncounter
+					key={editEncounter?.encounter.id ?? "new"}
+					setOpen={setOpen}
+					editEncounter={editEncounter?.encounter}
+					editEncounterPlayers={editEncounter?.encounterPlayers}
+					editPlayableStatBlocks={editEncounter?.playableStatBlocks}
+				/>
 			</Backdrop>
 			{ loading && 
 				(
@@ -116,7 +129,19 @@ function EncounterSearch() {
 				}}>
 					{encounters
 						.filter(encounter => encounter.name.includes(search))
-						.map(encounter => <EncounterCard encounter={encounter} />)
+						.map(encounter => <EncounterCard
+							key={encounter.id}
+							encounter={encounter}
+							informative
+							handleEdit={(playableStatBlocks: PlayableStatBlock[], encounterPlayers: EncounterPlayer[]) => {
+								setEditEncounter({
+									encounter,
+									encounterPlayers,
+									playableStatBlocks
+								});
+								setOpen(true);
+							}}
+						/>)
 					}
 				</Box>
 			)}	

@@ -1,16 +1,25 @@
 import { Box } from "@mui/material";
 import { Dispatch, SetStateAction } from "react";
-import { useLocation } from "react-router-dom";
 import EncounterForm from "../components/EncounterForm";
 import { CreateEncounterProvider } from "../context/CreateEncounterContext";
+import { Encounter, EncounterPlayer, PlayableStatBlock } from "../types/encounter";
 
 interface CreateEncounterProps {
 	setOpen: Dispatch<SetStateAction<boolean>>;
+	editEncounter?: Encounter;
+	editPlayableStatBlocks?: PlayableStatBlock[];
+	editEncounterPlayers?: EncounterPlayer[];
 }
 
-function CreateEncounter({ setOpen }: CreateEncounterProps) {
-	const location = useLocation();
-	const { encounter = null, playableStatBlocks = [], encounterPlayers = [] } = location.state || {};
+function CreateEncounter({
+	setOpen,
+	editEncounter,
+	editPlayableStatBlocks,
+	editEncounterPlayers
+}: CreateEncounterProps) {
+	const encounter = editEncounter;
+	const playableStatBlocks = editPlayableStatBlocks || [];
+	const encounterPlayers = editEncounterPlayers || [];
 
 	return (
 		<Box sx={{
