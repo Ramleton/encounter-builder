@@ -6,7 +6,7 @@ use database::statblock_db::{delete_statblock, save_statblock};
 use tauri::{Emitter, Manager};
 #[cfg(desktop)]
 use tauri_plugin_deep_link::DeepLinkExt;
-use utils::fs_utils::{delete_encounter, load_encounters, load_statblocks};
+use utils::fs_utils::{load_encounters, load_statblocks};
 
 use utils::auth_utils::{
     get_current_user, get_stored_value, handle_discord_oauth_callback, login_with_discord,
@@ -14,7 +14,7 @@ use utils::auth_utils::{
 };
 
 use crate::database::encounter_db::{
-    fetch_encounter_players_for_encounter, fetch_encounters,
+    delete_encounter, fetch_encounter_players_for_encounter, fetch_encounters,
     fetch_playable_statblocks_for_encounter, save_encounter, save_encounter_players,
     save_playable_statblocks,
 };

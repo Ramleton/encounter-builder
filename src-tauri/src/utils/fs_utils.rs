@@ -38,12 +38,3 @@ pub fn load_statblocks() -> Result<Vec<StatBlock>, String> {
     let statblocks: Vec<StatBlock> = load_data("statblocks")?;
     Ok(statblocks)
 }
-
-#[tauri::command]
-pub fn delete_encounter(encounter: Encounter) -> Result<String, String> {
-    let path = PathBuf::from(format!("../encounters/{}.json", encounter.name));
-
-    fs::remove_file(path).map_err(|e| e.to_string())?;
-
-    Ok(String::from("Successfully deleted encounter"))
-}

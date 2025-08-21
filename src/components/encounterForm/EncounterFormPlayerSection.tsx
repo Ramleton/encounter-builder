@@ -1,4 +1,4 @@
-import { Add, Delete } from "@mui/icons-material";
+import { Add, Delete, Favorite } from "@mui/icons-material";
 import { Box, Button, List, ListItem, Typography, useTheme } from "@mui/material";
 import { Dispatch, SetStateAction } from "react";
 import { useEncounter } from "../../context/CreateEncounterContext";
@@ -38,13 +38,16 @@ function EncounterFormPlayerSection({
 			{encounterPlayers.map(player => 
 				<ListItem key={player.name} sx={{ display: 'flex', flexDirection: 'row', pb: '0.5rem' }}>
 					<Typography variant="body1" textAlign="center" sx={{ flex: 1 }}>{player.name}</Typography>
-					<Typography variant="body1" textAlign="center" sx={{ flex: 1 }}>
-						{
-							player.temporary_hp
-							? `${player.current_hp}/${player.hp} + ${player.temporary_hp}`
-							: `${player.current_hp}/${player.hp}`
-						} HP
-					</Typography>
+					<Box sx={{ flex: 1, display: 'flex', flexDirection: 'row', gap: '0.5rem' }}>
+						<Favorite sx={{ color: "red" }} />
+						<Typography variant="body1" textAlign="center" >
+							{
+								player.temporary_hp
+								? `${player.current_hp}/${player.hp} + ${player.temporary_hp}`
+								: `${player.current_hp}/${player.hp}`
+							} HP
+						</Typography>
+					</Box>
 					<Typography variant="body1" textAlign="center" sx={{ flex: 1 }}>Level {player.level}</Typography>
 					<Button
 						sx={{

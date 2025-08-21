@@ -92,7 +92,7 @@ function EncounterSearch() {
 		fetchEncounters();
 	}, []);
 
-	const handleEncounterSaved = async () => {
+	const handleRefreshNeeded = async () => {
 		await fetchEncounters();
 		setRefreshTrigger(prev => prev + 1);
 	}
@@ -110,7 +110,7 @@ function EncounterSearch() {
 					editEncounter={editEncounter?.encounter}
 					editEncounterPlayers={editEncounter?.encounterPlayers}
 					editPlayableStatBlocks={editEncounter?.playableStatBlocks}
-					onSave={() => handleEncounterSaved()}
+					onSave={() => handleRefreshNeeded()}
 				/>
 			</Backdrop>
 			{ loading && 
@@ -149,6 +149,7 @@ function EncounterSearch() {
 								setOpen(true);
 							}}
 							refreshTrigger={refreshTrigger}
+							onRefreshNeeded={handleRefreshNeeded}
 						/>)
 					}
 				</Box>

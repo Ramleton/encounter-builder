@@ -414,3 +414,27 @@ pub async fn save_encounter(
 }
 
 //? Delete
+
+#[tauri::command]
+pub async fn delete_encounter(encounter_id: i64, access_token: String) -> Result<String, String> {
+    let config = init_supabase().await.map_err(|e| e.to_string())?;
+    let client = reqwest::Client::new();
+    let delete_url = format!("{}/rest/v1/Encounter?id=eq.{}", config.url, encounter_id);
+
+    let response = client
+        .delete(&delete_url)
+        .header("apikey", &config.anon_key)
+        .header("Authorization", format!("Bearer {}", &access_token))
+        .header("Content-Type", "application/json")
+        .send()
+        .await
+        .map_err(|e| format!("Request failed: {}", e))?;
+
+    let status = response.status();
+
+    if !status.is_success() {
+        return Err("Supabase delete error {}: {}".to_string());
+    }
+
+    return Ok("Encounter deleted successfully".to_string());
+}

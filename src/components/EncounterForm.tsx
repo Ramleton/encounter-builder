@@ -78,6 +78,8 @@ function EncounterForm({ setOpen, onSave }: EncounterFormProps) {
 
 		// Save Encounter
 
+		setLoading(true);
+
 		const accessToken = await getAccessToken();
 
 		encounter.last_modified = new Date().toISOString();
@@ -100,6 +102,7 @@ function EncounterForm({ setOpen, onSave }: EncounterFormProps) {
 		setEncounterPlayers([]);
 		setEncounter(generateEmptyEncounter());
 
+		setLoading(false);
 		setOpen(false);
 		onSave();
 	}
@@ -231,13 +234,20 @@ function EncounterForm({ setOpen, onSave }: EncounterFormProps) {
 				justifyContent: 'center',
 				gap: '1rem'
 			}}>
-				<Button variant="outlined" endIcon={<ArrowBack />} onClick={() => {
+				<Button variant="contained" endIcon={<ArrowBack />} onClick={() => {
 					setOpen(false);
 					setPlayableStatBlocks([]);
 					setEncounterPlayers([]);
 					setEncounter(generateEmptyEncounter());
 				}}>Cancel</Button>
-				<Button variant="outlined" endIcon={<Save />} onClick={handleSaveEncounter}>Save</Button>
+				<Button
+					variant="contained"
+					endIcon={<Save />}
+					onClick={handleSaveEncounter}
+					disabled={loading}
+				>
+					Save
+				</Button>
 			</Box>
 		</Box>
 	)
