@@ -94,6 +94,7 @@ function EncounterSearch() {
 
 	const handleRefreshNeeded = async () => {
 		await fetchEncounters();
+		setEditEncounter(undefined);
 		setRefreshTrigger(prev => prev + 1);
 	}
 

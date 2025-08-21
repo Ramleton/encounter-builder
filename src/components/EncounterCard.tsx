@@ -78,9 +78,7 @@ export default function EncounterCard({ encounter, informative = false, handleEd
 	const handleDelete = async () => {
 		if (!encounter.id) return;
 		const accessToken = await getAccessToken();
-		const deleteResponse = await invoke<string>("delete_encounter", { encounterId: encounter.id, accessToken });
-
-		console.log(deleteResponse);
+		await invoke<string>("delete_encounter", { encounterId: encounter.id, accessToken });
 		onRefreshNeeded();
 	}
 

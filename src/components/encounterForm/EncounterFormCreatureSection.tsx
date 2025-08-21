@@ -63,8 +63,15 @@ function EncounterFormCreatureSection({
 							id="statblock_name"
 							label="Creature Name"
 							type="text"
-							value={matchingStatBlock.playableStatBlock.name || matchingStatBlock.statBlock.name}
-							onChange={(e) => matchingStatBlock.playableStatBlock.name = e.target.value || undefined}
+							value={
+								matchingStatBlock.playableStatBlock.name !== undefined
+									? matchingStatBlock.playableStatBlock.name
+									: matchingStatBlock.statBlock.name 
+							}
+							onChange={(e) => {
+								const newName = e.target.value;
+								setPlayableStatBlocks((prev) => prev.map((psb, idx) => idx === i ? { ...psb, name: newName } : psb));
+							}}
 							variant="standard"
 						/>
 						<Box sx={{ display: 'flex', flexDirection: 'row', flex: 1, gap: '0.5rem' }}>
