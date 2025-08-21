@@ -10,8 +10,14 @@ interface EncounterFormCreatureSelectionProps {
 	handleAddCreature: (statBlock: StatBlock) => void;
 }
 
-function EncounterFormCreatureSelection({ open, setOpen, statBlocks, handleAddCreature }: EncounterFormCreatureSelectionProps) {
+function EncounterFormCreatureSelection({
+	open,
+	setOpen,
+	statBlocks,
+	handleAddCreature
+}: EncounterFormCreatureSelectionProps) {
 	const [search, setSearch] = useState<string>("");
+	
 	const theme = useTheme();
 
 	return (
