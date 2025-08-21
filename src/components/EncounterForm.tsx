@@ -4,7 +4,7 @@ import { invoke } from "@tauri-apps/api/core";
 import { Dispatch, ReactNode, SetStateAction, useEffect, useState } from "react";
 import { useAuth } from "../context/AuthContext";
 import { useEncounter } from "../context/CreateEncounterContext";
-import { EncounterPlayer, PlayableStatBlock } from "../types/encounter";
+import { PlayableStatBlock } from "../types/encounter";
 import { FetchStatBlockResponse, StatBlock } from "../types/statBlock";
 import { calcEncounterDifficulty, calcEncounterXP } from "../utils/encounterUtils";
 import EncounterFormCreatureSelection from "./encounterForm/EncounterFormCreatureSelection";
@@ -93,10 +93,6 @@ function EncounterForm({ setOpen }: EncounterFormProps) {
 
 		setPlayableStatBlocks(prev => [...prev, newPlayableStatBlock]);
 	}
-
-	const handleNewPlayer = (newPlayer: EncounterPlayer) => {
-		setEncounterPlayers(prev => [...prev, newPlayer]);
-	}
 	
 	useEffect(() => {
 		const fetchStatBlocks = async () => {
@@ -161,40 +157,6 @@ function EncounterForm({ setOpen }: EncounterFormProps) {
 			</List>
 		)
 	};
-
-	const listEncounterPlayers = () => {
-		return <List sx={{
-			padding: '0 1rem',
-			border: `1px solid ${theme.palette.secondary.main}`,
-			maxHeight: '150px',
-			overflowY: 'auto',
-			mt: '1rem'
-		}}>
-			{encounterPlayers.map(player => 
-				<ListItem key={player.name} sx={{ display: 'flex', flexDirection: 'row', pb: '0.5rem' }}>
-					<Typography variant="body1" textAlign="center" sx={{ flex: 1 }}>{player.name}</Typography>
-					<Typography variant="body1" textAlign="center" sx={{ flex: 1 }}>
-						{
-							player.temporary_hp
-							? `${player.current_hp}/${player.hp} + ${player.temporary_hp}`
-							: `${player.current_hp}/${player.hp}`
-						} HP
-					</Typography>
-					<Typography variant="body1" textAlign="center" sx={{ flex: 1 }}>Level {player.level}</Typography>
-					<Button
-						sx={{
-							backgroundColor: 'red'
-						}}
-						variant="contained"
-						endIcon={<Delete />}
-						onClick={() => setEncounterPlayers(prev => prev.filter(encounterPlayer => encounterPlayer.name !== player.name))}
-					>
-						Remove
-					</Button>
-				</ListItem>
-			)}
-		</List>
-	}
 
 	return (
 		<Box sx={{
@@ -266,33 +228,13 @@ function EncounterForm({ setOpen }: EncounterFormProps) {
 				/>
 				{!!playableStatBlocks.length && listEncounterCreatures()}
 				<Divider sx={{ margin: '1rem 0' }} />
-				<Box sx={{
-					display: 'flex',
-					flexDirection: 'row',
-					alignItems: 'center',
-					justifyContent: 'space-between',
-					gap: '1rem',
-					padding: '0 1rem'
-				}}>
-					<Typography variant="h6">Players</Typography>
-					<Button
-						variant="contained"
-						endIcon={<Add />}
-						onClick={() => {
-							setOpenCreatureSelection(false);
-							setOpenPlayerCreation(true);
-						}}
-					>
-						Add
-					</Button>
-				</Box>
 				<EncounterFormPlayerSection
-					open={openPlayerCreation}
-					setOpen={setOpenPlayerCreation}
-					currentPlayers={encounterPlayers}
-					handleAddPlayer={handleNewPlayer}
+					encounterPlayers={encounterPlayers}
+					setEncounterPlayers={setEncounterPlayers}
+					openPlayerCreation={openPlayerCreation}
+					setOpenPlayerCreation={setOpenPlayerCreation}
+					setOpenCreatureSelection={setOpenCreatureSelection}
 				/>
-				{!!encounterPlayers.length && listEncounterPlayers()}
 			</Box>
 			<Divider />
 			<Box sx={{
