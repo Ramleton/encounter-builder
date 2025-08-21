@@ -92,14 +92,8 @@ function EncounterForm({ setOpen, onSave }: EncounterFormProps) {
 		playableStatBlocks.forEach(statBlock => statBlock.encounter_id = encounterResponse.id);
 		encounterPlayers.forEach(player => player.encounter_id = encounterResponse.id);
 
-		console.log(playableStatBlocks);
-		console.log(encounterPlayers);
-
-		const statblockResponse = await invoke<SavePlayableStatBlocksResponse>("save_playable_statblocks", { playableStatBlocks, accessToken });
-		const playerResponse = await invoke<SaveEncounterPlayersResponse>("save_encounter_players", { encounterPlayers, accessToken });
-
-		console.log(statblockResponse);
-		console.log(playerResponse);
+		await invoke<SavePlayableStatBlocksResponse>("save_playable_statblocks", { playableStatBlocks, accessToken });
+		await invoke<SaveEncounterPlayersResponse>("save_encounter_players", { encounterPlayers, accessToken });
 
 		// Reset state
 		setPlayableStatBlocks([]);

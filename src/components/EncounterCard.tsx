@@ -1,4 +1,4 @@
-import { CircularProgress } from '@mui/material';
+import { Box, CircularProgress } from '@mui/material';
 import Button from '@mui/material/Button';
 import Card from '@mui/material/Card';
 import CardActions from '@mui/material/CardActions';
@@ -76,14 +76,21 @@ export default function EncounterCard({ encounter, informative = false, handleEd
 
 	return (
 		<Card variant="outlined" sx={{ width: "100%" }}>
-			<CardContent>
+			<CardContent sx={{
+				display: 'flex',
+				flexDirection: 'column'
+			}}>
 				<Typography variant="h5" component="div">
 					{name}
 				</Typography>
 				<Typography sx={{ color: 'text.secondary' }}>
 					{new Date(last_modified).toLocaleString()}
 				</Typography>
-				{loading && <CircularProgress />}
+				{loading && 
+					<Box sx={{ display: 'flex', flexDirection: 'row', justifyContent: 'center' }}>
+						<CircularProgress />
+					</Box>
+				}
 				{!loading && informative ? (
 					<>
 						<Typography variant="body2">
