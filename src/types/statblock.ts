@@ -90,6 +90,7 @@ export enum DamageType {
 	Psychic = "Psychic",
 	Radiant = "Radiant",
 	Slashing = "Slashing",
+	Thunder = "Thunder"
 }
 
 export enum ConditionType {

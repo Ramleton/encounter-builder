@@ -16,6 +16,7 @@ pub enum DamageType {
     Psychic,
     Radiant,
     Slashing,
+    Thunder,
 }
 
 #[derive(Serialize, Deserialize, Debug)]

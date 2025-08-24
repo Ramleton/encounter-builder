@@ -87,8 +87,6 @@ function EncounterForm({ setOpen, onSave }: EncounterFormProps) {
 
 		const encounterResponse = await invoke<SaveEncounterResponse>("save_encounter", { encounter, accessToken });
 
-		console.log(encounterResponse);
-
 		if (encounterResponse.status === 500) return;
 
 		playableStatBlocks.forEach(statBlock => statBlock.encounter_id = encounterResponse.id);
