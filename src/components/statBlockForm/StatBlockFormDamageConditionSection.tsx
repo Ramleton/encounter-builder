@@ -25,6 +25,15 @@ function StatBlockFormDamageConditionSection() {
 					id="resistance-select"
 					value={statBlock.damage_resistances.sort()}
 					onChange={(e) => updateField("damage_resistances", e.target.value as DamageType[], setStatBlock)}
+					sx={{
+						"& .MuiSelect-select": {
+							display: 'block',
+							overflow: 'hidden',
+							textOverflow: 'ellipsis',
+							whiteSpace: 'nowrap',
+							maxWidth: '20rem'
+						}
+					}}
 				>
 					{
 						Object.values(DamageType).map(dmgType => <MenuItem key={dmgType} value={dmgType}>{dmgType}</MenuItem>)
@@ -40,6 +49,15 @@ function StatBlockFormDamageConditionSection() {
 					id="immunity-select"
 					value={statBlock.damage_immunities.sort()}
 					onChange={(e) => updateField("damage_immunities", e.target.value as DamageType[], setStatBlock)}
+					sx={{
+						"& .MuiSelect-select": {
+							display: 'block',
+							overflow: 'hidden',
+							textOverflow: 'ellipsis',
+							whiteSpace: 'nowrap',
+							maxWidth: '20rem'
+						}
+					}}
 				>
 					{
 						Object.values(DamageType).map(dmgType => <MenuItem key={dmgType} value={dmgType}>{dmgType}</MenuItem>)
@@ -55,6 +73,15 @@ function StatBlockFormDamageConditionSection() {
 					id="vulnerabilities-select"
 					value={statBlock.damage_vulnerabilities.sort()}
 					onChange={(e) => updateField("damage_vulnerabilities", e.target.value as DamageType[], setStatBlock)}
+					sx={{
+						"& .MuiSelect-select": {
+							display: 'block',
+							overflow: 'hidden',
+							textOverflow: 'ellipsis',
+							whiteSpace: 'nowrap',
+							maxWidth: '20rem'
+						}
+					}}
 				>
 					{
 						Object.values(DamageType).map(dmgType => <MenuItem key={dmgType} value={dmgType}>{dmgType}</MenuItem>)
@@ -70,6 +97,15 @@ function StatBlockFormDamageConditionSection() {
 					id="condition-select"
 					value={statBlock.condition_immunities.sort()}
 					onChange={(e) => updateField("condition_immunities", e.target.value as ConditionType[], setStatBlock)}
+					sx={{
+						"& .MuiSelect-select": {
+							display: 'block',
+							overflow: 'hidden',
+							textOverflow: 'ellipsis',
+							whiteSpace: 'nowrap',
+							maxWidth: '20rem'
+						}
+					}}
 				>
 					{
 						Object.values(ConditionType).map(conditionType => 
